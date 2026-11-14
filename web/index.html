@@ -46,7 +46,16 @@ aside{grid-column:1;grid-row:1/3;background:var(--panel);border-right:1px solid 
 .stage{position:relative;min-width:0;grid-column:2;grid-row:1;background:radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/22px 22px,var(--bg)}
 #cy{position:absolute;inset:0}
 .status{position:absolute;left:14px;bottom:14px;font:11px var(--m);color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;box-shadow:var(--shadow);max-width:calc(100% - 28px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tools{position:absolute;right:14px;top:14px;display:flex;gap:6px}
+.tools{position:absolute;right:14px;top:14px;left:14px;display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;z-index:5;pointer-events:none}
+.tools>*{pointer-events:auto}
+.tools input{border:1px solid var(--line2);background:var(--panel);color:var(--fg);border-radius:8px;padding:6px 10px;font-size:13px;width:min(240px,100%);min-width:0}
+.tools .zg{display:inline-flex}.tools .zg button.b{border-radius:0;padding:6px 11px}.tools .zg button.b:first-child{border-radius:8px 0 0 8px}.tools .zg button.b:last-child{border-radius:0 8px 8px 0;border-left:0}
+.nacts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}.nacts .b,.nacts a.b{font-size:12px;padding:5px 10px;text-decoration:none;display:inline-flex;align-items:center}
+a.b{border:1px solid var(--line2);background:var(--panel);color:var(--fg);border-radius:8px}
+.ghint{position:absolute;right:14px;bottom:14px;font:11px var(--m);color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;box-shadow:var(--shadow)}
+body.full .stage{position:fixed;inset:0 360px 0 0;z-index:40;height:auto}
+body.full .insp{position:fixed;top:0;right:0;bottom:0;width:360px;max-height:none;z-index:41;border-left:1px solid var(--line)}
+@media (max-width:760px){body.full .stage{inset:0 0 45vh 0}body.full .insp{top:55vh;width:auto;left:0;border-left:0;border-top:1px solid var(--line)}.ghint{display:none}}
 .ask{grid-column:2;grid-row:2;border-top:1px solid var(--line);padding:18px 20px 28px;background:var(--panel);min-width:0}
 
 /* controls */
@@ -253,9 +262,9 @@ dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:
    <label class="t"><input type="checkbox" data-l="kycc" checked><span class="dot" style="background:var(--kycc)"></span>KYCC network</label>
    <label class="t"><input type="checkbox" data-l="memory"><span class="dot" style="background:var(--mem)"></span>Memory and reasoning</label></div>
   <div class="grp"><h3>Required, not yet in the file</h3><div class="miss" id="miss"></div></div>
-  <p class="fine">The graph and every answer come from Cypher queries that run in this page, in Relate compiled to WebAssembly. Click a node for its properties and connections; double-click to show only its neighbours. All clients, offices and the example company are fictitious; enforcement cases are published decisions, each with its source.</p>
+  <p class="fine">The graph and every answer come from Cypher queries that run in this page, in Relate compiled to WebAssembly. Scroll or pinch to zoom and drag to pan. Click a node or a relationship for its properties; double-click a node to expand its neighbours, or open it on a page of its own. All clients, offices and the example company are fictitious; enforcement cases are published decisions, each with its source.</p>
  </aside>
- <div class="stage"><div class="tools"><button class="b" id="fit">Fit</button><button class="b" id="all">Show all</button></div><div id="cy"></div><div class="status" id="status">Loading…</div></div>
+ <div class="stage"><div class="tools"><input id="gfind" list="gnames" type="search" placeholder="Find a node…" aria-label="Find a node"><datalist id="gnames"></datalist><span class="zg"><button class="b" id="zin" title="Zoom in" aria-label="Zoom in">+</button><button class="b" id="zout" title="Zoom out" aria-label="Zoom out">−</button></span><button class="b" id="fit">Fit</button><button class="b" id="all">Show all</button><button class="b" id="full" title="Graph over the whole window (Esc to leave)">Full screen</button></div><div id="cy"></div><div class="status" id="status">Loading…</div><div class="ghint">scroll or pinch to zoom · drag to pan · double-click to expand</div></div>
  <section class="insp" id="insp"><p class="note">Pick a node. A red document type is required but missing; its connections show the legal form rule, the law article or the risk trigger behind it. Law articles marked "to verify" still need checking against the current consolidated text.</p></section>
  <section class="ask">
   <div id="paneO" hidden><div class="path" id="ohead"></div><div id="obody"></div></div>
@@ -322,7 +331,7 @@ function style(){return [
  {selector:'edge[y="NEXT"],edge[y="SUPPORTED_BY"],edge[y="READ"]',style:{'line-color':css('--mem'),'target-arrow-color':css('--mem'),'width':1.6}},
  {selector:'.faded',style:{'opacity':.12}},{selector:'node:selected',style:{'border-width':3,'border-color':css('--signal')}},
  {selector:'edge.hi',style:{'line-color':css('--muted'),'target-arrow-color':css('--muted'),'label':'data(y)','font-size':7,'color':css('--muted'),'text-rotation':'autorotate','text-background-color':css('--panel'),'text-background-opacity':1}}];}
-function layout(e){(e||cy.elements(':visible')).layout({name:'concentric',animate:false,padding:30,minNodeSpacing:6,concentric:n=>10-(RING[n.data('t')]??3),levelWidth:()=>1,spacingFactor:1.2}).run();cy.fit(cy.elements(':visible'),30);}
+function layout(e){(e||cy.elements(':visible')).layout({name:'concentric',animate:false,padding:30,minNodeSpacing:6,concentric:n=>10-(RING[n.data('t')]??3),levelWidth:()=>1,spacingFactor:1.2}).run();cy.fit(cy.elements(':visible'),30);if(cy.zoom()>1.5){cy.zoom(1.5);cy.center(cy.elements(':visible'));}}
 function applyHidden(){cy.nodes().forEach(n=>n.style('display',hidden.has(n.data('layer'))?'none':'element'));cy.edges().forEach(e=>e.style('display',e.source().style('display')==='none'||e.target().style('display')==='none'?'none':'element'));}
 function table(r){if(!r.rows.length)return '<div class="note">No rows.</div>';const cols=r.columns;const fmt=v=>v==null?'':Array.isArray(v)?v.map(x=>typeof x==='object'?JSON.stringify(x):x).join('; '):typeof v==='object'?JSON.stringify(v):String(v);
   return `<table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${r.rows.map(row=>`<tr>${cols.map(c=>`<td>${esc(fmt(row[c]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;}
@@ -342,10 +351,30 @@ function select(n){cy.elements().removeClass('faded hi');cy.elements().not(n.clo
  const sim=(p.embedding&&CASE.vectors.includes(d.t))?`<button class="b" id="simBtn" style="margin:8px 0">Similar passages (vector search)</button><div id="simRes"></div>`:'';
  const rels=n.connectedEdges().map(e=>{const o=e.source().id()===n.id()?e.target():e.source(),ep=e.data('p')||{},x=[ep.pct!=null?ep.pct+'%':'',ep.condition||'',ep.when||'',ep.where||'',ep.quote?ep.quote.slice(0,160):''].filter(Boolean).join(' · ');
    return `<button class="rel" data-id="${esc(o.id())}"><div class="y">${e.source().id()===n.id()?'→':'←'} ${esc(e.data('y'))}</div>${esc(o.data('l'))}${x?`<div class="note">${esc(x)}</div>`:''}</button>`;}).join('');
- $('insp').innerHTML=`<div class="note">${esc(d.t)}</div><h2 style="margin:4px 0 6px;font-size:17px">${esc(d.l)}</h2><div>${flags}</div>${rows?`<dl>${rows}</dl>`:''}${txt}${sim}<div class="lab" style="margin-top:12px">Connections (${n.connectedEdges().length})</div>${rels}`;
- $('insp').querySelectorAll('.rel').forEach(b=>b.onclick=()=>{const t=cy.getElementById(b.dataset.id);cy.$(':selected').unselect();t.select();select(t);cy.animate({center:{eles:t}},{duration:200});});
+ const hid=n.neighborhood('node').filter(x=>x.style('display')==='none').length,ent=nodeLink(n);
+ const acts=`<div class="nacts"><button class="b" id="naExp" type="button"${hid?'':' disabled'}>Expand${hid?' (+'+hid+')':''}</button><button class="b" id="naIso" type="button">Only this and neighbours</button><button class="b" id="naHide" type="button">Hide</button>${ent?`<a class="b" href="${esc(ent)}" target="_blank" rel="noopener">Open on its own page ↗</a>`:''}</div>`;
+ $('insp').innerHTML=`<div class="note">${esc(d.t)}</div><h2 style="margin:4px 0 6px;font-size:17px">${esc(d.l)}</h2><div>${flags}</div>${acts}${rows?`<dl>${rows}</dl>`:''}${txt}${sim}<div class="lab" style="margin-top:12px">Connections (${n.connectedEdges().length})</div>${rels}`;
+ $('insp').querySelectorAll('.rel').forEach(b=>b.onclick=()=>goTo(cy.getElementById(b.dataset.id)));
+ $('naExp').onclick=()=>expand(n);$('naIso').onclick=()=>isolate(n);$('naHide').onclick=()=>hideNode(n);
  if(sim)$('simBtn').onclick=()=>{try{const r=run(`MATCH (k:Chunk) SEARCH k IN (VECTOR INDEX chunk_vec FOR $v LIMIT 6) SCORE AS similarity MATCH (d:Document)-[:HAS_CHUNK]->(k) WHERE k._vid <> $id RETURN d.file AS file, k.page AS page, round(similarity,3) AS similarity, left(k.text,120) AS text ORDER BY similarity DESC`,{v:p.embedding,id:p._vid});
    $('simRes').innerHTML=table(r)+`<div class="ms">vector search in the browser · ${r.ms.toFixed(1)} ms</div>`;}catch(e){$('simRes').innerHTML=`<div class="note">${esc(e.message)}</div>`;}};}
+// ---- Exploring the graph: zoom, find, expand, hide, a relationship's properties, and a node on a page of its own (?file=…&node=…)
+const vis=x=>x.style('display')!=='none';
+function showWithEdges(ns){ns.style('display','element');ns.connectedEdges().forEach(e=>{if(vis(e.source())&&vis(e.target()))e.style('display','element');});}
+function goTo(t){if(!t||!t.length)return;if(!vis(t)){const p=t.neighborhood('node').filter(vis)[0];if(p)t.position({x:p.position('x')+50,y:p.position('y')+50});showWithEdges(t);}
+ cy.$(':selected').unselect();t.select();select(t);cy.animate({center:{eles:t},zoom:Math.max(cy.zoom(),1.3)},{duration:250});}
+function expand(n){const nb=n.neighborhood('node'),fresh=nb.filter(x=>!vis(x)),k=fresh.length,c=n.position(),r=70+5*k;
+ fresh.forEach((x,i)=>{const a=2*Math.PI*i/k;x.position({x:c.x+r*Math.cos(a),y:c.y+r*Math.sin(a)});});showWithEdges(fresh);
+ select(n);cy.animate({fit:{eles:n.closedNeighborhood(),padding:60}},{duration:300});return k;}
+function isolate(n){const k=n.closedNeighborhood();cy.elements().not(k).style('display','none');k.style('display','element');layout(k);select(n);}
+function hideNode(n){n.unselect();n.style('display','none');n.connectedEdges().style('display','none');cy.elements().removeClass('faded hi');$('insp').innerHTML='<p class="note">Hidden from the view (not from the file). Show all brings it back.</p>';}
+function nodeLink(n){const e=CASE&&CASE.case;if(!e||CASE.template||/-new$/.test(e)||CASE.kind==='register'||CASE.kind==='law')return '';return location.pathname+'?file='+encodeURIComponent(e)+'&node='+encodeURIComponent(n.id());}
+function selectEdge(ed){const p=ed.data('p')||{};cy.elements().removeClass('faded hi');cy.elements().not(ed.union(ed.connectedNodes())).addClass('faded');ed.addClass('hi');
+ const rows=Object.entries(p).filter(([k])=>!['embedding','_vid'].includes(k)).map(([k,v])=>`<dt>${esc(k.replace(/_/g,' '))}</dt><dd>${esc(Array.isArray(v)?v.join(', '):typeof v==='object'&&v?JSON.stringify(v):v)}</dd>`).join('');
+ $('insp').innerHTML=`<div class="note">Relationship</div><h2 style="margin:4px 0 6px;font-size:17px">${esc(ed.data('y'))}</h2>${rows?`<dl>${rows}</dl>`:'<p class="note">No properties.</p>'}<div class="lab" style="margin-top:12px">From</div><button class="rel" data-id="${esc(ed.source().id())}">${esc(ed.source().data('l'))}</button><div class="lab">To</div><button class="rel" data-id="${esc(ed.target().id())}">${esc(ed.target().data('l'))}</button>`;
+ $('insp').querySelectorAll('.rel').forEach(b=>b.onclick=()=>goTo(cy.getElementById(b.dataset.id)));}
+function findNode(q){q=String(q||'').trim().toLowerCase();if(!q)return;const ns=cy.nodes();const t=ns.filter(n=>n.data('l').toLowerCase()===q)[0]||ns.filter(n=>n.data('l').toLowerCase().includes(q)||String((n.data('p')||{}).id||'').toLowerCase()===q)[0];
+ if(t)goTo(t);else $('status').textContent='No node matches "'+q+'"';}
 function drawGraph(){const t=performance.now();
  const nodes=run("MATCH (n) RETURN n._vid AS id, labels(n) AS labels, properties(n) AS p").rows;
  const rels=run("MATCH (a)-[r]->(b) RETURN a._vid AS s, b._vid AS t, type(r) AS y, properties(r) AS p").rows;
@@ -355,6 +384,7 @@ function drawGraph(){const t=performance.now();
  cy.add(nodes.map(n=>{const t=n.labels.includes('Person')?'Person':n.labels.includes('Company')?'Company':n.labels.includes('Foundation')?'Foundation':n.labels[0];return {group:'nodes',data:{id:n.id,t,layer:layerOf(n.labels[0],n.p),l:label(t,n.p),p:n.p,verify:n.p.verify===true,st:n.id in req?(req[n.id]?'received':'missing'):''}};}));
  cy.add(rels.map((r,i)=>({group:'edges',data:{id:'e'+i,source:r.s,target:r.t,y:r.y,p:r.p}})));
  applyHidden();layout();
+ $('gnames').innerHTML=[...new Set(cy.nodes().map(n=>n.data('l')))].sort().slice(0,3000).map(l=>`<option value="${esc(l)}"></option>`).join('');
  $('status').textContent=`${CASE.client} · ${nodes.length} nodes · ${rels.length} relationships · read with Cypher in ${ms.toFixed(0)} ms`;
  const miss=cy.nodes('[st="missing"]');$('miss').innerHTML=miss.length?miss.map(n=>`<button data-id="${esc(n.id())}">${esc(n.data('l'))}</button>`).join(''):'<div class="note">Nothing missing.</div>';
  $('miss').querySelectorAll('button').forEach(b=>b.onclick=()=>{const t=cy.getElementById(b.dataset.id);cy.$(':selected').unselect();t.select();select(t);cy.animate({center:{eles:t},zoom:1.4},{duration:200});});
@@ -369,7 +399,14 @@ function ask(){const q=QUERIES.find(x=>x.id===$('qsel').value);const p=q.params.
  try{const r=run(q.cypher,params);$('qres').innerHTML=table(r)+`<div class="ms">${r.rows.length} rows · ran in your browser in ${r.ms.toFixed(1)} ms</div>`;}catch(e){$('qres').innerHTML=`<div class="note">${esc(e.message)}</div>`;}}
 (async()=>{
  cy=cytoscape({container:$('cy'),style:style(),wheelSensitivity:.25});cy.on('tap','node',e=>select(e.target));cy.on('tap',e=>{if(e.target===cy)cy.elements().removeClass('faded hi');});
- cy.on('dbltap','node',e=>{const k=e.target.closedNeighborhood();cy.elements().not(k).style('display','none');k.style('display','element');layout(k);});
+ cy.on('dbltap','node',e=>expand(e.target));cy.on('tap','edge',e=>selectEdge(e.target));
+ $('zin').onclick=()=>cy.animate({zoom:{level:cy.zoom()*1.4,renderedPosition:{x:cy.width()/2,y:cy.height()/2}}},{duration:150});
+ $('zout').onclick=()=>cy.animate({zoom:{level:cy.zoom()/1.4,renderedPosition:{x:cy.width()/2,y:cy.height()/2}}},{duration:150});
+ const setFull=on=>{document.body.classList.toggle('full',on);$('full').textContent=on?'Exit full screen':'Full screen';setTimeout(()=>{cy.resize();cy.fit(cy.elements(':visible'),30);},30);};
+ $('full').onclick=()=>setFull(!document.body.classList.contains('full'));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('full')&&!document.querySelector('.drawer:not([hidden])'))setFull(false);});
+ $('gfind').addEventListener('change',e=>findNode(e.target.value));$('gfind').addEventListener('keydown',e=>{if(e.key==='Enter')findNode(e.target.value);});
+ window.CF_FULL=setFull;
  $('fit').onclick=()=>cy.fit(cy.elements(':visible'),30);$('all').onclick=()=>{applyHidden();cy.elements().removeClass('faded hi');layout();};
  document.querySelectorAll('[data-l]').forEach(i=>i.onchange=()=>{i.checked?hidden.delete(i.dataset.l):hidden.add(i.dataset.l);applyHidden();layout();});
  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>cy.style(style()));
@@ -664,10 +701,12 @@ ORDER BY CASE result WHEN 'GAP' THEN 0 WHEN 'no article' THEN 1 ELSE 2 END, leve
  $('relClose').onclick=()=>{$('relDrawer').hidden=true;$('relBtn').focus();};
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('relDrawer').hidden)$('relClose').click();});
  window.casefoldRelate={drawRelate,PROBES,emb};
- const start=idx.find(c=>c.kind==='case'&&!c.test)||idx[0];
+ const QS=new URLSearchParams(location.search),deep=idx.find(c=>c.case===QS.get('file')&&(c.kind==='case'||c.kind==='office')&&!c.template);
+ const start=deep||idx.find(c=>c.kind==='case'&&!c.test)||idx[0];
  if(start.jurisdiction)$('jur').value=start.jurisdiction;fillAuth();fillSectors();fillOffices();
  const so=offices.find(o=>o.office===start.office);if(so)$('office').value=so.case;fillClients();$('client').value=start.kind==='case'?start.case:'';
  try{await openUser(start.case);}catch(err){$('engine').textContent='Loading the case failed: '+err.message;}
+ if(deep&&QS.get('node')){const n=cy.getElementById(QS.get('node'));if(n.length){isolate(n);n.select();window.CF_FULL(true);document.title=n.data('l')+' · Casefold';}}
 })();
 </script>
 <script src="newclient.js"></script>
