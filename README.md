@@ -17,7 +17,7 @@
 
 ![Testing the example company: per duty the article, the procedure section, and enforcement cases](docs/testing.png)
 
-Demo video (1:58, with voice-over; 0:24 New client from documents in the browser, 1:23 the Relate inside panel): `casefold-demo.mp4`, script in `docs/video-script.md`.
+Demo video (1:59, with voice-over; 0:17 exploring the graph, 0:34 New client from documents in the browser, 1:28 the Relate inside panel): `casefold-demo.mp4`, script in `docs/video-script.md`.
 
 **Relate inside.** Click **Relate inside** in the viewer's top bar: nine cards, each running one Relate feature live in the page with Relate's own timings. One file per record; a schema Relate enforces (try to break it); quantified path patterns and `SHORTEST` for the ownership chain; dates and `REPLACED_BY` for the law that changes; a full-text index and a vector index with `SEARCH` (hybrid, in the testing table); `PROFILE` of the testing query; parameterised writes. Outside the page: `relate query` for the tests, an MCP server on `relate query --read-only` for a grounded AI agent (`relate serve --mcp` for plain read-only access), `relate clone` + `relate info` for the auditor hand-over (`casefold/handover.py`). The full inventory, including what we did not use and why: [docs/relate-features.md](docs/relate-features.md).
 

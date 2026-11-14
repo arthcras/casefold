@@ -294,7 +294,7 @@ const COLOR={file:'--file',rulebook:'--rule',kycc:'--kycc',ocr:'--doc',memory:'-
 function layerOf(t,p){return LAYER[t]||'file';}
 const RING={Source:4,SourceSection:5,LawVersion:0,LawArticle:1,LawParagraph:2,LawPoint:3,UboGround:4,GroundType:5,Foundation:1,TrustGroup:0,Institution:1,Sector:2,Regulator:3,UboRule:3,ToolCall:4,Claim:4,Episode:1,Session:2,Pattern:2,Ask:3,Answer:3,Step:4,Client:0,Case:1,Person:1,Company:1,LegalForm:1,RiskTrigger:1,Counterparty:1,Document:2,Signal:2,Obligation:2,Country:3,ScreeningHit:3,Question:3,DocumentType:3,Chunk:3,Article:4,Law:5,Jurisdiction:5};
 let relate, db, cy, CASE, QUERIES=[], hidden=new Set(['ocr','memory']);
-window.CF={get db(){return db;},get CASE(){return CASE;},get QUERIES(){return QUERIES;},$:id=>document.getElementById(id),esc:s=>esc(s),loadCase:id=>loadCase(id),drawGraph:()=>drawGraph()};
+window.CF={get db(){return db;},get cy(){return cy;},get CASE(){return CASE;},get QUERIES(){return QUERIES;},$:id=>document.getElementById(id),esc:s=>esc(s),loadCase:id=>loadCase(id),drawGraph:()=>drawGraph()};
 // A local embedding computed in this page: signed hashing of character trigrams (256 dimensions). No model download and no text leaves the browser;
 // casefold/embed.py swaps in a local sentence model for the files on disk. Accents are folded so 'opleiding' and 'opleidingen' land close together.
 const EMB_D=256;
