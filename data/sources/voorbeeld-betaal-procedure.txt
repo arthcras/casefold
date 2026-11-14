@@ -1,0 +1,33 @@
+Procedure cliëntenonderzoek, monitoring en melden
+Voorbeeld Betaal B.V. (fictief voorbeeld voor Casefold; geen bestaande onderneming)
+Versie 1.3, vastgesteld door de directie op 2 maart 2026
+
+1. Doel en reikwijdte
+Deze procedure geldt voor alle diensten van Voorbeeld Betaal B.V.: zakelijke betaalrekeningen, het uitvoeren van overboekingen en het accepteren van kaartbetalingen voor webwinkels. Zij werkt de Wwft uit voor de dagelijkse praktijk.
+
+2. Risicobeoordeling
+Wij stellen jaarlijks onze risico's op witwassen en financieren van terrorisme vast en beoordelen deze (artikel 2b Wwft). De uitkomst bepaalt welke cliënten wij als hoog risico aanmerken.
+
+3. Cliëntenonderzoek bij acceptatie
+Voordat wij een zakelijke relatie aangaan, identificeren en verifiëren wij de cliënt en de uiteindelijk belanghebbende, en stellen wij het doel en de beoogde aard van de relatie vast (artikel 3, tweede lid, Wwft). Een incidentele transactie van € 15.000 of meer behandelen wij als aanleiding voor cliëntenonderzoek (artikel 3 lid 5 Wwft).
+
+4. Verscherpt cliëntenonderzoek
+Bij een hoger risico en bij cliënten uit staten met een hoger risico verrichten wij verscherpt cliëntenonderzoek (artikel 8 Wwft); de compliance officer keurt deze cliënten goed.
+
+5. Monitoring van transacties
+Ons monitoringsysteem vergelijkt de transacties met het risicoprofiel van de cliënt en geeft alerts. Elk alert wordt binnen vijf werkdagen beoordeeld en de beoordeling wordt vastgelegd (artikel 3 lid 2 onder d Wwft).
+
+6. Melden aan FIU-Nederland
+Een ongebruikelijke transactie melden wij onverwijld aan de Financiële inlichtingen eenheid (artikel 16 Wwft).
+
+7. Sanctiescreening
+Wij screenen cliënten bij acceptatie en daarna dagelijks tegen de sanctielijsten. Een treffer melden wij onverwijld aan DNB (Rtsw art. 3).
+
+8. Bij elke overboeking
+Bij elke overboeking geven wij de gegevens van de betaler en de begunstigde mee en controleren wij of die gegevens volledig zijn.
+
+9. Opleiding
+Nieuwe medewerkers volgen in hun eerste maand een opleiding over witwassen; daarna jaarlijks een opfriscursus.
+
+10. Bewaren
+Wij bewaren de gegevens van het cliëntenonderzoek vijf jaar na het einde van de relatie (artikel 33 Wwft).

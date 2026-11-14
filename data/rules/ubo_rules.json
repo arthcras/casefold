@@ -1,0 +1,378 @@
+{
+ "note": "The Dutch UBO rule (Uitvoeringsbesluit Wwft 2018, art. 3) as it applies to every Wwft institution in the Netherlands, ground by ground per legal-entity type, with the literal passage of each ground (read 2026-11-13 on wetten.overheid.nl). The rule is the same for every supervised sector; supervision and guidance differ per sector.",
+ "checked": "2026-11-13",
+ "ground_types": {
+  "ownership_interest": {
+   "name": "Ownership interest (shares, economic interest, other ownership interest), direct or indirect",
+   "reference": "AMLR art. 51(1)(a), 52(1)"
+  },
+  "voting_rights": {
+   "name": "Voting rights, direct or indirect",
+   "reference": "AMLR art. 52(1), 53(3)(a)"
+  },
+  "control_other_means": {
+   "name": "Control via other means, no percentage: appoint or remove the majority of the board, veto or decision rights, profit distribution, agreements, family relationships, nominee arrangements",
+   "reference": "AMLR art. 51(1)(b), 53(3)-(4)"
+  },
+  "statute_votes": {
+   "name": "Votes on amending the statutes (other legal persons: foundation, association, cooperative)",
+   "reference": "Uitvoeringsbesluit Wwft 2018 art. 3(1)(c)"
+  },
+  "founder": {
+   "name": "Founder or settlor",
+   "reference": "AMLR art. 57(1)(a), 58(1)(a)"
+  },
+  "management_body": {
+   "name": "Member of the management or supervisory body",
+   "reference": "AMLR art. 57(1)(b)-(c)"
+  },
+  "trustee": {
+   "name": "Trustee",
+   "reference": "AMLR art. 58(1)(b)"
+  },
+  "protector": {
+   "name": "Protector",
+   "reference": "AMLR art. 58(1)(c)"
+  },
+  "beneficiary": {
+   "name": "Beneficiary or class of beneficiaries",
+   "reference": "AMLR art. 57(1)(d), 58(1)(d)"
+  },
+  "other_controller": {
+   "name": "Any other natural person exercising ultimate control",
+   "reference": "AMLR art. 57(1)(e), 58(1)(e)"
+  },
+  "senior_managing_official": {
+   "name": "Fallback: senior managing officials, only when no one qualifies on the grounds above",
+   "reference": "AMLR art. 63(4)"
+  },
+  "listed_exemption": {
+   "name": "Exception: a company listed on a regulated market with equivalent disclosure rules is not looked through, and a listed client is not tested on ownership",
+   "reference": "national rule (as read)"
+  },
+  "branch_parent": {
+   "name": "Branch: the beneficial owners of the foreign parent",
+   "reference": "legal-form inventory"
+  },
+  "agreement_votes": {
+   "name": "Votes on amending the partnership agreement (partnerships)",
+   "reference": "Uitvoeringsbesluit Wwft 2018 art. 3(1)(d)"
+  },
+  "fgr_group": {
+   "name": "Fund for joint account offered to 150 or more persons with a licensed manager: the group of participants",
+   "reference": "Uitvoeringsbesluit Wwft 2018 art. 3(5)"
+  }
+ },
+ "rules": [
+  {
+   "id": "UBO:NL:wwft",
+   "cc": "NL",
+   "jurisdiction": "Nederland",
+   "sector": "all Wwft institutions",
+   "group": "all",
+   "supervisor": "per sector (DNB, AFM)",
+   "threshold": 25,
+   "op": ">",
+   "op_note": "",
+   "method": "both",
+   "basis": [
+    "shares",
+    "voting",
+    "ownership interest",
+    "control by other means incl. consolidation (Boek 2 BW)"
+   ],
+   "indirect": "direct or indirect; control route via consolidation rules",
+   "fallback": "hoger leidinggevend personeel (bestuurders), only after all means exhausted",
+   "trusts": "founder, trustee, protector, beneficiaries or class, any other controller",
+   "source": "Uitvoeringsbesluit Wwft 2018, art. 3",
+   "kind": "regulation",
+   "source_url": "https://wetten.overheid.nl/BWBR0041193/2026-04-30/#Paragraaf2_Artikel3",
+   "text_read": true,
+   "verify": false,
+   "note": "Wtt 2018: UBO identified 'zoveel mogelijk met zekerheid', nature and size of interest verified; no lighter CDD at low risk (DNB Good Practices Wtt 2018). From 10 July 2027 the AMLR applies (art. 51-58: ownership interest of 25% or more, indirect ownership multiplied along the chain and added up, control separately); that rule is not modelled yet, so no UBO answer is given for dates from 10 July 2027.",
+   "valid_from": "2000-01-01",
+   "valid_to": "2027-07-09",
+   "applies_in": [
+    "NL"
+   ],
+   "passage": {
+    "ref": "Uitvoeringsbesluit Wwft 2018 art. 3",
+    "text": "meer dan 25 procent van de aandelen, van de stemrechten of van het eigendomsbelang",
+    "lang": "nl",
+    "read_on": "2026-11-13",
+    "primary": true,
+    "text_en": "more than 25 per cent of the shares, of the voting rights or of the ownership interest",
+    "en_type": "unofficial translation (Casefold)"
+   },
+   "grounds": [
+    {
+     "id": "UBO:NL:corporate:ownership_interest",
+     "entity": "corporate",
+     "ground": "ownership_interest",
+     "threshold": 25,
+     "op": ">",
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a, 1°",
+      "text": "meer dan 25 procent van de aandelen, van de stemrechten of van het eigendomsbelang in de vennootschap",
+      "text_en": "more than 25 per cent of the shares, of the voting rights or of the ownership interest in the company",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:corporate:voting_rights",
+     "entity": "corporate",
+     "ground": "voting_rights",
+     "threshold": 25,
+     "op": ">",
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a, 1°",
+      "text": "meer dan 25 procent van de aandelen, van de stemrechten of van het eigendomsbelang in de vennootschap",
+      "text_en": "more than 25 per cent of the shares, of the voting rights or of the ownership interest in the company",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:corporate:control_other_means",
+     "entity": "corporate",
+     "ground": "control_other_means",
+     "threshold": null,
+     "op": null,
+     "note": "summary of the text",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a, 1°",
+      "text": "zeggenschap via andere middelen (onder meer de consolidatieregels van Boek 2 BW)",
+      "text_en": "control via other means (among others the consolidation rules of Book 2 of the Dutch Civil Code)",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:corporate:listed_exemption",
+     "entity": "corporate",
+     "ground": "listed_exemption",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a",
+      "text": "niet zijnde een vennootschap die als uitgevende instelling is onderworpen aan openbaarmakingsvereisten als bedoeld in de richtlijn transparantie, dan wel aan vergelijkbare internationale standaarden […] met inbegrip van een 100 procent dochtermaatschappij van een dergelijke vennootschap",
+      "text_en": "not being a company that, as an issuer, is subject to disclosure requirements as referred to in the Transparency Directive, or to comparable international standards […] including a wholly owned subsidiary of such a company",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:corporate:senior_managing_official",
+     "entity": "corporate",
+     "ground": "senior_managing_official",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a, 2° jo. lid 6",
+      "text": "het hoger leidinggevend personeel […] elke bestuurder in de zin van artikel 9 van Boek 2 van het Burgerlijk Wetboek",
+      "text_en": "the senior managing officials […] every director within the meaning of Article 9 of Book 2 of the Dutch Civil Code",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:other_legal_entity:ownership_interest",
+     "entity": "other_legal_entity",
+     "ground": "ownership_interest",
+     "threshold": 25,
+     "op": ">",
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder c, 1°",
+      "text": "het direct of indirect houden van meer dan 25 procent van het eigendomsbelang in de rechtspersoon",
+      "text_en": "directly or indirectly holding more than 25 per cent of the ownership interest in the legal person",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:other_legal_entity:statute_votes",
+     "entity": "other_legal_entity",
+     "ground": "statute_votes",
+     "threshold": 25,
+     "op": ">",
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder c, 1°",
+      "text": "het direct of indirect kunnen uitoefenen van meer dan 25 procent van de stemmen bij besluitvorming ter zake van wijziging van de statuten van de rechtspersoon",
+      "text_en": "being able, directly or indirectly, to exercise more than 25 per cent of the votes in decisions on amending the articles of association of the legal person",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:other_legal_entity:control_other_means",
+     "entity": "other_legal_entity",
+     "ground": "control_other_means",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder c, 1°",
+      "text": "het kunnen uitoefenen van feitelijk zeggenschap over de rechtspersoon",
+      "text_en": "being able to exercise actual control over the legal person",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:other_legal_entity:senior_managing_official",
+     "entity": "other_legal_entity",
+     "ground": "senior_managing_official",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder c, 2° jo. lid 6",
+      "text": "de natuurlijke persoon of personen die behoort of behoren tot het hoger leidinggevend personeel van de rechtspersoon",
+      "text_en": "the natural person or persons who belong to the senior managing officials of the legal person",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:partnership:ownership_interest",
+     "entity": "partnership",
+     "ground": "ownership_interest",
+     "threshold": 25,
+     "op": ">",
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder d, 1°",
+      "text": "het direct of indirect houden van meer dan 25 procent van het eigendomsbelang in de personenvennootschap",
+      "text_en": "directly or indirectly holding more than 25 per cent of the ownership interest in the partnership",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:partnership:agreement_votes",
+     "entity": "partnership",
+     "ground": "agreement_votes",
+     "threshold": 25,
+     "op": ">",
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder d, 1°",
+      "text": "meer dan 25 procent van de stemmen bij besluitvorming ter zake van wijziging van de overeenkomst die ten grondslag ligt aan de personenvennootschap",
+      "text_en": "more than 25 per cent of the votes in decisions on amending the agreement on which the partnership is based",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:partnership:control_other_means",
+     "entity": "partnership",
+     "ground": "control_other_means",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder d, 1°",
+      "text": "het kunnen uitoefenen van feitelijke zeggenschap over de personenvennootschap",
+      "text_en": "being able to exercise actual control over the partnership",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:partnership:senior_managing_official",
+     "entity": "partnership",
+     "ground": "senior_managing_official",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder d, 2° jo. lid 6",
+      "text": "in het geval van een personenvennootschap, elke vennoot, met uitzondering van een vennoot bij wijze van geldschieting",
+      "text_en": "in the case of a partnership, every partner, except a partner by way of contribution of money only (a limited partner)",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:trust:founder",
+     "entity": "trust",
+     "ground": "founder",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder e",
+      "text": "de oprichter of oprichters",
+      "text_en": "the settlor or settlors",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:trust:trustee",
+     "entity": "trust",
+     "ground": "trustee",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder e",
+      "text": "de trustee of trustees",
+      "text_en": "the trustee or trustees",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:trust:protector",
+     "entity": "trust",
+     "ground": "protector",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder e",
+      "text": "voor zover van toepassing, de protector of protectors",
+      "text_en": "where applicable, the protector or protectors",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:trust:beneficiary",
+     "entity": "trust",
+     "ground": "beneficiary",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder e, 4°",
+      "text": "de begunstigden, of de groep in wier belang de trust hoofdzakelijk is opgericht of werkzaam is (paraphrase)",
+      "text_en": "the beneficiaries, or the class of persons in whose main interest the trust is set up or operates (paraphrase)",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:trust:other_controller",
+     "entity": "trust",
+     "ground": "other_controller",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder e",
+      "text": "elke andere natuurlijke persoon die door directe of indirecte eigendom of via andere middelen uiteindelijke zeggenschap over de trust uitoefent",
+      "text_en": "any other natural person exercising ultimate control over the trust by means of direct or indirect ownership or by other means",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    },
+    {
+     "id": "UBO:NL:trust:fgr_group",
+     "entity": "trust",
+     "ground": "fgr_group",
+     "threshold": null,
+     "op": null,
+     "note": "",
+     "passage": {
+      "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 5",
+      "text": "In geval van een fonds voor gemene rekening dat wordt aangeboden aan honderdvijftig personen of meer en wordt beheerd door een beheerder waaraan een vergunning […] is verleend, wordt als uiteindelijk belanghebbende […] aangemerkt de groep van natuurlijke personen in wier belang dit fonds […] hoofdzakelijk is opgericht of werkzaam is.",
+      "text_en": "In the case of a fund for joint account that is offered to one hundred and fifty persons or more and is managed by a manager that has been granted a licence […], the beneficial owner […] is the group of natural persons in whose main interest the fund […] is set up or operates.",
+      "en_type": "unofficial translation (Casefold)"
+     }
+    }
+   ],
+   "listed_exempt": true
+  }
+ ]
+}

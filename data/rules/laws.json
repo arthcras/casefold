@@ -1,0 +1,462 @@
+{
+ "note": "The legislation per sector in the Netherlands. source \"inventory\": the sector-law link from the authority inventory (kc-world); \"casefold\": added here (AVG/UAVG, Sanctiewet 1977 and the UBO register apply to everyone; Wft, MiCA, ECSPR, Wna and the Advocatenwet follow from the licence; Rtsw for DNB and AFM institutions; TFR for transfers of funds and crypto-assets; AMLR and Iwt for the new sectors).",
+ "laws": [
+  {
+   "id": "NL:wwft",
+   "short": "Wwft",
+   "title": "Wet ter voorkoming van witwassen en financieren van terrorisme (Wwft)",
+   "url": "https://wetten.overheid.nl/BWBR0024282",
+   "kind": "act",
+   "valid_from": null,
+   "note": "Core AML/CFT law: CDD, risk assessment (art. 2b), UTR reporting (art. 16), record keeping (art. 33-34). To be replaced on 10 July 2027 by AMLR + Iwt.",
+   "verify": false
+  },
+  {
+   "id": "NL:sw1977",
+   "short": "Sw",
+   "title": "Sanctiewet 1977",
+   "url": "https://wetten.overheid.nl/BWBR0003296",
+   "kind": "act",
+   "valid_from": null,
+   "note": "Legal basis for implementing and enforcing UN/EU/national sanctions in NL",
+   "verify": false
+  },
+  {
+   "id": "NL:rtsw",
+   "short": "Rtsw",
+   "title": "Regeling toezicht Sanctiewet 1977",
+   "url": "https://wetten.overheid.nl/BWBR0018806",
+   "kind": "regulation",
+   "valid_from": null,
+   "note": "Administrative organisation, screening and hit-reporting duties for financial institutions supervised by DNB/AFM",
+   "verify": true
+  },
+  {
+   "id": "NL:wft",
+   "short": "Wft",
+   "title": "Wet op het financieel toezicht (Wft)",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "kind": "act",
+   "valid_from": null,
+   "note": "Licensing and conduct/prudential rules for banks, insurers, investment firms, payment/e-money institutions; SIRA via art. 3:10 Wft jo. art. 10 Bpr",
+   "verify": false
+  },
+  {
+   "id": "NL:wtt2018",
+   "short": "Wtt 2018",
+   "title": "Wet toezicht trustkantoren 2018 (Wtt 2018)",
+   "url": "https://wetten.overheid.nl/BWBR0041259",
+   "kind": "act",
+   "valid_from": null,
+   "note": "DNB licensing and integrity rules for trust offices; in force 1 January 2019; SIRA art. 14 Wtt 2018 jo. art. 10 Btt 2018",
+   "verify": true
+  },
+  {
+   "id": "NL:mica",
+   "short": "MiCAR",
+   "title": "Verordening (EU) 2023/1114 van het Europees Parlement en de Raad van 31 mei 2023 betreffende cryptoactivamarkten, en tot wijziging van de Verordeningen (EU) nr. 1093/2010 en (EU) nr. 1095/2010 en de Richtlijnen 2013/36/EU en (EU) 2019/1937",
+   "url": "https://eur-lex.europa.eu/eli/reg/2023/1114/oj",
+   "kind": "eu_regulation",
+   "valid_from": null,
+   "note": "CASP licensing by AFM since 30 Dec 2024; national transition ended 30 June 2025; Wwft/Sw supervision of CASPs moved to AFM",
+   "verify": false
+  },
+  {
+   "id": "NL:tfr",
+   "short": "TFR",
+   "title": "Verordening (EU) 2023/1113 van het Europees Parlement en de Raad van 31 mei 2023 betreffende bij geldovermakingen en overdrachten van bepaalde cryptoactiva te voegen informatie en tot wijziging van Richtlijn (EU) 2015/849",
+   "url": "https://eur-lex.europa.eu/eli/reg/2023/1113/oj",
+   "kind": "eu_regulation",
+   "valid_from": null,
+   "note": "Travel rule for payment service providers and CASPs",
+   "verify": false
+  },
+  {
+   "id": "EU:2014/269",
+   "short": "Verordening 269/2014",
+   "title": "Verordening (EU) nr. 269/2014 van de Raad van 17 maart 2014 betreffende beperkende maatregelen ten aanzien van acties die de territoriale integriteit, soevereiniteit en onafhankelijkheid van Oekraïne ondermijnen of bedreigen",
+   "url": "https://eur-lex.europa.eu/eli/reg/2014/269/oj",
+   "kind": "eu_regulation",
+   "valid_from": null,
+   "note": "Example of an EU sanctions regulation: the freezing duty (art. 2) that the Sanctiewet 1977 enforces",
+   "verify": false
+  }
+ ],
+ "applies": [
+  {
+   "sector": "NL:banks",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:banks",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:banks",
+   "law": "NL:tfr",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:banks",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:banks",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:payment-institutions",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-institutions",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:payment-institutions",
+   "law": "NL:tfr",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-institutions",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-institutions",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:electronic-money-institutions",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:electronic-money-institutions",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:electronic-money-institutions",
+   "law": "NL:tfr",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:electronic-money-institutions",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:electronic-money-institutions",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:currency-exchange-institutions",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:currency-exchange-institutions",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:currency-exchange-institutions",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:currency-exchange-institutions",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:payment-service-agents",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-service-agents",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:payment-service-agents",
+   "law": "NL:tfr",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-service-agents",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-service-agents",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:life-insurers",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:life-insurers",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:life-insurers",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:life-insurers",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "law": "NL:mica",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "law": "NL:tfr",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:trust-offices-wtt-2018",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:trust-offices-wtt-2018",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:trust-offices-wtt-2018",
+   "law": "NL:wtt2018",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:trust-offices-wtt-2018",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:investment-firms",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:investment-firms",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:investment-firms",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:investment-firms",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:investment-institutions-aifs-and-their-managers",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:investment-institutions-aifs-and-their-managers",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:investment-institutions-aifs-and-their-managers",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:investment-institutions-aifs-and-their-managers",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:ucits-and-their-managers",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:ucits-and-their-managers",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:ucits-and-their-managers",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:ucits-and-their-managers",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:financial-service-providers-intermediating-in-life-insurance",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:financial-service-providers-intermediating-in-life-insurance",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:financial-service-providers-intermediating-in-life-insurance",
+   "law": "NL:wft",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:financial-service-providers-intermediating-in-life-insurance",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "law": "NL:mica",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "law": "NL:rtsw",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "law": "NL:sw1977",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "law": "NL:tfr",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "law": "NL:wwft",
+   "source": "inventory"
+  },
+  {
+   "sector": "NL:banks",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-institutions",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:electronic-money-institutions",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:currency-exchange-institutions",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:payment-service-agents",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:life-insurers",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:trust-offices-wtt-2018",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:investment-firms",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:investment-institutions-aifs-and-their-managers",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:ucits-and-their-managers",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:financial-service-providers-intermediating-in-life-insurance",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  },
+  {
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "law": "EU:2014/269",
+   "source": "casefold"
+  }
+ ]
+}

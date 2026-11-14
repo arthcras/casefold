@@ -1,0 +1,353 @@
+{
+ "id": "nl-kalmora",
+ "fictitious": true,
+ "institution": "INST-NL",
+ "client": {
+  "name": "Kalmora Europe B.V.",
+  "jurisdiction": "NL",
+  "legal_form": "NL:lf:bv",
+  "sector": "Trading and logistics subsidiary administered by a trust office",
+  "risk": {
+   "band": "high",
+   "triggers": [
+    "pep",
+    "complex_structure"
+   ]
+  }
+ },
+ "entities": [
+  {
+   "id": "P_VAL",
+   "kind": "Person",
+   "name": "Ines Valtor",
+   "country": "CW",
+   "pep": true,
+   "pep_role": "Member of the Island Council (fictitious)"
+  },
+  {
+   "id": "P_OKK",
+   "kind": "Person",
+   "name": "Ruben Okkema",
+   "country": "NL"
+  },
+  {
+   "id": "P_BRO",
+   "kind": "Person",
+   "name": "Lina Brouwer",
+   "country": "NL"
+  },
+  {
+   "id": "P_DAS",
+   "kind": "Person",
+   "name": "Mara Dasilva",
+   "country": "CW"
+  },
+  {
+   "id": "C_GRP",
+   "kind": "Company",
+   "name": "Kalmora Group Ltd",
+   "country": "VG",
+   "legal_form": "VG:lf:bc"
+  },
+  {
+   "id": "C_TID",
+   "kind": "Company",
+   "name": "Tidewater Holdings Ltd",
+   "country": "CY",
+   "legal_form": "CY:lf:ltd"
+  },
+  {
+   "id": "C_SEA",
+   "kind": "Company",
+   "name": "Seagrape Ventures Ltd.",
+   "country": "PA",
+   "legal_form": "PA:lf:sa"
+  },
+  {
+   "id": "C_STAK",
+   "kind": "Foundation",
+   "name": "Stichting Administratiekantoor Kalmora",
+   "country": "NL",
+   "legal_form": "NL:lf:stichting"
+  },
+  {
+   "id": "P_HEN",
+   "kind": "Person",
+   "name": "Pieter Hendrikx",
+   "country": "NL"
+  }
+ ],
+ "relations": [
+  {
+   "from": "C_GRP",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 100,
+   "source": "D4",
+   "where": "structure chart, box 1"
+  },
+  {
+   "from": "C_TID",
+   "to": "C_GRP",
+   "type": "OWNS",
+   "pct": 40,
+   "source": "D4",
+   "where": "structure chart, box 3"
+  },
+  {
+   "from": "C_SEA",
+   "to": "C_GRP",
+   "type": "OWNS",
+   "pct": 35,
+   "source": "D4",
+   "where": "structure chart, box 4"
+  },
+  {
+   "from": "P_OKK",
+   "to": "C_TID",
+   "type": "OWNS",
+   "pct": 60,
+   "source": "D4",
+   "where": "structure chart, box 5"
+  },
+  {
+   "from": "P_BRO",
+   "to": "C_TID",
+   "type": "OWNS",
+   "pct": 40,
+   "source": "D4",
+   "where": "structure chart, box 5"
+  },
+  {
+   "from": "P_VAL",
+   "to": "C_SEA",
+   "type": "OWNS",
+   "pct": 100,
+   "source": "D4",
+   "where": "share register Seagrape, entries 1-2 (30 shares through a nominee)"
+  },
+  {
+   "from": "P_OKK",
+   "to": "client",
+   "type": "DIRECTOR_OF",
+   "source": "D1",
+   "where": "uittreksel, bestuurders"
+  },
+  {
+   "from": "C_STAK",
+   "to": "C_GRP",
+   "type": "OWNS",
+   "pct": 25,
+   "votes": 25,
+   "kind": "legal",
+   "source": "D4",
+   "where": "structure chart, box 2"
+  },
+  {
+   "from": "P_DAS",
+   "to": "C_STAK",
+   "type": "OWNS",
+   "pct": 100,
+   "votes": 0,
+   "kind": "certificates",
+   "source": "D7",
+   "where": "register of depositary receipts, entry 1"
+  },
+  {
+   "from": "P_HEN",
+   "to": "C_STAK",
+   "type": "BOARD_OF",
+   "votes": 100,
+   "source": "D7",
+   "where": "statutes STAK art. 6 (sole board member exercises the votes)"
+  },
+  {
+   "from": "P_BRO",
+   "to": "C_GRP",
+   "type": "CONTROLS",
+   "basis": "veto on budget, dividends and the appointment of directors",
+   "means": "veto or decision rights; shareholders agreement",
+   "source": "D8",
+   "where": "shareholders agreement art. 4"
+  }
+ ],
+ "documents": [
+  {
+   "id": "D1",
+   "title": "Uittreksel Handelsregister Kalmora Europe B.V.",
+   "doctype": "register_extract",
+   "date": "2026-10-20",
+   "text": "Besloten vennootschap. Bestuurders: R. Okkema; Arbelune Trustkantoor B.V."
+  },
+  {
+   "id": "D2",
+   "title": "Statuten (notariële akte)",
+   "doctype": "constitutional",
+   "date": "2021-04-01",
+   "text": "Statuten Kalmora Europe B.V.; doel: handel en logistiek."
+  },
+  {
+   "id": "D3",
+   "title": "Uittreksel UBO-register",
+   "doctype": "ubo_register_extract",
+   "date": "2026-10-20",
+   "text": "UBO's: R. Okkema, middellijk via Tidewater Holdings Ltd, belang 25-50%; I. Valtor, middellijk via Seagrape Ventures Ltd., belang 25-50%."
+  },
+  {
+   "id": "D4",
+   "title": "Structuurschema groep (gedateerd en geverifieerd)",
+   "doctype": "structure_chart",
+   "date": "2026-10-02",
+   "text": "Kalmora Group Ltd (BVI) holds 100%. Kalmora Group Ltd: Stichting Administratiekantoor Kalmora (NL) 25% (depositary receipts held by M. Dasilva; votes exercised by its board, P. Hendrikx), Tidewater Holdings Ltd (Cyprus) 40%, Seagrape Ventures Ltd. (Panama) 35%. Tidewater: R. Okkema 60%, L. Brouwer 40%; L. Brouwer has a veto under the shareholders agreement. Seagrape: I. Valtor 70 shares, nominee holder 30 shares for I. Valtor."
+  },
+  {
+   "id": "D5",
+   "title": "Paspoort R. Okkema",
+   "doctype": "person_id",
+   "date": "2025-05-05",
+   "text": "Identiteitsbewijs bestuurder."
+  },
+  {
+   "id": "D6",
+   "title": "UBO-verklaring (getekend)",
+   "doctype": "ubo_declaration",
+   "date": "2026-10-03",
+   "text": "Verklaarde UBO's: R. Okkema (zeggenschap Tidewater, 40%) en I. Valtor (35%, PEP)."
+  },
+  {
+   "id": "D7",
+   "title": "Statutes and register of depositary receipts, Stichting Administratiekantoor Kalmora",
+   "doctype": "shareholder_register",
+   "date": "2026-06-30",
+   "text": "The foundation holds 25% of the shares in Kalmora Group Ltd and has issued depositary receipts for all of them to M. Dasilva. The board (sole member: P. Hendrikx) exercises the voting rights."
+  },
+  {
+   "id": "D8",
+   "title": "Shareholders agreement Kalmora Group Ltd",
+   "doctype": "other",
+   "date": "2025-11-20",
+   "text": "Article 4: resolutions on the budget, dividend distributions and the appointment or dismissal of directors require the prior consent of L. Brouwer."
+  }
+ ],
+ "questions": [
+  {
+   "id": "Q1",
+   "text": "Rechtsvorm, inschrijving en bestuur",
+   "status": "answered",
+   "answer": "B.V., bestuur R. Okkema en het trustkantoor.",
+   "sources": [
+    {
+     "doc": "D1",
+     "where": "pagina 1"
+    }
+   ]
+  },
+  {
+   "id": "Q2",
+   "text": "Wie zijn de uiteindelijk belanghebbenden?",
+   "status": "answered",
+   "answer": "R. Okkema en I. Valtor, volgens UBO-register en verklaring.",
+   "sources": [
+    {
+     "doc": "D3",
+     "where": "regels 1-2"
+    },
+    {
+     "doc": "D6",
+     "where": "sectie 1"
+    }
+   ]
+  },
+  {
+   "id": "Q3",
+   "text": "Herkomst van het vermogen van de PEP",
+   "status": "missing",
+   "answer": "",
+   "sources": []
+  }
+ ],
+ "signals": [
+  {
+   "id": "S1",
+   "severity": "medium",
+   "title": "Screening hit on a supplier (Coastline Fuel Services)",
+   "about": [
+    "K4"
+   ]
+  }
+ ],
+ "counterparties": [
+  {
+   "id": "K1",
+   "name": "Nordhaven Shipping GmbH",
+   "type": "organisation",
+   "role": "customer",
+   "country": "DE",
+   "incoming": 4200000,
+   "outgoing": 0,
+   "transactions": 48,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "K2",
+   "name": "Wislana Trans Sp. z o.o.",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "PL",
+   "incoming": 0,
+   "outgoing": 1900000,
+   "transactions": 31,
+   "kycc_level": "light",
+   "checks_done": 1,
+   "checks_total": 2
+  },
+  {
+   "id": "K3",
+   "name": "Gulfmere Trading FZE",
+   "type": "organisation",
+   "role": "customer",
+   "country": "AE",
+   "incoming": 2600000,
+   "outgoing": 0,
+   "transactions": 9,
+   "kycc_level": "full",
+   "checks_done": 1,
+   "checks_total": 4,
+   "offshore": true
+  },
+  {
+   "id": "K4",
+   "name": "Coastline Fuel Services",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "IR",
+   "incoming": 0,
+   "outgoing": 85000,
+   "transactions": 2,
+   "kycc_level": "full",
+   "checks_done": 0,
+   "checks_total": 4,
+   "high_risk": true,
+   "screening_hit": {
+    "list": "Example sanctions list (fictitious)",
+    "matched": "Coastline Fuel Services Co.",
+    "score": 93
+   }
+  },
+  {
+   "id": "K5",
+   "name": "Dijkstra Verpakkingen B.V.",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "NL",
+   "incoming": 0,
+   "outgoing": 240000,
+   "transactions": 12,
+   "kycc_level": "none",
+   "checks_done": 0,
+   "checks_total": 0
+  }
+ ]
+}

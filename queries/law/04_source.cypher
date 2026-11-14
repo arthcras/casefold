@@ -1,0 +1,2 @@
+// Law file. Where this text comes from: the law, its version, the source file, its sha256 and how it was read (BWB XML, pdftotext or tesseract).
+MATCH (v:LawVersion) RETURN v.law AS law, v.title AS title, v.version AS version, v.lang AS lang, v.valid_from AS valid_from, v.valid_to AS valid_to, v.source_file AS source_file, v.sha256 AS sha256, v.method AS method, v.ocr_confidence AS ocr_confidence, v.articles AS articles, v.url AS url

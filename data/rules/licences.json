@@ -1,0 +1,132 @@
+{
+ "note": "Whether the service needs a specific licence (or registration, notification, appointment, admission), under which basis and from which authority. Where a licence is needed, the licensing authority supervises the sector besides the AML supervisor (often the same body). verify=true: the article numbers are not yet checked against the official text.",
+ "other_authorities": [],
+ "licences": {
+  "banks": {
+   "kind": "licence",
+   "name": "Banking licence (bank)",
+   "basis": "Wft art. 2:11",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": "In the euro area granted by the ECB on a proposal of DNB."
+  },
+  "non-bank-lending": {
+   "kind": "none",
+   "name": "No specific licence for the AML-relevant activity",
+   "basis": "Wwft art. 1a lid 3",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": "Supervised for the Wwft only."
+  },
+  "payment-institutions": {
+   "kind": "licence",
+   "name": "Licence as payment institution",
+   "basis": "Wft art. 2:3a",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "electronic-money": {
+   "kind": "licence",
+   "name": "Licence as electronic money institution",
+   "basis": "Wft art. 2:10a",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "currency-exchange": {
+   "kind": "licence",
+   "name": "Licence as currency exchange institution",
+   "basis": "Wft art. 2:55",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "payment-service-agents": {
+   "kind": "registration",
+   "name": "Registration as agent of a payment institution (through the principal)",
+   "basis": "Wft art. 2:3a; PSD2 art. 19",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "life-insurers": {
+   "kind": "licence",
+   "name": "Licence as life insurer",
+   "basis": "Wft art. 2:27",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "banks-and-e-money": {
+   "kind": "notification",
+   "name": "Notification to provide crypto-asset services (as licensed bank or e-money institution)",
+   "basis": "MiCA art. 60",
+   "authority": "NL:afm",
+   "url": "https://eur-lex.europa.eu/eli/reg/2023/1114/oj",
+   "verify": true,
+   "note": null
+  },
+  "trust-offices": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "authority": "NL:dnb",
+   "url": "https://wetten.overheid.nl/BWBR0041259",
+   "verify": true,
+   "note": null
+  },
+  "investment-firms": {
+   "kind": "licence",
+   "name": "Licence as investment firm",
+   "basis": "Wft art. 2:96",
+   "authority": "NL:afm",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "investment-institutions": {
+   "kind": "licence",
+   "name": "Licence as manager of an alternative investment fund (AIFM)",
+   "basis": "Wft art. 2:65",
+   "authority": "NL:afm",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "ucits": {
+   "kind": "licence",
+   "name": "Licence as manager of a UCITS",
+   "basis": "Wft art. 2:69b",
+   "authority": "NL:afm",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "financial-service-providers": {
+   "kind": "licence",
+   "name": "Licence as financial service provider (intermediary)",
+   "basis": "Wft art. 2:80",
+   "authority": "NL:afm",
+   "url": "https://wetten.overheid.nl/BWBR0020368",
+   "verify": true,
+   "note": null
+  },
+  "crypto-asset-service": {
+   "kind": "licence",
+   "name": "Authorisation as crypto-asset service provider",
+   "basis": "MiCA art. 59",
+   "authority": "NL:afm",
+   "url": "https://eur-lex.europa.eu/eli/reg/2023/1114/oj",
+   "verify": true,
+   "note": null
+  }
+ }
+}

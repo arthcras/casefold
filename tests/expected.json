@@ -1,0 +1,1492 @@
+{
+ "nl-banks-1": {
+  "office": "Test office: banken",
+  "office_id": "OFF-banks",
+  "category": "banking",
+  "supervisor": "DNB",
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TBAN1 C (96% of the holding)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TBAN1 D (2% and a veto)": [
+    "control_other_means"
+   ],
+   "TBAN1 E (board of the STAK)": [
+    "voting_rights"
+   ],
+   "TBAN1 F (depositary receipts)": [
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 transfer EUR 5000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "business payment account",
+   "expected_monthly": 50000,
+   "cash_allowed": false
+  },
+  "business_type": "holding_spv",
+  "risk_band": "high",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TBAN1 Pars Trading Co.",
+   "indirect_high_risk:TBAN1 Volga Metals LLC",
+   "kycc_open:TBAN1 Harbour Logistics FZE",
+   "kycc_open:TBAN1 Pars Trading Co.",
+   "sanctions_hit:TBAN1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-banks-2": {
+  "office": "Test office: banken",
+  "office_id": "OFF-banks",
+  "category": "banking",
+  "supervisor": "DNB",
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "legal_form": "NL:lf:nv",
+  "ubo": {},
+  "fallback": [
+   "TBAN2 M1 (director)",
+   "TBAN2 M2 (director)"
+  ],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "simplified CDD possible"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "business payment account",
+   "expected_monthly": 50000,
+   "cash_allowed": false
+  },
+  "business_type": "listed_group",
+  "risk_band": "low",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-non-bank-lending-financi-1": {
+  "office": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "office_id": "OFF-non-bank-lending-financial-und",
+  "category": "banking",
+  "supervisor": "DNB",
+  "scenario": "B.V. with two shareholders, 60% and 40%",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TNON1 A (60%)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TNON1 B (40%)": [
+    "ownership_interest",
+    "voting_rights"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 15000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "business payment account",
+   "expected_monthly": 50000,
+   "cash_allowed": false
+  },
+  "business_type": "cash_intensive",
+  "risk_band": "high",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TNON1 Pars Trading Co.",
+   "indirect_high_risk:TNON1 Volga Metals LLC",
+   "kycc_open:TNON1 Harbour Logistics FZE",
+   "kycc_open:TNON1 Pars Trading Co.",
+   "sanctions_hit:TNON1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-non-bank-lending-financi-2": {
+  "office": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "office_id": "OFF-non-bank-lending-financial-und",
+  "category": "banking",
+  "supervisor": "DNB",
+  "scenario": "V.O.F. with two partners, 70% and 30%",
+  "legal_form": "NL:lf:vof",
+  "ubo": {
+   "TNON2 A (partner, 70%)": [
+    "agreement_votes",
+    "ownership_interest"
+   ],
+   "TNON2 B (partner, 30%)": [
+    "agreement_votes",
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "business payment account",
+   "expected_monthly": 50000,
+   "cash_allowed": false
+  },
+  "business_type": "cash_intensive",
+  "risk_band": "high",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-payment-institutions-1": {
+  "office": "Test office: betaalinstellingen",
+  "office_id": "OFF-payment-institutions",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "B.V. with two shareholders and high-risk counterparties",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TPAY1 A (60%)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TPAY1 B (40%)": [
+    "ownership_interest",
+    "voting_rights"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 transfer EUR 2500 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "trading",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TPAY1 Pars Trading Co.",
+   "indirect_high_risk:TPAY1 Volga Metals LLC",
+   "kycc_open:TPAY1 Harbour Logistics FZE",
+   "kycc_open:TPAY1 Pars Trading Co.",
+   "sanctions_hit:TPAY1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-payment-institutions-2": {
+  "office": "Test office: betaalinstellingen",
+  "office_id": "OFF-payment-institutions",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "B.V. held 100% by a listed issuer: excepted, fallback to the directors",
+  "legal_form": "NL:lf:bv",
+  "ubo": {},
+  "fallback": [
+   "TPAY2 M (director)"
+  ],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "simplified CDD possible"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "listed_group",
+  "risk_band": "low",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-electronic-money-institu-1": {
+  "office": "Test office: elektronischgeldinstellingen",
+  "office_id": "OFF-electronic-money-institutions",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "B.V. with five shareholders of 20% each: nobody qualifies, fallback to the directors",
+  "legal_form": "NL:lf:bv",
+  "ubo": {},
+  "fallback": [
+   "TELE1 M1 (director)",
+   "TELE1 M2 (director)"
+  ],
+  "transactions": [
+   "T1 transfer EUR 120 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "construction",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TELE1 Pars Trading Co.",
+   "indirect_high_risk:TELE1 Volga Metals LLC",
+   "kycc_open:TELE1 Harbour Logistics FZE",
+   "kycc_open:TELE1 Pars Trading Co.",
+   "sanctions_hit:TELE1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-electronic-money-institu-2": {
+  "office": "Test office: elektronischgeldinstellingen",
+  "office_id": "OFF-electronic-money-institutions",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "Coöperatie U.A. with two members of 50% each",
+  "legal_form": "NL:lf:cooperatie",
+  "ubo": {
+   "TELE2 A (member, 50%)": [
+    "ownership_interest",
+    "statute_votes"
+   ],
+   "TELE2 B (member, 50%)": [
+    "ownership_interest",
+    "statute_votes"
+   ]
+  },
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "real_estate",
+  "risk_band": "medium",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-currency-exchange-instit-1": {
+  "office": "Test office: wisselinstellingen",
+  "office_id": "OFF-currency-exchange-institutions",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "Natural person: no UBO test (the client is the natural person)",
+  "legal_form": null,
+  "ubo": {},
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 16000 cash",
+   "T2 cash_import EUR 12000 cash"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "private_individual",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TCUR1 Pars Trading Co.",
+   "indirect_high_risk:TCUR1 Volga Metals LLC",
+   "kycc_open:TCUR1 Harbour Logistics FZE",
+   "kycc_open:TCUR1 Pars Trading Co.",
+   "sanctions_hit:TCUR1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-currency-exchange-instit-2": {
+  "office": "Test office: wisselinstellingen",
+  "office_id": "OFF-currency-exchange-institutions",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "B.V. with two shareholders, 60% and 40%",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TCUR2 A (60%)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TCUR2 B (40%)": [
+    "ownership_interest",
+    "voting_rights"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 900 cash"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "cash_intensive",
+  "risk_band": "high",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-payment-service-agents-1": {
+  "office": "Test office: betaaldienstagenten",
+  "office_id": "OFF-payment-service-agents",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "V.O.F. with two partners, 70% and 30%",
+  "legal_form": "NL:lf:vof",
+  "ubo": {
+   "TPAY1 A (partner, 70%)": [
+    "agreement_votes",
+    "ownership_interest"
+   ],
+   "TPAY1 B (partner, 30%)": [
+    "agreement_votes",
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 transfer EUR 800 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "cash_intensive",
+  "risk_band": "high",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TPAY1 Pars Trading Co.",
+   "indirect_high_risk:TPAY1 Volga Metals LLC",
+   "kycc_open:TPAY1 Harbour Logistics FZE",
+   "kycc_open:TPAY1 Pars Trading Co.",
+   "sanctions_hit:TPAY1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-payment-service-agents-2": {
+  "office": "Test office: betaaldienstagenten",
+  "office_id": "OFF-payment-service-agents",
+  "category": "payments",
+  "supervisor": "DNB",
+  "scenario": "Natural person: no UBO test (the client is the natural person)",
+  "legal_form": null,
+  "ubo": {},
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "payment and money transfer service",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "private_individual",
+  "risk_band": "medium",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-life-insurers-1": {
+  "office": "Test office: levensverzekeraars",
+  "office_id": "OFF-life-insurers",
+  "category": "insurance",
+  "supervisor": "DNB",
+  "scenario": "Coöperatie U.A. with two members of 50% each",
+  "legal_form": "NL:lf:cooperatie",
+  "ubo": {
+   "TLIF1 A (member, 50%)": [
+    "ownership_interest",
+    "statute_votes"
+   ],
+   "TLIF1 B (member, 50%)": [
+    "ownership_interest",
+    "statute_votes"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 15000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "life insurance with a single premium",
+   "expected_monthly": 2000,
+   "cash_allowed": false
+  },
+  "business_type": "real_estate",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TLIF1 Pars Trading Co.",
+   "indirect_high_risk:TLIF1 Volga Metals LLC",
+   "kycc_open:TLIF1 Harbour Logistics FZE",
+   "kycc_open:TLIF1 Pars Trading Co.",
+   "sanctions_hit:TLIF1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-life-insurers-2": {
+  "office": "Test office: levensverzekeraars",
+  "office_id": "OFF-life-insurers",
+  "category": "insurance",
+  "supervisor": "DNB",
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "legal_form": "NL:lf:nv",
+  "ubo": {},
+  "fallback": [
+   "TLIF2 M1 (director)",
+   "TLIF2 M2 (director)"
+  ],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "simplified CDD possible"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "life insurance with a single premium",
+   "expected_monthly": 2000,
+   "cash_allowed": false
+  },
+  "business_type": "listed_group",
+  "risk_band": "low",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-banks-and-e-money-instit-1": {
+  "office": "Test office: banken en elektronischgeldinstellingen met cryptodiensten",
+  "office_id": "OFF-banks-and-e-money-institutions",
+  "category": "crypto",
+  "supervisor": "DNB",
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TBAN1 C (96% of the holding)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TBAN1 D (2% and a veto)": [
+    "control_other_means"
+   ],
+   "TBAN1 E (board of the STAK)": [
+    "voting_rights"
+   ],
+   "TBAN1 F (depositary receipts)": [
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 crypto_transfer EUR 1500 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "crypto-asset custody and trading account",
+   "expected_monthly": 5000,
+   "cash_allowed": false
+  },
+  "business_type": "holding_spv",
+  "risk_band": "high",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TBAN1 Pars Trading Co.",
+   "indirect_high_risk:TBAN1 Volga Metals LLC",
+   "kycc_open:TBAN1 Harbour Logistics FZE",
+   "kycc_open:TBAN1 Pars Trading Co.",
+   "sanctions_hit:TBAN1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-banks-and-e-money-instit-2": {
+  "office": "Test office: banken en elektronischgeldinstellingen met cryptodiensten",
+  "office_id": "OFF-banks-and-e-money-institutions",
+  "category": "crypto",
+  "supervisor": "DNB",
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "legal_form": "NL:lf:nv",
+  "ubo": {},
+  "fallback": [
+   "TBAN2 M1 (director)",
+   "TBAN2 M2 (director)"
+  ],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "simplified CDD possible"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "crypto-asset custody and trading account",
+   "expected_monthly": 5000,
+   "cash_allowed": false
+  },
+  "business_type": "listed_group",
+  "risk_band": "low",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-trust-offices-wtt-2018-1": {
+  "office": "Test office: trustkantoren",
+  "office_id": "OFF-trust-offices-wtt-2018",
+  "category": "trust",
+  "supervisor": "DNB",
+  "scenario": "Foreign express trust administered in the Netherlands",
+  "legal_form": "NL:lf:foreign-trust",
+  "ubo": {
+   "TTRU1 S (settlor)": [
+    "founder"
+   ],
+   "TTRU1 T (trustee)": [
+    "trustee"
+   ],
+   "TTRU1 R (protector)": [
+    "protector"
+   ],
+   "TTRU1 B1 (beneficiary)": [
+    "beneficiary"
+   ],
+   "TTRU1 B2 (beneficiary)": [
+    "beneficiary"
+   ]
+  },
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:wtt-purpose": "applies",
+   "NL:duty:wtt-memo": "applies",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "management and registered office of a holding company",
+   "expected_monthly": 20000,
+   "cash_allowed": false
+  },
+  "business_type": "personal_holding",
+  "risk_band": "high",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TTRU1 Pars Trading Co.",
+   "indirect_high_risk:TTRU1 Volga Metals LLC",
+   "kycc_open:TTRU1 Harbour Logistics FZE",
+   "kycc_open:TTRU1 Pars Trading Co.",
+   "sanctions_hit:TTRU1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-trust-offices-wtt-2018-2": {
+  "office": "Test office: trustkantoren",
+  "office_id": "OFF-trust-offices-wtt-2018",
+  "category": "trust",
+  "supervisor": "DNB",
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TTRU2 C (96% of the holding)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TTRU2 D (2% and a veto)": [
+    "control_other_means"
+   ],
+   "TTRU2 E (board of the STAK)": [
+    "voting_rights"
+   ],
+   "TTRU2 F (depositary receipts)": [
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:wtt-purpose": "applies",
+   "NL:duty:wtt-memo": "applies",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "management and registered office of a holding company",
+   "expected_monthly": 20000,
+   "cash_allowed": false
+  },
+  "business_type": "holding_spv",
+  "risk_band": "high",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-investment-firms-1": {
+  "office": "Test office: beleggingsondernemingen",
+  "office_id": "OFF-investment-firms",
+  "category": "investment",
+  "supervisor": "AFM",
+  "scenario": "Fund for joint account offered to 412 participants, with a licensed manager",
+  "legal_form": "NL:lf:fgr",
+  "ubo": {
+   "TINV1 participants of the fund (group of 412)": [
+    "fgr_group"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 20000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "investment account / participation in a fund",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "real_estate",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TINV1 Pars Trading Co.",
+   "indirect_high_risk:TINV1 Volga Metals LLC",
+   "kycc_open:TINV1 Harbour Logistics FZE",
+   "kycc_open:TINV1 Pars Trading Co.",
+   "sanctions_hit:TINV1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-investment-firms-2": {
+  "office": "Test office: beleggingsondernemingen",
+  "office_id": "OFF-investment-firms",
+  "category": "investment",
+  "supervisor": "AFM",
+  "scenario": "B.V. held 100% by a listed issuer: excepted, fallback to the directors",
+  "legal_form": "NL:lf:bv",
+  "ubo": {},
+  "fallback": [
+   "TINV2 M (director)"
+  ],
+  "transactions": [
+   "T1 occasional EUR 5000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "simplified CDD possible"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "investment account / participation in a fund",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "listed_group",
+  "risk_band": "low",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-investment-institutions-1": {
+  "office": "Test office: beleggingsinstellingen",
+  "office_id": "OFF-investment-institutions-aifs-a",
+  "category": "investment",
+  "supervisor": "AFM",
+  "scenario": "Fund for joint account offered to 412 participants, with a licensed manager",
+  "legal_form": "NL:lf:fgr",
+  "ubo": {
+   "TINV1 participants of the fund (group of 412)": [
+    "fgr_group"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 20000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "investment account / participation in a fund",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "real_estate",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TINV1 Pars Trading Co.",
+   "indirect_high_risk:TINV1 Volga Metals LLC",
+   "kycc_open:TINV1 Harbour Logistics FZE",
+   "kycc_open:TINV1 Pars Trading Co.",
+   "sanctions_hit:TINV1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-investment-institutions-2": {
+  "office": "Test office: beleggingsinstellingen",
+  "office_id": "OFF-investment-institutions-aifs-a",
+  "category": "investment",
+  "supervisor": "AFM",
+  "scenario": "C.V.: a managing partner with the votes and three limited partners",
+  "legal_form": "NL:lf:cv",
+  "ubo": {
+   "TINV2 G (managing partner, 2%)": [
+    "agreement_votes"
+   ],
+   "TINV2 L1 (limited partner, 40%)": [
+    "ownership_interest"
+   ],
+   "TINV2 L2 (limited partner, 30%)": [
+    "ownership_interest"
+   ],
+   "TINV2 L3 (limited partner, 28%)": [
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 5000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "investment account / participation in a fund",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "real_estate",
+  "risk_band": "medium",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-ucits-and-their-managers-1": {
+  "office": "Test office: icbe's",
+  "office_id": "OFF-ucits-and-their-managers",
+  "category": "investment",
+  "supervisor": "AFM",
+  "scenario": "Fund for joint account offered to 412 participants, with a licensed manager",
+  "legal_form": "NL:lf:fgr",
+  "ubo": {
+   "TUCI1 participants of the fund (group of 412)": [
+    "fgr_group"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 20000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "investment account / participation in a fund",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "real_estate",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TUCI1 Pars Trading Co.",
+   "indirect_high_risk:TUCI1 Volga Metals LLC",
+   "kycc_open:TUCI1 Harbour Logistics FZE",
+   "kycc_open:TUCI1 Pars Trading Co.",
+   "sanctions_hit:TUCI1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-ucits-and-their-managers-2": {
+  "office": "Test office: icbe's",
+  "office_id": "OFF-ucits-and-their-managers",
+  "category": "investment",
+  "supervisor": "AFM",
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "legal_form": "NL:lf:nv",
+  "ubo": {},
+  "fallback": [
+   "TUCI2 M1 (director)",
+   "TUCI2 M2 (director)"
+  ],
+  "transactions": [
+   "T1 occasional EUR 5000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "simplified CDD possible"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "investment account / participation in a fund",
+   "expected_monthly": 10000,
+   "cash_allowed": false
+  },
+  "business_type": "listed_group",
+  "risk_band": "low",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-financial-service-provid-1": {
+  "office": "Test office: financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "office_id": "OFF-financial-service-providers-in",
+  "category": "insurance",
+  "supervisor": "AFM",
+  "scenario": "Natural person: no UBO test (the client is the natural person)",
+  "legal_form": null,
+  "ubo": {},
+  "fallback": [],
+  "transactions": [
+   "T1 occasional EUR 15000 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "life insurance with a single premium",
+   "expected_monthly": 2000,
+   "cash_allowed": false
+  },
+  "business_type": "private_individual",
+  "risk_band": "medium",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TFIN1 Pars Trading Co.",
+   "indirect_high_risk:TFIN1 Volga Metals LLC",
+   "kycc_open:TFIN1 Harbour Logistics FZE",
+   "kycc_open:TFIN1 Pars Trading Co.",
+   "sanctions_hit:TFIN1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-financial-service-provid-2": {
+  "office": "Test office: financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "office_id": "OFF-financial-service-providers-in",
+  "category": "insurance",
+  "supervisor": "AFM",
+  "scenario": "B.V. with two shareholders, 60% and 40%",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TFIN2 A (60%)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TFIN2 B (40%)": [
+    "ownership_interest",
+    "voting_rights"
+   ]
+  },
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "life insurance with a single premium",
+   "expected_monthly": 2000,
+   "cash_allowed": false
+  },
+  "business_type": "cash_intensive",
+  "risk_band": "high",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "up to date",
+   "NL:duty:training": "overdue",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-crypto-asset-service-pro-1": {
+  "office": "Test office: aanbieders van cryptoactivadiensten",
+  "office_id": "OFF-crypto-asset-service-providers",
+  "category": "crypto",
+  "supervisor": "AFM",
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "legal_form": "NL:lf:bv",
+  "ubo": {
+   "TCRY1 C (96% of the holding)": [
+    "ownership_interest",
+    "voting_rights"
+   ],
+   "TCRY1 D (2% and a veto)": [
+    "control_other_means"
+   ],
+   "TCRY1 E (board of the STAK)": [
+    "voting_rights"
+   ],
+   "TCRY1 F (depositary receipts)": [
+    "ownership_interest"
+   ]
+  },
+  "fallback": [],
+  "transactions": [
+   "T1 crypto_transfer EUR 1200 transfer"
+  ],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "REPORT hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "CDD required",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "FREEZE",
+   "NL:duty:edd": "EDD required"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "crypto-asset custody and trading account",
+   "expected_monthly": 5000,
+   "cash_allowed": false
+  },
+  "business_type": "holding_spv",
+  "risk_band": "high",
+  "monitoring": [
+   "cash_outside_profile",
+   "high_risk_country:TCRY1 Pars Trading Co.",
+   "indirect_high_risk:TCRY1 Volga Metals LLC",
+   "kycc_open:TCRY1 Harbour Logistics FZE",
+   "kycc_open:TCRY1 Pars Trading Co.",
+   "sanctions_hit:TCRY1 Harbour Logistics FZE",
+   "structuring",
+   "volume_above_profile"
+  ],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ },
+ "nl-crypto-asset-service-pro-2": {
+  "office": "Test office: aanbieders van cryptoactivadiensten",
+  "office_id": "OFF-crypto-asset-service-providers",
+  "category": "crypto",
+  "supervisor": "AFM",
+  "scenario": "Dutch branch of a foreign company: test the foreign parent",
+  "legal_form": "NL:lf:branch",
+  "ubo": {
+   "TCRY2 A (80% of the parent)": [
+    "ownership_interest",
+    "voting_rights"
+   ]
+  },
+  "fallback": [],
+  "transactions": [],
+  "duties": {
+   "NL:duty:cdd": "applies",
+   "NL:duty:ongoing-monitoring": "applies",
+   "NL:duty:report-unusual": "applies",
+   "NL:duty:record-keeping": "applies",
+   "NL:duty:ubo-discrepancy": "applies",
+   "NL:duty:sanctions-hit": "no sanctions hit",
+   "NL:duty:occasional-15000": "not triggered",
+   "NL:duty:tfr": "not triggered",
+   "NL:duty:tipping-off": "applies",
+   "NL:duty:fiu-suspension": "applies",
+   "NL:duty:sanctions-freeze": "no sanctions hit",
+   "NL:duty:edd": "standard CDD"
+  },
+  "no_cdd": false,
+  "no_rule": false,
+  "on": "2026-11-14",
+  "service": {
+   "name": "crypto-asset custody and trading account",
+   "expected_monthly": 5000,
+   "cash_allowed": false
+  },
+  "business_type": "trading",
+  "risk_band": "medium",
+  "monitoring": [],
+  "office_records": {
+   "NL:duty:risk-assessment": "missing",
+   "NL:duty:training": "up to date",
+   "NL:duty:sanctions-ao": "up to date"
+  }
+ }
+}

@@ -1,0 +1,459 @@
+[
+ {
+  "id": "01",
+  "scope": "case",
+  "title": "Which documents does this client still have to deliver, and on what basis?",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Which documents does this client still have to deliver, and on what basis?\n// Only where the office's sector requires customer due diligence on $on (not for traders in goods from 2026, nor for appraisers).\n// For every required document type that no document in the file proves: the legal form rule, the law article (with the quote) or the risk trigger behind it.\nMATCH (c:Client)-[q:REQUIRES]->(t:DocumentType)\nWHERE NOT EXISTS { (:Document)-[:OF_TYPE]->(t) }\nMATCH (c)-[:CLIENT_OF]->(:Institution)-[:IN_SECTOR]->(sec:Sector) WHERE coalesce(sec.cdd, true) AND (sec.cdd_until IS NULL OR sec.cdd_until >= $on) AND (sec.cdd_from IS NULL OR sec.cdd_from <= $on)\nOPTIONAL MATCH (c)-[:HAS_LEGAL_FORM]->(f:LegalForm)-[ld:REQUIRES_DOC]->(t)\nOPTIONAL MATCH (c)-[:SUBJECT_TO]->(o:Obligation)-[:PROVEN_BY]->(t)\nOPTIONAL MATCH (a:Article)-[i:IMPOSES]->(o)\nOPTIONAL MATCH (c)-[:HAS_TRIGGER]->(g:RiskTrigger)-[:ADDS_REQUIREMENT]->(t)\nRETURN t.name AS missing_document,\n       collect(DISTINCT CASE WHEN f IS NULL THEN null ELSE f.abbr + ': ' + coalesce(ld.local, ld.when) END) AS legal_form_rule,\n       collect(DISTINCT a.ref + CASE WHEN a.verify THEN ' (to verify)' ELSE ' (checked)' END) AS law_articles,\n       collect(DISTINCT g.name) AS risk_triggers\nORDER BY missing_document;\n"
+ },
+ {
+  "id": "02",
+  "scope": "case",
+  "title": "Why is this document type required? Follow the chain Client -> Obligation <- Article -> Law, with the passage and the source.",
+  "params": [
+   "doctype"
+  ],
+  "cypher": "// Why is this document type required? Follow the chain Client -> Obligation <- Article -> Law, with the passage and the source.\n// param: doctype (e.g. source_of_funds, person_id, proof_of_address)\nMATCH (c:Client)-[:SUBJECT_TO]->(o:Obligation)-[:PROVEN_BY]->(t:DocumentType {key:$doctype})\nMATCH (a:Article)-[i:IMPOSES]->(o)\nOPTIONAL MATCH (a)-[:PART_OF]->(l:Law)\nRETURN t.name AS document, o.text AS obligation, i.condition AS applies, a.ref AS article, l.title AS law, left(i.quote, 220) AS passage, a.source_url AS source, CASE WHEN a.verify THEN 'to verify' ELSE 'checked' END AS text_status\nORDER BY article;\n"
+ },
+ {
+  "id": "03",
+  "scope": "case",
+  "title": "Who are the beneficial owners, asked from the office that serves the client (rule valid on $on, default today), ground by ground for the client's legal form (Uitvoeringsbesluit Wwft 2018 art. 3): shares and economic ownership, votes (for a foundation, association or cooperative: on amending the statutes; for a partnership: on amending the agreement), control via other means, trust roles, and the listed-issuer exception. Compared with the UBO declaration.",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Who are the beneficial owners, asked from the office that serves the client (rule valid on $on, default today), ground by ground for the client's legal form (Uitvoeringsbesluit Wwft 2018 art. 3): shares and economic ownership, votes (for a foundation, association or cooperative: on amending the statutes; for a partnership: on amending the agreement), control via other means, trust roles, and the listed-issuer exception. Compared with the UBO declaration.\nMATCH (c:Client)-[:CLIENT_OF]->(inst:Institution)-[:FOLLOWS]->(u:UboRule), (inst)-[:IN_SECTOR]->(sec:Sector)\nWHERE coalesce(sec.cdd, true) AND (sec.cdd_until IS NULL OR sec.cdd_until >= $on) AND (sec.cdd_from IS NULL OR sec.cdd_from <= $on) AND u.valid_from <= $on AND (u.valid_to IS NULL OR u.valid_to >= $on)\nMATCH (c)-[:HAS_LEGAL_FORM]->(f:LegalForm)\nWITH c, u, CASE f.entity_type WHEN 'branch' THEN 'corporate' ELSE f.entity_type END AS et\nMATCH (u)-[:HAS_GROUND]->(g:UboGround) WHERE g.entity_type = et\nWITH c, u, et, collect(g) AS grounds,\n     (et = 'corporate' AND (coalesce(c.listed, false) OR EXISTS { (l:Party {listed:true})-[:OWNS {pct:100}]->(c) })) AS exempt\nMATCH (o:Party) WHERE (o:Person OR o:Group) AND (EXISTS { (o)-[:OWNS|BOARD_OF|MEMBER_OF|CONTROLS|ROLE_IN]->{1,5}(c) } OR EXISTS { (o)-[:CONTROLS]->(x) WHERE EXISTS { (x)-[:OWNS]->{1,4}(c) } })\nOPTIONAL MATCH p = (o)-[:OWNS]->{1,5}(c)\nWITH c, u, et, grounds, exempt, o,\n     sum(reduce(x = 1.0, r IN relationships(p) | x * r.pct / 100.0)) AS em,\n     sum(reduce(x = 1.0, r IN relationships(p)[0..-1] | x * CASE WHEN r.votes > 50 THEN 1.0 ELSE r.pct / 100.0 END) * last(relationships(p)).pct / 100.0) AS ec\nOPTIONAL MATCH q = (o)-[:OWNS|BOARD_OF|MEMBER_OF]->{1,5}(c)\nWITH c, u, et, grounds, exempt, o, em, ec,\n     sum(reduce(x = 1.0, r IN relationships(q) | x * r.votes / 100.0)) AS vm,\n     sum(reduce(x = 1.0, r IN relationships(q)[0..-1] | x * CASE WHEN r.votes > 50 THEN 1.0 ELSE r.votes / 100.0 END) * last(relationships(q)).votes / 100.0) AS vc\nOPTIONAL MATCH (o)-[ri:ROLE_IN]->(c)\nWITH c, u, et, grounds, exempt, o, collect(ri.role) AS roles,\n     round(100 * CASE WHEN u.method = 'both' AND ec > em THEN ec ELSE em END, 1) AS ownership,\n     round(100 * CASE WHEN u.method = 'both' AND vc > vm THEN vc ELSE vm END, 1) AS votes,\n     EXISTS { (o)-[:CONTROLS]->(x) WHERE x = c OR EXISTS { (x)-[:OWNS]->{1,4}(c) } } AS control\nWITH c, u, et, exempt, o, roles, ownership, votes, control,\n     [g IN grounds WHERE NOT exempt AND (\n          (g.ground = 'ownership_interest' AND ((g.op = '>' AND ownership > g.threshold) OR (g.op = '>=' AND ownership >= g.threshold)))\n       OR (g.ground IN ['voting_rights', 'statute_votes', 'agreement_votes'] AND ((g.op = '>' AND votes > g.threshold) OR (g.op = '>=' AND votes >= g.threshold)))\n       OR (g.ground = 'control_other_means' AND control)\n       OR (g.ground IN roles AND (g.ground <> 'fgr_group' OR (coalesce(c.participants, 0) >= 150 AND c.licensed_manager)))) | g.name] AS grounds_met\nOPTIONAL MATCH (d:Document)-[:OF_TYPE]->(t:DocumentType) WHERE t.key IN ['ubo_declaration', 'ubo_register_extract']\nWITH u, et, exempt, o, roles, ownership, votes, control, grounds_met, collect(d) AS decls\nRETURN u.name AS rule, et AS tested_as, o.name AS person, ownership, votes, control AS control_other_means, roles, grounds_met, size(grounds_met) > 0 AS ubo,\n       CASE WHEN exempt THEN 'listed issuer or 100% subsidiary: excepted' ELSE '' END AS exception, coalesce(o.pep, false) AS pep,\n       CASE WHEN size(decls) = 0 THEN 'no declaration in file' WHEN any(d IN decls WHERE d.text CONTAINS split(o.name, ' ')[1]) THEN 'declared' ELSE 'not declared' END AS declaration\nORDER BY ubo DESC, ownership DESC, votes DESC, person;\n"
+ },
+ {
+  "id": "04",
+  "scope": "case",
+  "title": "PEPs in the structure, how they are connected to the client, and the signals raised about them",
+  "params": [],
+  "cypher": "// PEPs in the structure, how they are connected to the client, and the signals raised about them\nMATCH (v:Person {pep:true})\nMATCH p = (v)-[:OWNS|DIRECTOR_OF]->{1,3}(c:Client)\nOPTIONAL MATCH (s:Signal)-[:ABOUT]->(v)\nRETURN v.name AS pep, v.pep_role AS role, [n IN nodes(p) | n.name] AS path, [r IN relationships(p) | type(r) + ' ' + coalesce(toString(r.pct) + '%', '')] AS links, collect(DISTINCT s.title) AS signals;\n"
+ },
+ {
+  "id": "05",
+  "scope": "case",
+  "title": "Know your customer's customer: which counterparties still need KYCC, ordered by volume, with country risk and screening hits",
+  "params": [],
+  "cypher": "// Know your customer's customer: which counterparties still need KYCC, ordered by volume, with country risk and screening hits\nMATCH (k:Counterparty)-[r:COUNTERPARTY_OF]->(c:Client)\nOPTIONAL MATCH (k)-[:LOCATED_IN]->(g:Country)\nOPTIONAL MATCH (k)-[:SCREENING_HIT]->(h:ScreeningHit)\nWITH k, r, g, h WHERE k.kycc_level <> 'none'\nRETURN k.name AS counterparty, k.role AS role, g.code AS country, g.high_risk OR g.offshore AS risky_country, k.kycc_level AS kycc,\n       toString(k.checks_done) + '/' + toString(k.checks_total) AS checks, k.kycc_complete AS complete, r.volume AS volume,\n       CASE WHEN h IS NULL THEN null ELSE h.matched + ' (' + toString(h.score) + '%)' END AS screening_hit\nORDER BY complete, volume DESC;\n"
+ },
+ {
+  "id": "06",
+  "scope": "case",
+  "title": "For every question in the client acceptance: the answer, its status and the documents (with the place in the document) it rests on",
+  "params": [],
+  "cypher": "// For every question in the client acceptance: the answer, its status and the documents (with the place in the document) it rests on\nMATCH (c:Client)-[:HAS_QUESTION]->(q:Question)\nOPTIONAL MATCH (d:Document)-[a:ANSWERS]->(q)\nRETURN q.id AS id, q.text AS question, q.status AS status, q.answer AS answer, collect(d.id + ' ' + d.title + ' @ ' + a.where) AS evidence\nORDER BY id;\n"
+ },
+ {
+  "id": "07",
+  "scope": "case",
+  "title": "Full-text search in the documents of the case. param: term (e.g. nominee, director, Panama)",
+  "params": [
+   "term"
+  ],
+  "cypher": "// Full-text search in the documents of the case. param: term (e.g. nominee, director, Panama)\nMATCH (d:Document) SEARCH d IN (FULLTEXT INDEX doc_text FOR $term LIMIT 5) SCORE AS relevance\nOPTIONAL MATCH (d)-[:MENTIONS]->(p:Party)\nRETURN d.id AS doc, d.title AS title, relevance, collect(p.name) AS mentions\nORDER BY relevance DESC;\n"
+ },
+ {
+  "id": "08",
+  "scope": "case",
+  "title": "Full-text search in the law articles copied into the case. param: term (e.g. \"source of wealth\", address)",
+  "params": [
+   "term"
+  ],
+  "cypher": "// Full-text search in the law articles copied into the case. param: term (e.g. \"source of wealth\", address)\nMATCH (a:Article) SEARCH a IN (FULLTEXT INDEX article_text FOR $term LIMIT 5) SCORE AS relevance\nOPTIONAL MATCH (a)-[i:IMPOSES]->(o:Obligation)\nRETURN a.ref AS article, relevance, collect(DISTINCT o.text) AS obligations, left(a.text_en, 200) AS text, a.source_url AS source\nORDER BY relevance DESC;\n"
+ },
+ {
+  "id": "09",
+  "scope": "case",
+  "title": "Where in the scanned documents does a term appear, on which page and position, and how sure is the OCR? param: term (e.g. nominee, getekend, bevoegd)",
+  "params": [
+   "term"
+  ],
+  "cypher": "// Where in the scanned documents does a term appear, on which page and position, and how sure is the OCR? param: term (e.g. nominee, getekend, bevoegd)\nMATCH (k:Chunk) SEARCH k IN (FULLTEXT INDEX chunk_text FOR $term LIMIT 8) SCORE AS relevance\nMATCH (d:Document)-[:HAS_CHUNK]->(k)\nRETURN d.id AS doc, d.file AS file, k.page AS page, k.bbox AS box_px, k.confidence AS ocr_conf, k.low_conf_words AS unsure_words, left(replace(k.text, '\\n', ' | '), 140) AS text, relevance\nORDER BY relevance DESC;\n"
+ },
+ {
+  "id": "10",
+  "scope": "case",
+  "title": "How did we reach each conclusion? The answers of the latest session as reasoning chains (observation -> rule -> derived -> conclusion -> decision), with what each step cites",
+  "params": [],
+  "cypher": "// How did we reach each conclusion? The answers of the latest session as reasoning chains (observation -> rule -> derived -> conclusion -> decision), with what each step cites\nMATCH (s:Session) WITH s ORDER BY s.started DESC LIMIT 1\nMATCH (s)-[:ASKED]->(q:Ask)-[:ANSWERED_BY]->(a:Answer)-[:HAS_STEP]->(step:Step)\nOPTIONAL MATCH (step)-[:CITES]->(e)\nRETURN q.text AS question, step.ord AS n, step.kind AS kind, step.text AS reasoning, step.confidence AS confidence,\n       collect(DISTINCT coalesce(e.title, e.name, e.ref, e.id)) AS cites\nORDER BY question, n;\n"
+ },
+ {
+  "id": "11",
+  "scope": "case",
+  "title": "What does this case remember? Short-term sessions, medium-term episodes (decisions and open items) and long-term patterns (proposed or approved)",
+  "params": [],
+  "cypher": "// What does this case remember? Short-term sessions, medium-term episodes (decisions and open items) and long-term patterns (proposed or approved)\nMATCH (k:Case)\nOPTIONAL MATCH (k)-[:HAS_SESSION]->(s:Session)\nOPTIONAL MATCH (k)-[:HAS_EPISODE]->(e:Episode)\nOPTIONAL MATCH (k)-[:PROPOSED]->(p:Pattern)\nRETURN 'short-term' AS memory, s.id AS id, 'until ' + s.expires AS detail, null AS items\nUNION\nMATCH (k:Case)-[:HAS_EPISODE]->(e:Episode)\nRETURN 'medium-term' AS memory, e.id AS id, 'decision: ' + e.decision AS detail, e.open_items AS items\nUNION\nMATCH (k:Case)-[:PROPOSED]->(p:Pattern)\nRETURN 'long-term' AS memory, p.id AS id, p.status + ': ' + p.title AS detail, [p.action] AS items;\n"
+ },
+ {
+  "id": "12",
+  "scope": "case",
+  "title": "What did the AI answer, and on what basis? Per claim: grounded or not, the evidence it cites, and the query (tool call) in which the AI read that evidence",
+  "params": [],
+  "cypher": "// What did the AI answer, and on what basis? Per claim: grounded or not, the evidence it cites, and the query (tool call) in which the AI read that evidence\nMATCH (s:Session {by:'ai'})-[:ASKED]->(q:Ask)-[:ANSWERED_BY]->(a:Answer)-[:HAS_CLAIM]->(c:Claim)\nOPTIONAL MATCH (c)-[:SUPPORTED_BY]->(e)\nOPTIONAL MATCH (q)-[:USED]->(t:ToolCall)-[:READ]->(e)\nWITH q, a, c, e, collect(DISTINCT t.ord) AS calls\nRETURN q.text AS question, a.id AS answer, CASE WHEN EXISTS { (:Answer)-[:REVISES]->(a) } THEN 'revised' ELSE 'current' END AS version,\n       c.ord AS claim, c.text AS statement, c.status AS status,\n       collect(DISTINCT labels(e)[0] + ': ' + coalesce(e.title, e.name, e.ref, e.id) + CASE WHEN size(calls) > 0 THEN ' (read in query ' + toString(calls[0]) + ')' ELSE '' END) AS evidence\nORDER BY answer, claim;\n"
+ },
+ {
+  "id": "13",
+  "scope": "case",
+  "title": "Which UBO rule applies to this client, and why? The office that renders the service, the country, the supervisor, the rule it follows (today and later) and where the rule is written.",
+  "params": [],
+  "cypher": "// Which UBO rule applies to this client, and why? The office that renders the service, the country, the supervisor, the rule it follows (today and later) and where the rule is written.\nMATCH (c:Client)-[:CLIENT_OF]->(i:Institution)-[:IN_JURISDICTION]->(j:Jurisdiction)\nOPTIONAL MATCH (i)-[:IN_SECTOR]->(s:Sector)<-[:SUPERVISES {aml:true}]-(g:Regulator)\nOPTIONAL MATCH (i)-[f:FOLLOWS]->(u:UboRule)\nOPTIONAL MATCH (u)-[:DEFINED_IN]->(a:Article)\nRETURN c.name AS client, i.name AS office, j.name AS service_rendered_in, s.name AS sector, g.short AS supervisor, u.name AS ubo_rule, u.method AS method, u.fallback AS fallback,\n       CASE WHEN u.valid_from = '2000-01-01' THEN 'in force' ELSE u.valid_from END AS valid_from, u.valid_to AS valid_to, collect(a.ref + CASE WHEN a.primary = false THEN ' (secondary source)' ELSE '' END) AS written_in, collect(coalesce(nullif(a.text_local, ''), a.text_en))[0] AS passage, u.source AS source, CASE WHEN u.verify THEN 'to verify' ELSE 'checked' END AS status\nORDER BY valid_to IS NULL, valid_to;\n"
+ },
+ {
+  "id": "14",
+  "scope": "case",
+  "title": "Every entity in the structure, its legal form, and the grounds on which its beneficial owners are determined (from the legal-form inventory and the UBO rule of the office)",
+  "params": [],
+  "cypher": "// Every entity in the structure, its legal form, and the grounds on which its beneficial owners are determined (from the legal-form inventory and the UBO rule of the office)\nMATCH (x) WHERE (x:Client OR x:Party) AND EXISTS { (x)-[:HAS_LEGAL_FORM]->() }\nMATCH (x)-[:HAS_LEGAL_FORM]->(f:LegalForm)\nOPTIONAL MATCH (f)-[:TESTED_BY]->(g:UboGround)\nRETURN x:Client AS client, x.name AS entity, f.abbr + ' (' + split(f.id, ':')[0] + ')' AS legal_form, f.category AS category, f.entity_type AS tested_as,\n       collect(g.ground + CASE WHEN g.op IN ['>', '>='] THEN ' ' + g.op + ' ' + toString(g.threshold) + '%' ELSE '' END) AS grounds_here,\n       f.ubo_rule AS ubo_rule_for_this_form, f.law AS law, CASE WHEN f.verify THEN 'to verify' ELSE 'checked' END AS status\nORDER BY client DESC, entity;\n"
+ },
+ {
+  "id": "15",
+  "scope": "case",
+  "title": "Fallback (Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a/c/d 2° jo. lid 6): the senior managing officials who are designated when nobody qualifies on the grounds: every director, or for a partnership every partner except a partner by way of a loan",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Fallback (Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a/c/d 2° jo. lid 6): the senior managing officials who are designated when nobody qualifies on the grounds: every director, or for a partnership every partner except a partner by way of a loan\nMATCH (c:Client)-[:HAS_LEGAL_FORM]->(f:LegalForm), (c)-[:CLIENT_OF]->(:Institution)-[:IN_SECTOR]->(sec:Sector)\nWHERE coalesce(sec.cdd, true) AND (sec.cdd_until IS NULL OR sec.cdd_until >= $on) AND (sec.cdd_from IS NULL OR sec.cdd_from <= $on)\n  AND EXISTS { (c)-[:CLIENT_OF]->(:Institution)-[:FOLLOWS]->(u:UboRule) WHERE u.valid_from <= $on AND (u.valid_to IS NULL OR u.valid_to >= $on) }\nWITH c, CASE f.entity_type WHEN 'branch' THEN 'corporate' ELSE f.entity_type END AS et\nOPTIONAL MATCH (d:Person)-[:DIRECTOR_OF]->(c) WHERE et IN ['corporate', 'other_legal_entity']\nOPTIONAL MATCH (v:Person)-[r:OWNS]->(c) WHERE et = 'partnership' AND NOT coalesce(r.lender, false)\nWITH et, collect(DISTINCT d.name) + collect(DISTINCT v.name) AS names\nUNWIND names AS name\nRETURN DISTINCT et AS tested_as, name AS senior_managing_official\nORDER BY senior_managing_official;\n"
+ },
+ {
+  "id": "16",
+  "scope": "case",
+  "title": "Besides the UBO: the KYC duties per client of the office's sector (towards the AML supervisor or FIU-Nederland), and what they mean for this client today ($on): triggered by which transaction (CDD threshold, FIU indicator), and the passage it rests on. The office's own duties are in the office file (office/01).",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Besides the UBO: the KYC duties per client of the office's sector (towards the AML supervisor or FIU-Nederland), and what they mean for this client today ($on): triggered by which transaction (CDD threshold, FIU indicator), and the passage it rests on. The office's own duties are in the office file (office/01).\nMATCH (c:Client)-[:CLIENT_OF]->(i:Institution)-[:IN_SECTOR]->(s:Sector)-[:HAS_DUTY]->(d:SectorDuty)\nWHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nOPTIONAL MATCH (g:Regulator)-[:SUPERVISES {aml:true}]->(s)\nOPTIONAL MATCH (c)-[:MADE]->(t:Transaction)\n  WHERE d.amount IS NOT NULL AND t.amount >= d.amount AND (size(d.tx) = 0 OR t.kind IN d.tx) AND (d.payment IN [null, 'any'] OR t.payment = d.payment)\nWITH c, i, s, d, g.short AS supervisor, collect(t.id + ' ' + t.kind + ' EUR ' + toString(t.amount) + ' ' + t.payment) AS hits\nOPTIONAL MATCH (c)-[:COUNTERPARTY_OF|HAS_COUNTERPARTY]-(p:Counterparty)-[:SCREENING_HIT]->(h:ScreeningHit)\nWITH c, i, s, d, supervisor, hits, collect(DISTINCT p.name + ' (' + toString(h.score) + '%)') AS sanction_hits,\n     (coalesce(d.independent, false) OR NOT (s.only_duties IS NOT NULL AND (s.cdd = false OR $on > coalesce(s.cdd_until, '9999-12-31') OR $on < coalesce(s.cdd_from, '0000-01-01')) AND NOT d.id IN s.only_duties)) AS active\nOPTIONAL MATCH (d)-[:DEFINED_IN]->(a:Article)-[:PART_OF]->(l:Law) WHERE (a.valid_from IS NULL OR a.valid_from <= $on) AND (a.valid_to IS NULL OR a.valid_to >= $on)\nWITH c, i, s, d, supervisor, hits, sanction_hits, active, collect(a.ref) AS basis, any(x IN collect(a.verify) WHERE x) AS to_verify, collect(DISTINCT a.basis_kind) AS basis_kind\nRETURN CASE coalesce(d.authority, 'supervisor') WHEN 'supervisor' THEN supervisor ELSE d.authority END AS authority, d.level AS level, d.title AS duty, d.kind AS kind,\n  CASE\n    WHEN NOT active THEN 'not applicable: ' + s.scope_note\n    WHEN d.kind = 'obliged_from' THEN CASE WHEN $on < d.from_date THEN 'not yet: obliged from ' + d.from_date ELSE 'applies (obliged since ' + d.from_date + ')' END\n    WHEN d.kind IN ['always', 'periodic', 'scope_limit'] THEN 'applies' + CASE WHEN d.frequency IS NULL THEN '' ELSE ' (' + d.frequency + ')' END\n    WHEN d.kind = 'threshold' THEN CASE WHEN size(hits) > 0 THEN 'CDD required: ' + reduce(x = '', h IN hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'not triggered' END\n    WHEN d.kind = 'indicator' THEN CASE WHEN size(hits) > 0 THEN 'REPORT to FIU-NL: ' + reduce(x = '', h IN hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'no objective indicator met' END\n    WHEN d.kind = 'prohibition' THEN CASE WHEN size(hits) > 0 THEN 'VIOLATION: ' + reduce(x = '', h IN hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'complied with' END\n    WHEN d.kind = 'scope' THEN CASE WHEN size(hits) > 0 THEN 'in scope: ' + reduce(x = '', h IN hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'out of scope (below the amount)' END\n    WHEN d.kind = 'screening' THEN CASE WHEN size(sanction_hits) > 0 THEN 'REPORT hit to ' + supervisor + ': ' + reduce(x = '', h IN sanction_hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'no sanctions hit' END\n    WHEN d.kind = 'risk_band' THEN CASE c.risk_band WHEN 'high' THEN 'EDD required: ' + reduce(x = '', f IN coalesce(c.risk_factors, []) | x + CASE WHEN x = '' THEN '' ELSE '; ' END + f)\n         WHEN 'low' THEN 'simplified CDD possible: ' + reduce(x = '', f IN coalesce(c.risk_factors, []) | x + CASE WHEN x = '' THEN '' ELSE '; ' END + f) ELSE 'standard CDD' END\n    WHEN d.kind = 'declaration' THEN CASE WHEN size(hits) > 0 THEN 'ASK for the customs declaration: ' + reduce(x = '', h IN hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'not triggered' END\n    WHEN d.kind = 'freeze' THEN CASE WHEN size(sanction_hits) > 0 THEN 'FREEZE: ' + reduce(x = '', h IN sanction_hits | x + CASE WHEN x = '' THEN '' ELSE '; ' END + h) ELSE 'no sanctions hit' END\n    WHEN d.kind = 'service_scope' THEN CASE WHEN c.service_in_scope THEN 'in scope: ' + coalesce(c.service, 'listed service') ELSE 'out of scope: ' + coalesce(c.service, '') END\n  END AS status,\n  basis, basis_kind, to_verify, d.id AS duty_id\nORDER BY CASE d.level WHEN 'client' THEN 0 ELSE 1 END, CASE WHEN status STARTS WITH 'VIOLATION' OR status STARTS WITH 'REPORT' OR status STARTS WITH 'FREEZE' THEN 0 WHEN status STARTS WITH 'CDD' OR status STARTS WITH 'in scope' THEN 1 ELSE 2 END, duty\n"
+ },
+ {
+  "id": "17",
+  "scope": "case",
+  "title": "Ongoing monitoring on $on: the client's transactions with its sub-clients (KYCC), against the expected profile of the service it uses. Per rule: volume above the profile, cash outside the profile, possible structuring just below a cash limit, high-risk countries (also one level further: the sub-clients of a sub-client), sanctions hits, sub-clients with open KYCC, each with the passage it rests on. Without customer due diligence in the sector, only the cash ban is watched (structuring).",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Ongoing monitoring on $on: the client's transactions with its sub-clients (KYCC), against the expected profile of the service it uses. Per rule: volume above the profile, cash outside the profile, possible structuring just below a cash limit, high-risk countries (also one level further: the sub-clients of a sub-client), sanctions hits, sub-clients with open KYCC, each with the passage it rests on. Without customer due diligence in the sector, only the cash ban is watched (structuring).\nMATCH (c:Client)-[:USES]->(v:Service), (c)-[:CLIENT_OF]->(:Institution)-[:IN_SECTOR]->(s:Sector)\nWITH c, v, s,\n     coalesce(s.cdd, true) AND (s.cdd_until IS NULL OR s.cdd_until >= $on) AND (s.cdd_from IS NULL OR s.cdd_from <= $on) AS cdd,\n     EXISTS { (s)-[:HAS_DUTY]->(b:SectorDuty {id:'NL:duty:cash-ban'}) WHERE b.valid_from <= $on AND (b.valid_to IS NULL OR b.valid_to >= $on) } AS cash_ban\nMATCH (m:MonitoringRule)\nOPTIONAL MATCH (c)-[:MADE]->(t:Transaction {series:'monitoring'}) WHERE t.date <= $on\nWITH c, v, cdd, cash_ban, m, CASE WHEN cash_ban THEN 3000 ELSE 10000 END AS lim,\n     sum(t.amount) AS total, count(DISTINCT substring(t.date, 0, 7)) AS months,\n     collect(t) AS txs\nWITH c, v, cdd, cash_ban, m, lim, total, months, txs,\n     [t IN txs WHERE t.payment = 'cash'] AS cash,\n     [t IN txs WHERE t.payment = 'cash' AND t.amount >= m.band * lim AND t.amount < lim] AS near\nWITH c, v, cdd, cash_ban, m, lim, total, months, txs, cash, near,\n     [a IN near WHERE any(b IN near WHERE b.id <> a.id AND abs(a.day - b.day) <= m.window_days)] AS pieces\nOPTIONAL MATCH (c)-[:MADE]->(t2:Transaction {series:'monitoring'})-[:WITH]->(k:Counterparty)-[:LOCATED_IN]->(g:Country) WHERE t2.date <= $on\nWITH c, v, cdd, cash_ban, m, lim, total, months, cash, pieces,\n     collect(DISTINCT CASE WHEN m.check = 'high_risk_country' AND g.code IN m.countries THEN k.name + ' (' + g.code + ')' END) AS hr,\n     collect(DISTINCT CASE WHEN m.check = 'sanctions_hit' AND EXISTS { (k)-[:SCREENING_HIT]->() } THEN k.name END) AS sh,\n     collect(DISTINCT CASE WHEN m.check = 'kycc_open' AND k.checks_done < k.checks_total THEN k.name + ' (' + toString(k.checks_done) + '/' + toString(k.checks_total) + ')' END) AS ko\nOPTIONAL MATCH (c)-[:MADE]->(t3:Transaction {series:'monitoring'})-[:WITH]->(:Counterparty)<-[:COUNTERPARTY_OF]-(k2:Counterparty)-[:LOCATED_IN]->(g2:Country)\n  WHERE t3.date <= $on AND m.check = 'indirect_high_risk' AND g2.code IN m.countries\nWITH c, v, m, cdd, cash_ban, lim, total, months, cash, pieces, hr, sh, ko, collect(DISTINCT k2.name + ' (' + g2.code + ', via a sub-client)') AS ih,\n     (cdd OR (m.check = 'structuring' AND cash_ban)) AS active\nOPTIONAL MATCH (m)-[:DEFINED_IN]->(a:Article)\nWITH c, v, m, active, lim, total, months, cash, pieces, hr, sh, ko, ih, collect(a.ref) AS basis, any(x IN collect(a.verify) WHERE x) AS to_verify\nWITH v, m, active, basis, to_verify,\n  CASE m.check\n    WHEN 'volume_above_profile' THEN CASE WHEN months > 0 AND total / months > m.factor * v.expected_monthly\n         THEN 'FLAG: EUR ' + toString(toInteger(total / months)) + ' a month against EUR ' + toString(v.expected_monthly) + ' expected' END\n    WHEN 'cash_outside_profile' THEN CASE WHEN size(cash) > 0 AND NOT v.cash_allowed THEN 'FLAG: ' + toString(size(cash)) + ' cash payment(s), the service expects none' END\n    WHEN 'structuring' THEN CASE WHEN size(pieces) > 0 THEN 'FLAG: ' + reduce(x = '', t IN pieces | x + CASE WHEN x = '' THEN '' ELSE ', ' END + t.id + ' ' + t.date + ' EUR ' + toString(t.amount)) + ' (limit EUR ' + toString(lim) + ')' END\n    WHEN 'high_risk_country' THEN CASE WHEN size(hr) > 0 THEN 'FLAG: ' + reduce(x = '', n IN hr | x + CASE WHEN x = '' THEN '' ELSE '; ' END + n) END\n    WHEN 'sanctions_hit' THEN CASE WHEN size(sh) > 0 THEN 'FLAG: ' + reduce(x = '', n IN sh | x + CASE WHEN x = '' THEN '' ELSE '; ' END + n) END\n    WHEN 'indirect_high_risk' THEN CASE WHEN size(ih) > 0 THEN 'FLAG: ' + reduce(x = '', n IN ih | x + CASE WHEN x = '' THEN '' ELSE '; ' END + n) END\n    WHEN 'kycc_open' THEN CASE WHEN size(ko) > 0 THEN 'FLAG: ' + reduce(x = '', n IN ko | x + CASE WHEN x = '' THEN '' ELSE '; ' END + n) END\n  END AS flag\nRETURN v.name AS service, m.title AS rule, m.check AS check,\n       CASE WHEN NOT active THEN 'not applicable (no customer due diligence in this sector on this date)' ELSE coalesce(flag, 'ok') END AS status,\n       basis, to_verify, m.id AS rule_id\nORDER BY CASE WHEN status STARTS WITH 'FLAG' THEN 0 ELSE 1 END, rule\n"
+ },
+ {
+  "id": "18",
+  "scope": "case",
+  "title": "What does the client's structure chart say, and what has the compliance officer confirmed? Every box and line of the chart as a proposal,",
+  "params": [],
+  "cypher": "// What does the client's structure chart say, and what has the compliance officer confirmed? Every box and line of the chart as a proposal,\n// with the place in the chart (page, position) and the text as drawn; confirmed proposals became the client's parties and OWNS / CONTROLS / BOARD_OF relations.\nMATCH (p:Proposal)-[:STATED_IN]->(k:Chunk)<-[:HAS_CHUNK]-(d:Document)\nOPTIONAL MATCH (p)-[:CREATED]->(n)\nRETURN p.id AS proposal, p.status AS status, p.kind AS fact,\n       CASE p.kind WHEN 'party' THEN p.from_name + ' (' + p.party_kind + coalesce(', ' + p.country, '') + ')'\n                   ELSE p.from_name + ' → ' + p.to_name END AS what,\n       CASE p.kind WHEN 'OWNS' THEN toString(p.pct) + '% shares, ' + toString(p.votes) + '% votes'\n                   WHEN 'BOARD_OF' THEN toString(p.votes) + '% votes' WHEN 'CONTROLS' THEN p.basis ELSE '' END AS detail,\n       d.title AS document, k.page AS page, k.bbox AS position, p.confirmed_by AS confirmed_by\nORDER BY toInteger(split(p.id, '-')[1]);\n"
+ },
+ {
+  "id": "o01",
+  "scope": "office",
+  "title": "Office file. The office itself on $on: for each periodic duty of its sector (risk assessment, training, sanctions procedure, SIRA, the annual return to the supervisor), the latest evidence on file, and whether it is up to date (within a year), overdue or missing.",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Office file. The office itself on $on: for each periodic duty of its sector (risk assessment, training, sanctions procedure, SIRA, the annual return to the supervisor), the latest evidence on file, and whether it is up to date (within a year), overdue or missing.\nMATCH (i:Institution)-[:IN_SECTOR]->(s:Sector)-[:HAS_DUTY]->(d:SectorDuty {kind:'periodic'})\nWHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\n  AND (coalesce(d.independent, false) OR NOT (s.only_duties IS NOT NULL AND (s.cdd = false OR $on > coalesce(s.cdd_until, '9999-12-31') OR $on < coalesce(s.cdd_from, '0000-01-01')) AND NOT d.id IN s.only_duties))\nOPTIONAL MATCH (g:Regulator)-[:SUPERVISES {aml:true}]->(s)\nOPTIONAL MATCH (i)-[:HAS_RECORD]->(r:OfficeRecord)-[:FULFILS]->(d) WHERE r.date <= $on\nWITH i, g, d, max(r.date) AS last, toString(toInteger(substring($on, 0, 4)) - 1) + substring($on, 4) AS year_ago\nOPTIONAL MATCH (d)-[:DEFINED_IN]->(a:Article)\nRETURN i.name AS office, CASE coalesce(d.authority, 'supervisor') WHEN 'supervisor' THEN g.short ELSE d.authority END AS authority, d.title AS duty, d.frequency AS frequency, last AS latest_evidence,\n       CASE WHEN last IS NULL THEN 'MISSING' WHEN last >= year_ago THEN 'up to date' ELSE 'OVERDUE' END AS status,\n       collect(a.ref) AS basis, d.id AS duty_id\nORDER BY CASE status WHEN 'MISSING' THEN 0 WHEN 'OVERDUE' THEN 1 ELSE 2 END, duty\n"
+ },
+ {
+  "id": "o02",
+  "scope": "office",
+  "title": "Office file. The office's clients on $on: one row per client file, with what that file says (UBO answer, sector duties that need action, monitoring signals), worst first. The client data stays in the client's own file; the office file holds the file name and the signals only.",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Office file. The office's clients on $on: one row per client file, with what that file says (UBO answer, sector duties that need action, monitoring signals), worst first. The client data stays in the client's own file; the office file holds the file name and the signals only.\nMATCH (i:Institution)<-[:CLIENT_OF]-(f:ClientFile)\nRETURN i.name AS office, f.case AS client_file, f.file AS file, f.legal_form AS legal_form, f.business_type AS business_type, f.sbi AS sbi, f.risk_band AS risk_band, f.service AS service, f.ubo AS ubo,\n       f.actions AS duty_actions, f.monitoring AS monitoring_signals, size(f.actions) + size(f.monitoring) AS signals, f.as_of AS as_of\nORDER BY signals DESC, client_file\n"
+ },
+ {
+  "id": "o03",
+  "scope": "office",
+  "title": "Office file. Which signals recur across the office's clients: per monitoring signal or duty action, how many client files show it and which. A view for the compliance officer and the supervisor's periodic return.",
+  "params": [],
+  "cypher": "// Office file. Which signals recur across the office's clients: per monitoring signal or duty action, how many client files show it and which. A view for the compliance officer and the supervisor's periodic return.\nMATCH (i:Institution)<-[:CLIENT_OF]-(f:ClientFile)\nUNWIND [x IN f.monitoring | 'monitoring: ' + x] + [x IN f.actions | 'duty: ' + x] AS signal\nRETURN i.name AS office, signal, count(DISTINCT f) AS client_files, collect(DISTINCT f.case) AS files\nORDER BY client_files DESC, signal\n"
+ },
+ {
+  "id": "o04",
+  "scope": "office",
+  "title": "Office file. KYCC across clients: counterparties that recur in more than one of the office's client files. The office file holds only a one-way key per counterparty (from its name and country), so the overlap shows without the name; the name is in the client files.",
+  "params": [],
+  "cypher": "// Office file. KYCC across clients: counterparties that recur in more than one of the office's client files. The office file holds only a one-way key per counterparty (from its name and country), so the overlap shows without the name; the name is in the client files.\nMATCH (i:Institution)<-[:CLIENT_OF]-(f:ClientFile)-[:HAS_COUNTERPARTY]->(k:CounterpartyKey)\nWITH i, k, collect(DISTINCT f.case) AS files\nWHERE size(files) > 1\nRETURN i.name AS office, k.key AS counterparty_key, size(files) AS client_files, files\nORDER BY client_files DESC\n"
+ },
+ {
+  "id": "r01",
+  "scope": "register",
+  "title": "Sector register. The entry: jurisdiction, then sector, then its supervisor(s) on $on. Per sector: the supervisors with their role (the AML supervisor marked), the category and FATF scope, whether it is obliged today or from which date, and how many duties it has.",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Sector register. The entry: jurisdiction, then sector, then its supervisor(s) on $on. Per sector: the supervisors with their role (the AML supervisor marked), the category and FATF scope, whether it is obliged today or from which date, and how many duties it has.\nMATCH (j:Jurisdiction)<-[:IN_JURISDICTION]-(s:Sector)-[:IN_CATEGORY]->(c:SectorCategory), (s)-[:IN_SCOPE]->(f:FatfScope)\nOPTIONAL MATCH (g:Regulator)-[v:SUPERVISES]->(s)\nWITH j, s, c, f, collect(DISTINCT g.short + CASE WHEN v.aml THEN ' (AML)' ELSE ' (' + coalesce(v.role, '') + ')' END) AS supervisors\nOPTIONAL MATCH (s)-[:HAS_DUTY]->(d:SectorDuty) WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nRETURN j.name AS jurisdiction, s.local AS sector, supervisors, s.expected_supervisor AS expected_supervisor, c.name_nl AS category, f.id AS fatf,\n       CASE WHEN s.obliged_from IS NULL THEN 'obliged' WHEN s.obliged_from <= $on THEN 'obliged since ' + s.obliged_from ELSE 'from ' + s.obliged_from END AS status,\n       count(DISTINCT d) AS duties, c.order AS cat_order\nORDER BY jurisdiction, cat_order, sector\n"
+ },
+ {
+  "id": "r02",
+  "scope": "register",
+  "title": "Sector register. Which duties are shared and which belong to one corner of the market: per duty in force on $on, the number of sectors and the categories it applies to, with its legal basis.",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Sector register. Which duties are shared and which belong to one corner of the market: per duty in force on $on, the number of sectors and the categories it applies to, with its legal basis.\nMATCH (d:SectorDuty)<-[:HAS_DUTY]-(s:Sector)-[:IN_CATEGORY]->(c:SectorCategory)\nWHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nOPTIONAL MATCH (d)-[:DEFINED_IN]->(a:Article)\nRETURN d.title AS duty, d.level AS level, d.kind AS kind, count(DISTINCT s) AS sectors, collect(DISTINCT c.name_nl) AS categories, collect(DISTINCT a.ref)[0] AS basis\nORDER BY sectors DESC, duty\n"
+ },
+ {
+  "id": "r03",
+  "scope": "register",
+  "title": "Sector register. Per supervisor: the sectors where it is the AML supervisor and where it has another role (prudential), the categories and sectors it supervises, and the office files in the register. \"aan te wijzen\": the AMLR sectors whose supervisor is still to be designated by AMvB (Iwt art. 1.3).",
+  "params": [],
+  "cypher": "// Sector register. Per supervisor: the sectors where it is the AML supervisor and where it has another role (prudential), the categories and sectors it supervises, and the office files in the register. \"aan te wijzen\": the AMLR sectors whose supervisor is still to be designated by AMvB (Iwt art. 1.3).\nMATCH (g:Regulator)-[v:SUPERVISES]->(s:Sector)-[:IN_CATEGORY]->(c:SectorCategory)\nOPTIONAL MATCH (o:OfficeFile)-[:IN_SECTOR]->(s)\nRETURN g.short AS supervisor, count(DISTINCT CASE WHEN v.aml THEN s END) AS sectors_aml, count(DISTINCT CASE WHEN NOT v.aml THEN s END) AS sectors_other_role, collect(DISTINCT c.name_nl) AS categories, collect(DISTINCT s.local) AS sector_names, count(DISTINCT o) AS office_files\nORDER BY sectors_aml DESC\n"
+ },
+ {
+  "id": "r04",
+  "scope": "register",
+  "title": "Sector register. The legislation: per law (Wwft, Sanctiewet 1977, Rtsw, Wft, Wtt 2018, Wok, AVG/UAVG, Handelsregisterwet, MiCA, TFR, ECSPR, AMLR, Iwt, ...), in force on $on or later, the sectors it applies to and whether the link comes from the authority inventory or was added by Casefold.",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Sector register. The legislation: per law (Wwft, Sanctiewet 1977, Rtsw, Wft, Wtt 2018, Wok, AVG/UAVG, Handelsregisterwet, MiCA, TFR, ECSPR, AMLR, Iwt, ...), in force on $on or later, the sectors it applies to and whether the link comes from the authority inventory or was added by Casefold.\nMATCH (l:Law)<-[r:SUBJECT_TO]-(s:Sector)\nRETURN l.short AS law, l.title AS title, coalesce(l.kind, '') AS kind,\n       CASE WHEN l.valid_from IS NULL OR l.valid_from <= $on THEN 'in force' ELSE 'from ' + l.valid_from END AS status,\n       count(DISTINCT s) AS sectors, collect(DISTINCT r.source) AS source, collect(DISTINCT s.local)[0..6] AS example_sectors\nORDER BY sectors DESC, law\n"
+ },
+ {
+  "id": "r05",
+  "scope": "register",
+  "title": "Sector register. Sector-specific supervision depends on whether the service needs a licence: per sector the licence (or registration, notification, appointment, admission), who grants it, and whether that is the same body as the AML supervisor.",
+  "params": [],
+  "cypher": "// Sector register. Sector-specific supervision depends on whether the service needs a licence: per sector the licence (or registration, notification, appointment, admission), who grants it, and whether that is the same body as the AML supervisor.\nMATCH (s:Sector)-[:REQUIRES_LICENCE]->(x:Licence)\nOPTIONAL MATCH (x)-[:GRANTED_BY]->(g:Regulator)\nOPTIONAL MATCH (a:Regulator)-[:SUPERVISES {aml:true}]->(s)\nOPTIONAL MATCH (s)-[:IN_CATEGORY]->(c:SectorCategory)\nRETURN c.name_nl AS category, s.local AS sector, x.kind AS kind, x.name AS licence, x.basis AS basis, g.short AS granted_by, a.short AS aml_supervisor,\n       CASE WHEN x.kind = 'none' THEN 'AML supervision only' WHEN g.id = a.id THEN 'one body: licence and AML' ELSE 'two bodies' END AS supervision, x.verify AS to_verify, c.order AS cat_order\nORDER BY cat_order, sector\n"
+ },
+ {
+  "id": "r06",
+  "scope": "register",
+  "title": "Sector register. Business typologies of clients: activity code (SBI 2008 / NACE rev. 2) and the risk factors from Annex II (lower risk) and Annex III (higher risk) of the fourth AML directive, and the risk band that follows (higher, lower or standard).",
+  "params": [],
+  "cypher": "// Sector register. Business typologies of clients: activity code (SBI 2008 / NACE rev. 2) and the risk factors from Annex II (lower risk) and Annex III (higher risk) of the fourth AML directive, and the risk band that follows (higher, lower or standard).\nMATCH (t:BusinessType)\nOPTIONAL MATCH (t)-[:HAS_RISK_FACTOR]->(r:RiskFactor)\nWITH t, collect(r) AS fs\nRETURN t.name_nl AS business_type, t.sbi AS sbi, [f IN fs | f.id + ': ' + f.text] AS risk_factors,\n       CASE WHEN any(f IN fs WHERE f.annex = 'III') THEN 'higher: enhanced CDD' WHEN size(fs) > 0 THEN 'lower: simplified CDD possible' ELSE 'standard' END AS risk_band\nORDER BY risk_band, business_type\n"
+ },
+ {
+  "id": "x01",
+  "scope": "explore",
+  "title": "Which sectors are there, per category, and are they obliged today?",
+  "params": [],
+  "cypher": "// Which sectors are there, per category, and are they obliged today?\n// from: - | yields: Sector\nMATCH (s:Sector)-[:IN_CATEGORY]->(c:SectorCategory)\nRETURN 'Sector' AS _type, s.id AS _id, c.name_nl AS category, s.local AS sector,\n       CASE WHEN s.status = 'no_aml' THEN 'supervised, not an obliged entity' WHEN s.obliged_from IS NULL THEN 'obliged (Wwft)' ELSE 'obliged from ' + s.obliged_from END AS status, c.order AS cat_order\nORDER BY cat_order, sector\n",
+  "from": "-",
+  "yields": "Sector"
+ },
+ {
+  "id": "x02",
+  "scope": "explore",
+  "title": "Which authorities are there, and in how many sectors are they the AML supervisor or have another role?",
+  "params": [],
+  "cypher": "// Which authorities are there, and in how many sectors are they the AML supervisor or have another role?\n// from: - | yields: Regulator\nMATCH (g:Regulator)-[v:SUPERVISES]->(s:Sector)\nRETURN 'Regulator' AS _type, g.id AS _id, g.short AS authority, g.name AS name, count(DISTINCT CASE WHEN v.aml THEN s END) AS sectors_as_aml_supervisor, count(DISTINCT CASE WHEN NOT v.aml THEN s END) AS sectors_other_role\nORDER BY sectors_as_aml_supervisor DESC, sectors_other_role DESC, authority\n",
+  "from": "-",
+  "yields": "Regulator"
+ },
+ {
+  "id": "x03",
+  "scope": "explore",
+  "title": "Which legislation is there, and to how many sectors does it apply?",
+  "params": [
+   "on"
+  ],
+  "cypher": "// Which legislation is there, and to how many sectors does it apply?\n// from: - | yields: Law\nMATCH (l:Law)<-[:SUBJECT_TO]-(s:Sector)\nRETURN 'Law' AS _type, l.id AS _id, l.short AS law, l.title AS title, CASE WHEN l.valid_from IS NULL OR l.valid_from <= $on THEN 'in force' ELSE 'from ' + l.valid_from END AS status, count(DISTINCT s) AS sectors\nORDER BY sectors DESC, law\n",
+  "from": "-",
+  "yields": "Law"
+ },
+ {
+  "id": "x10",
+  "scope": "explore",
+  "title": "Who supervises this sector, in which role, and on what legal basis?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Who supervises this sector, in which role, and on what legal basis?\n// from: Sector | yields: Regulator\nMATCH (g:Regulator)-[v:SUPERVISES]->(s:Sector {id:$id})\nRETURN 'Regulator' AS _type, g.id AS _id, g.short AS authority, CASE WHEN v.aml THEN 'AML supervisor' ELSE replace(coalesce(v.role, ''), '_', ' ') END AS role, g.basis AS legal_basis, CASE WHEN g.basis_verify THEN 'to verify' ELSE 'checked' END AS basis_status\nORDER BY CASE WHEN v.aml THEN 0 ELSE 1 END, authority\n",
+  "from": "Sector",
+  "yields": "Regulator"
+ },
+ {
+  "id": "x11",
+  "scope": "explore",
+  "title": "Which legislation applies to this sector?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// Which legislation applies to this sector?\n// from: Sector | yields: Law\nMATCH (s:Sector {id:$id})-[r:SUBJECT_TO]->(l:Law)\nRETURN 'Law' AS _type, l.id AS _id, l.short AS law, l.title AS title, CASE WHEN l.valid_from IS NULL OR l.valid_from <= $on THEN 'in force' ELSE 'from ' + l.valid_from END AS status, r.source AS link_from\nORDER BY law\n",
+  "from": "Sector",
+  "yields": "Law"
+ },
+ {
+  "id": "x12",
+  "scope": "explore",
+  "title": "Does this sector need a licence, which one, and who grants it?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Does this sector need a licence, which one, and who grants it?\n// from: Sector | yields: Regulator\nMATCH (s:Sector {id:$id})-[:REQUIRES_LICENCE]->(x:Licence)\nOPTIONAL MATCH (x)-[:GRANTED_BY]->(g:Regulator)\nRETURN 'Regulator' AS _type, g.id AS _id, x.kind AS kind, x.name AS licence, x.basis AS basis, g.short AS granted_by, CASE WHEN x.verify THEN 'to verify' ELSE 'checked' END AS basis_status\n",
+  "from": "Sector",
+  "yields": "Regulator"
+ },
+ {
+  "id": "x13",
+  "scope": "explore",
+  "title": "Which duties does the office itself have in this sector on $on (organisation: risk assessment, training, sanctions procedure)?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// Which duties does the office itself have in this sector on $on (organisation: risk assessment, training, sanctions procedure)?\n// from: Sector | yields: SectorDuty\nMATCH (s:Sector {id:$id})-[:HAS_DUTY]->(d:SectorDuty {level:'office'}) WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nOPTIONAL MATCH (d)-[:DEFINED_IN]->(a:Article) WHERE (a.valid_from IS NULL OR a.valid_from <= $on) AND (a.valid_to IS NULL OR a.valid_to >= $on)\nRETURN 'SectorDuty' AS _type, d.id AS _id, d.level AS level, d.title AS duty, coalesce(d.authority, 'supervisor') AS towards, collect(a.ref)[0] AS basis\nORDER BY level DESC, duty\n",
+  "from": "Sector",
+  "yields": "SectorDuty"
+ },
+ {
+  "id": "x14",
+  "scope": "explore",
+  "title": "Which other sectors are in the same category, and who is their AML supervisor?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Which other sectors are in the same category, and who is their AML supervisor?\n// from: Sector | yields: Sector\nMATCH (s:Sector {id:$id})-[:IN_CATEGORY]->(c:SectorCategory)<-[:IN_CATEGORY]-(o:Sector) WHERE o <> s\nOPTIONAL MATCH (g:Regulator)-[:SUPERVISES {aml:true}]->(o)\nRETURN 'Sector' AS _type, o.id AS _id, c.name_nl AS category, o.local AS sector, g.short AS aml_supervisor\nORDER BY sector\n",
+  "from": "Sector",
+  "yields": "Sector"
+ },
+ {
+  "id": "x15",
+  "scope": "explore",
+  "title": "Which KYC duties does the office have per client in this sector on $on (CDD, reporting, screening, record keeping)?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// Which KYC duties does the office have per client in this sector on $on (CDD, reporting, screening, record keeping)?\n// from: Sector | yields: SectorDuty\nMATCH (s:Sector {id:$id})-[:HAS_DUTY]->(d:SectorDuty {level:'client'}) WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nOPTIONAL MATCH (d)-[:DEFINED_IN]->(a:Article) WHERE (a.valid_from IS NULL OR a.valid_from <= $on) AND (a.valid_to IS NULL OR a.valid_to >= $on)\nRETURN 'SectorDuty' AS _type, d.id AS _id, d.level AS level, d.title AS duty, coalesce(d.authority, 'supervisor') AS towards, collect(a.ref)[0] AS basis\nORDER BY level DESC, duty\n",
+  "from": "Sector",
+  "yields": "SectorDuty"
+ },
+ {
+  "id": "x20",
+  "scope": "explore",
+  "title": "Which sectors does this authority supervise, and in which role?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Which sectors does this authority supervise, and in which role?\n// from: Regulator | yields: Sector\nMATCH (g:Regulator {id:$id})-[v:SUPERVISES]->(s:Sector)-[:IN_CATEGORY]->(c:SectorCategory)\nRETURN 'Sector' AS _type, s.id AS _id, c.name_nl AS category, s.local AS sector, CASE WHEN v.aml THEN 'AML supervisor' ELSE replace(coalesce(v.role, ''), '_', ' ') END AS role, c.order AS cat_order\nORDER BY cat_order, sector\n",
+  "from": "Regulator",
+  "yields": "Sector"
+ },
+ {
+  "id": "x21",
+  "scope": "explore",
+  "title": "On what legal basis does this authority act, and where does that come from?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// On what legal basis does this authority act, and where does that come from?\n// from: Regulator | yields: -\nMATCH (g:Regulator {id:$id})\nRETURN g.short AS authority, g.name AS name, g.basis AS legal_basis, g.basis_url AS source, g.basis_source AS taken_from, CASE WHEN g.basis_verify THEN 'to verify' ELSE 'checked' END AS basis_status\n",
+  "from": "Regulator",
+  "yields": "-"
+ },
+ {
+  "id": "x22",
+  "scope": "explore",
+  "title": "Which duties answer to this authority (as AML supervisor of the sector, or directly, like FIU-Nederland or the AP)?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// Which duties answer to this authority (as AML supervisor of the sector, or directly, like FIU-Nederland or the AP)?\n// from: Regulator | yields: SectorDuty\nMATCH (g:Regulator {id:$id})-[v:SUPERVISES]->(s:Sector)-[:HAS_DUTY]->(d:SectorDuty)\nWHERE (v.aml AND coalesce(d.authority, 'supervisor') = 'supervisor') OR d.authority = g.short\nWITH * WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nRETURN 'SectorDuty' AS _type, d.id AS _id, d.level AS level, d.title AS duty, count(DISTINCT s) AS sectors\nORDER BY sectors DESC, duty\n",
+  "from": "Regulator",
+  "yields": "SectorDuty"
+ },
+ {
+  "id": "x23",
+  "scope": "explore",
+  "title": "Which licences does this authority grant, and for which sectors?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Which licences does this authority grant, and for which sectors?\n// from: Regulator | yields: Sector\nMATCH (s:Sector)-[:REQUIRES_LICENCE]->(x:Licence)-[:GRANTED_BY]->(g:Regulator {id:$id})\nRETURN 'Sector' AS _type, s.id AS _id, s.local AS sector, x.kind AS kind, x.name AS licence, x.basis AS basis\nORDER BY sector\n",
+  "from": "Regulator",
+  "yields": "Sector"
+ },
+ {
+  "id": "x30",
+  "scope": "explore",
+  "title": "Which sectors are subject to this law?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Which sectors are subject to this law?\n// from: Law | yields: Sector\nMATCH (l:Law {id:$id})<-[r:SUBJECT_TO]-(s:Sector)-[:IN_CATEGORY]->(c:SectorCategory)\nOPTIONAL MATCH (g:Regulator)-[:SUPERVISES {aml:true}]->(s)\nRETURN 'Sector' AS _type, s.id AS _id, c.name_nl AS category, s.local AS sector, g.short AS aml_supervisor, r.source AS link_from, c.order AS cat_order\nORDER BY cat_order, sector\n",
+  "from": "Law",
+  "yields": "Sector"
+ },
+ {
+  "id": "x31",
+  "scope": "explore",
+  "title": "Which duties rest on this law, and with which passage?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// Which duties rest on this law, and with which passage?\n// from: Law | yields: SectorDuty\nMATCH (l:Law {id:$id})<-[:PART_OF]-(a:Article)<-[:DEFINED_IN]-(d:SectorDuty)\nOPTIONAL MATCH (s:Sector)-[:HAS_DUTY]->(d)\nWITH * WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nRETURN 'SectorDuty' AS _type, d.id AS _id, a.ref AS article, d.title AS duty, count(DISTINCT s) AS sectors, CASE WHEN a.verify THEN 'to verify' ELSE 'checked' END AS text_status\nORDER BY sectors DESC, duty\n",
+  "from": "Law",
+  "yields": "SectorDuty"
+ },
+ {
+  "id": "x32",
+  "scope": "explore",
+  "title": "Which articles of this law are in the register, in Dutch and in English?",
+  "params": [
+   "id"
+  ],
+  "cypher": "// Which articles of this law are in the register, in Dutch and in English?\n// from: Law | yields: SectorDuty\nMATCH (a:Article)-[:PART_OF]->(l:Law {id:$id}) OPTIONAL MATCH (d:SectorDuty)-[:DEFINED_IN]->(a)\nRETURN 'SectorDuty' AS _type, d.id AS _id, a.ref AS article, d.title AS duty, a.text_local AS text_dutch, a.text_en AS text_english,\n       CASE WHEN a.basis_kind = 'summary' THEN 'summary' WHEN a.verify THEN 'law text, to verify' ELSE 'law text, checked' END AS text_status\nORDER BY article\n",
+  "from": "Law",
+  "yields": "SectorDuty"
+ },
+ {
+  "id": "x40",
+  "scope": "explore",
+  "title": "What does the law say for this duty, per legal regime: the article in Dutch and in English, from when to when, and what replaces it?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// What does the law say for this duty, per legal regime: the article in Dutch and in English, from when to when, and what replaces it?\n// from: SectorDuty | yields: -\nMATCH (d:SectorDuty {id:$id})-[:DEFINED_IN]->(a:Article)-[:PART_OF]->(l:Law)\nOPTIONAL MATCH (a)-[:REPLACED_BY]->(n:Article)\nRETURN d.title AS duty, l.short AS law, a.ref AS article, coalesce(a.valid_from, '') + ' – ' + coalesce(a.valid_to, '') AS valid,\n       CASE WHEN (a.valid_from IS NULL OR a.valid_from <= $on) AND (a.valid_to IS NULL OR a.valid_to >= $on) THEN 'applies on ' + $on ELSE '' END AS today,\n       n.ref AS replaced_by, a.text_local AS text_dutch, a.text_en AS text_english,\n       CASE a.en_type WHEN 'summary' THEN 'summary, not the law text' ELSE a.en_type END AS english_version,\n       CASE a.basis_kind WHEN 'summary' THEN 'summary' WHEN 'pending' THEN 'not read in yet' ELSE CASE WHEN a.verify THEN 'law text, to verify' ELSE 'law text, checked' END END AS text_status, a.read_in AS read_in, a.source_url AS source\nORDER BY coalesce(a.valid_from, '0000')\n",
+  "from": "SectorDuty",
+  "yields": "-"
+ },
+ {
+  "id": "x41",
+  "scope": "explore",
+  "title": "Which sectors have this duty?",
+  "params": [
+   "id",
+   "on"
+  ],
+  "cypher": "// Which sectors have this duty?\n// from: SectorDuty | yields: Sector\nMATCH (d:SectorDuty {id:$id})<-[:HAS_DUTY]-(s:Sector)-[:IN_CATEGORY]->(c:SectorCategory)\nWITH * WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)\nRETURN 'Sector' AS _type, s.id AS _id, c.name_nl AS category, s.local AS sector, c.order AS cat_order\nORDER BY cat_order, sector\n",
+  "from": "SectorDuty",
+  "yields": "Sector"
+ },
+ {
+  "id": "l01",
+  "scope": "law",
+  "title": "Law file. Every article of this law with its heading and the number of paragraphs and points, in the order of the law.",
+  "params": [],
+  "cypher": "// Law file. Every article of this law with its heading and the number of paragraphs and points, in the order of the law.\nMATCH (v:LawVersion)-[:HAS_ARTICLE]->(a:LawArticle)\nOPTIONAL MATCH (a)-[:HAS_PARAGRAPH]->(p:LawParagraph)\nOPTIONAL MATCH (p)-[:HAS_POINT]->(q:LawPoint)\nRETURN a.number AS article, a.heading AS heading, count(DISTINCT p) AS paragraphs, count(DISTINCT q) AS points, left(a.text, 160) AS text, a.seq AS seq\nORDER BY seq\n"
+ },
+ {
+  "id": "l02",
+  "scope": "law",
+  "title": "Law file. One article ($article, e.g. 16 or 3), paragraph by paragraph, with its points: the verbatim text as read in.",
+  "params": [
+   "article"
+  ],
+  "cypher": "// Law file. One article ($article, e.g. 16 or 3), paragraph by paragraph, with its points: the verbatim text as read in.\nMATCH (a:LawArticle {number:$article})\nOPTIONAL MATCH (a)-[:HAS_PARAGRAPH]->(p:LawParagraph)\nOPTIONAL MATCH (p)-[:HAS_POINT]->(q:LawPoint)\nWITH a, p, collect(q.label + '. ' + q.text) AS points\nRETURN a.number AS article, a.heading AS heading, p.number AS paragraph, coalesce(p.text, a.text) AS text, points, p.seq AS seq\nORDER BY seq\n"
+ },
+ {
+  "id": "l03",
+  "scope": "law",
+  "title": "Law file. Search the articles of this law for a word ($term, e.g. melding or suspicion), full text.",
+  "params": [
+   "term"
+  ],
+  "cypher": "// Law file. Search the articles of this law for a word ($term, e.g. melding or suspicion), full text.\nCALL db.index.fulltext.queryNodes('law_text', $term) YIELD node, score\nRETURN node.number AS article, node.heading AS heading, round(score, 2) AS score, left(node.text, 200) AS text\nORDER BY score DESC LIMIT 15\n"
+ },
+ {
+  "id": "l04",
+  "scope": "law",
+  "title": "Law file. Where this text comes from: the law, its version, the source file, its sha256 and how it was read (BWB XML, pdftotext or tesseract).",
+  "params": [],
+  "cypher": "// Law file. Where this text comes from: the law, its version, the source file, its sha256 and how it was read (BWB XML, pdftotext or tesseract).\nMATCH (v:LawVersion) RETURN v.law AS law, v.title AS title, v.version AS version, v.lang AS lang, v.valid_from AS valid_from, v.valid_to AS valid_to, v.source_file AS source_file, v.sha256 AS sha256, v.method AS method, v.ocr_confidence AS ocr_confidence, v.articles AS articles, v.url AS url\n"
+ }
+]

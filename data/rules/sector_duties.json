@@ -1,0 +1,1111 @@
+{
+ "note": "Duties per supervised sector in the Netherlands, besides identifying the UBO. level: office (the institution itself) or client (per client). kind: always; periodic (office); threshold (CDD from an amount); indicator (objective FIU indicator: report); prohibition; scope (the Wwft applies from an amount); scope_limit; service_scope; screening (sanctions hit). sectors: prefixes of the sector slugs in data/sectors.json; \"*\" is every sector. Every duty carries the passage it rests on; verify=true means not yet checked against the consolidated official text. authority: who the duty answers to: the AML supervisor of the sector (\"supervisor\"), FIU-Nederland or the Autoriteit Persoonsgegevens (AP). independent=true: the duty applies whether or not the Wwft applies to the sector (the AVG applies to everyone).",
+ "read_on": "2026-11-13",
+ "laws": [
+  {
+   "id": "NL:rtsw",
+   "short": "Rtsw",
+   "title": "Regeling toezicht Sanctiewet 1977",
+   "url": "https://wetten.overheid.nl/BWBR0018806"
+  },
+  {
+   "id": "NL:tfr",
+   "short": "TFR",
+   "title": "Verordening (EU) 2023/1113 (overdracht van geldmiddelen en cryptoactiva)",
+   "url": "https://eur-lex.europa.eu/eli/reg/2023/1113/oj"
+  },
+  {
+   "id": "NL:sw1977",
+   "short": "Sw 1977",
+   "title": "Sanctiewet 1977",
+   "url": "https://wetten.overheid.nl/BWBR0003296"
+  },
+  {
+   "id": "EU:2014/269",
+   "short": "Verordening 269/2014",
+   "title": "Verordening (EU) nr. 269/2014 (beperkende maatregelen Oekraïne)",
+   "url": "https://eur-lex.europa.eu/eli/reg/2014/269/oj"
+  },
+  {
+   "id": "EU:amlr",
+   "short": "AMLR",
+   "title": "Verordening (EU) 2024/1624 (AMLR)",
+   "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj"
+  },
+  {
+   "id": "NL:iwt",
+   "short": "Iwt",
+   "title": "Implementatiewet ter voorkoming van witwassen en terrorismefinanciering (wetsvoorstel)",
+   "url": "https://internetconsultatie.nl/implementatiewettervoorkomingvanwitwassenenterrorismefinanciering"
+  }
+ ],
+ "sector_scope": {},
+ "duties": [
+  {
+   "id": "NL:duty:risk-assessment",
+   "title": "Assess and record the office's own money-laundering and terrorist-financing risks",
+   "level": "office",
+   "kind": "periodic",
+   "sectors": [
+    "*"
+   ],
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 2b lid 1",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling neemt maatregelen om haar risico’s op witwassen en financieren van terrorisme vast te stellen en te beoordelen, waarbij de maatregelen in verhouding staan tot de aard en de omvang van de instelling.",
+     "text_en": "Art. 2b(1): An institution takes measures to identify and assess its risks of money laundering and terrorist financing, the measures being proportionate to the nature and size of the institution. Art. 3(7): An institution demonstrably adapts its customer due diligence to the sensitivity to money laundering or terrorist financing risk of the type of client, business relationship, product or transaction. Art. 3(8): In determining the risk sensitivity referred to in paragraph 7, an institution takes into account at least the risk variables listed in Annex I to the fourth anti-money laundering directive.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "2b",
+     "lid": "1"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 10(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "Meldingsplichtige entiteiten nemen passende maatregelen, die evenredig zijn met hun omvang en de aard van hun bedrijfsactiviteiten, met inbegrip van de risico’s en de complexiteit ervan, om de risico’s van witwassen en terrorismefinanciering waaraan zij worden blootgesteld, alsmede de risico’s van niet-uitvoering en ontduiking van gerichte financiële sancties te inventariseren en houden daarbij ten minste rekening met: a. de in bijlage I vermelde risicovariabelen en de in de bijlagen II en III vermelde risicofactoren; b. de bevindingen van de op grond van artikel 7 van Richtlijn (EU) 2024/1640 door de Commissie uitgevoerde risicobeoordeling op Unieniveau; c. de resultaten van de op grond van artikel 8 van Richtlijn (EU) 2024/1640 door de lidstaten uitgevoerde nationale risicobeoordelingen, en van alle door de lidstaten uitgevoerde sectorspecifieke risicobeoordelingen; d. relevante informatie die is gepubliceerd door internationale opstellers van standaarden op het gebied van AML/CFT of, op Unieniveau relevante publicaties van de Commissie of de AMLA; e. door de bevoegde autoriteiten verstrekte informatie over risico’s op witwassen en terrorismefinanciering; f. informatie over het cliëntenbestand. Voorafgaand aan de lancering van nieuwe producten, diensten of zakelijke praktijken, met inbegrip van het gebruik van nieuwe leveringskanalen en nieuwe of in ontwikkeling zijnde technologieën, in combinatie met nieuwe of reeds bestaande producten en diensten of voordat een bestaande dienst of een bestaand product aan een nieuw cliëntensegment of in een nieuw geografisch gebied wordt aangeboden, inventariseren en beoordelen de meldingsplichtige entiteiten met name de daarmee verband houdende risico’s op het gebied van witwassen en terrorismefinanciering en nemen zij passende maatregelen om die risico’s te beheren en te beperken.",
+     "text_en": "Obliged entities shall take appropriate measures, proportionate to the nature of their business, including its risks and complexity, and their size, to identify and assess the risks of money laundering and terrorist financing to which they are exposed, as well as the risks of non-implementation and evasion of targeted financial sanctions, taking into account at least: a. the risk variables set out in Annex I and the risk factors set out in Annexes II and III; b. the findings of the risk assessment at Union level conducted by the Commission pursuant to Article 7 of Directive (EU) 2024/1640; c. the findings of the national risk assessments carried out by the Member States pursuant to Article 8 of Directive (EU) 2024/1640, as well as of any relevant sector-specific risk assessment carried out by the Member States; d. relevant information published by international standard setters in the AML/CFT area or, at the level of the Union, relevant publications by the Commission or by AMLA; e. information on money laundering and terrorist financing risks provided by competent authorities; f. information on the customer base. Prior to the launch of new products, services or business practices, including the use of new delivery channels and new or developing technologies, in conjunction with new or pre-existing products and services or before starting to provide an existing service or product to a new customer segment or in a new geographical area, obliged entities shall identify and assess, in particular, the related money laundering and terrorist financing risks and take appropriate measures to manage and mitigate those risks.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Bedrijfsbrede risicobeoordeling",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "10",
+     "lid": "1"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 2b lid 1; art. 3 lid 7 en 8",
+     "text": "Art. 2b lid 1: Een instelling neemt maatregelen om haar risico’s op witwassen en financieren van terrorisme vast te stellen en te beoordelen, waarbij de maatregelen in verhouding staan tot de aard en de omvang van de instelling. Art. 3 lid 7: Een instelling stemt het cliëntenonderzoek aantoonbaar af op de risicogevoeligheid voor witwassen of financiering van terrorisme van het type cliënt, zakelijke relatie, product of transactie. Art. 3 lid 8: Een instelling houdt bij het bepalen van de risicogevoeligheid, bedoeld in het zevende lid, tenminste rekening met de in bijlage I bij de vierde anti-witwasrichtlijn genoemde risicovariabelen.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01/0",
+     "verify": false,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "Art. 2b(1): An institution takes measures to identify and assess its risks of money laundering and terrorist financing, the measures being proportionate to the nature and size of the institution. Art. 3(7): An institution demonstrably adapts its customer due diligence to the sensitivity to money laundering or terrorist financing risk of the type of client, business relationship, product or transaction. Art. 3(8): In determining the risk sensitivity referred to in paragraph 7, an institution takes into account at least the risk variables listed in Annex I to the fourth anti-money laundering directive.",
+     "en_type": "unofficial translation (Casefold)"
+    }
+   ],
+   "search": "risicoanalyse risicobeoordeling risico vaststellen"
+  },
+  {
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "*"
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "id": "NL:duty:cdd",
+   "title": "Customer due diligence: identify and verify the client and the UBO, establish the purpose and nature of the relationship",
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 3 lid 2",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Het cliëntenonderzoek stelt de instelling in staat om: a. de cliënt te identificeren en diens identiteit te verifiëren; b. de uiteindelijk belanghebbende van de cliënt te identificeren en redelijke maatregelen te nemen om zijn identiteit te verifiëren, indien de cliënt een rechtspersoon is, redelijke maatregelen te nemen om inzicht te verwerven in de eigendoms- en zeggenschapsstructuur van de cliënt, en indien de uiteindelijk belanghebbende lid is van het hoger leidinggevend personeel, noodzakelijke redelijke maatregelen te nemen om de identiteit te verifiëren van de natuurlijke persoon die lid is van het hoger leidinggevend personeel, waarbij de genomen maatregelen en de ondervonden moeilijkheden tijdens het verificatieproces worden vastgelegd; c. het doel en de beoogde aard van de zakelijke relatie vast te stellen; d. een voortdurende controle op de zakelijke relatie en de tijdens de duur van deze relatie verrichte transacties uit te oefenen, teneinde te verzekeren dat deze overeenkomen met de kennis die de instelling heeft van de cliënt en diens risicoprofiel, met zo nodig een onderzoek naar de bron van de middelen die bij de zakelijke relatie of de transactie gebruikt worden; e. vast te stellen of de natuurlijke persoon die de cliënt vertegenwoordigt daartoe bevoegd is en in voorkomend geval de natuurlijke persoon te identificeren en diens identiteit te verifiëren; f. redelijke maatregelen te nemen om te verifiëren of de cliënt ten behoeve van zichzelf optreedt dan wel ten behoeve van een derde.",
+     "text_en": "Customer due diligence enables the institution to: a. identify the client and verify its identity; b. identify the beneficial owner of the client and take reasonable measures to verify his identity; where the client is a legal person, take reasonable measures to understand the ownership and control structure of the client; and where the beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natural person who is a member of the senior managing officials, recording the measures taken and the difficulties encountered during the verification process; c. establish the purpose and intended nature of the business relationship; d. exercise ongoing monitoring of the business relationship and of the transactions carried out during that relationship, to ensure that these correspond to the institution's knowledge of the client and its risk profile, with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction; e. establish whether the natural person representing the client is authorised to do so and, where applicable, identify that natural person and verify his identity; f. take reasonable measures to verify whether the client is acting on its own behalf or on behalf of a third party.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "3",
+     "lid": "2"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 20(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "Met het oog op het verrichten van een cliëntenonderzoek passen de meldingsplichtige entiteiten alle volgende maatregelen toe: a. de cliënt identificeren en zijn identiteit verifiëren; b. de uiteindelijk begunstigden identificeren en redelijke maatregelen nemen om hun identiteit te verifiëren, zodat de meldingsplichtige entiteit ervan overtuigd is dat zij weet wie de uiteindelijk begunstigde is en dat zij inzicht heeft in de eigendoms- en zeggenschapsstructuur van de cliënt; c. informatie over het doel en de beoogde aard van de zakelijke relatie of de occasionele transacties beoordelen en, in voorkomend geval, verkrijgen, en dat doel en die aard begrijpen; d. nagaan of de cliënt of de uiteindelijk begunstigden onderworpen zijn aan gerichte financiële sancties en, in het geval van een cliënt of partij bij een juridische constructie die een juridische entiteit is, of natuurlijke of rechtspersonen die onderworpen zijn aan gerichte financiële sancties zeggenschap hebben over de juridische entiteit of meer dan 50 % van de eigendomsrechten van die juridische entiteit bezitten of een meerderheidsbelang erin hebben, zij het individueel of collectief; e. informatie over de aard van de activiteit van de cliënt, met inbegrip van, in het geval van ondernemingen, of zij activiteiten verrichten, of van hun arbeid of beroep, beoordelen en, in voorkomend geval, verkrijgen; f. de zakelijke relatie doorlopend monitoren, met inbegrip van een nauwlettende controle van tijdens de gehele duur van de zakelijke relatie verrichte transacties, om ervoor te zorgen dat de transacties stroken met de kennis van de meldingsplichtige entiteit over de cliënt en diens bedrijfsactiviteit en risicoprofiel, indien noodzakelijk ook inzake de oorsprong van de geldmiddelen; g. bepalen of de cliënt, de uiteindelijk begunstigde of de cliënt en, in voorkomend geval, de persoon namens wie of ten behoeve van wie een transactie of activiteit wordt verricht, een politiek prominente persoon, een familielid of een als naaste geassocieerde bekende persoon van die politiek prominente persoon is; h. indien een transactie of activiteit wordt verricht namens of ten behoeve van andere natuurlijke personen dan de cliënt, die natuurlijke personen identificeren en hun identiteit verifiëren; i. nagaan of eenieder die beweert namens de cliënt te handelen daar ook toe gemachtigd is en die persoon identificeren en zijn identiteit verifiëren. PB L van 19.6.2024",
+     "text_en": "For the purpose of conducting customer due diligence, obliged entities shall apply all of the following measures: a. identifying the customer and verifying the customer’s identity; b. identifying the beneficial owners and taking reasonable measures to verify their identity so that the obliged entity is satisfied that it knows who the beneficial owner is and that it understands the ownership and control structure of the customer; c. assessing and, as appropriate, obtaining information on and understanding the purpose and intended nature of the business relationship or the occasional transactions; d. verifying whether the customer or the beneficial owners are subject to targeted financial sanctions, and, in the case of a customer or party to a legal arrangement who is a legal entity, whether natural or legal persons subject to targeted financial sanctions control the legal entity or have more than 50 % of the proprietary rights of that legal entity or majority interest in it, whether individually or collectively; e. assessing and, as appropriate, obtaining information on the nature of the customers’ business, including, in the case of undertakings, whether they carry out activities, or of their employment or occupation; f. conducting ongoing monitoring of the business relationship including scrutiny of transactions undertaken throughout the course of the business relationship to ensure that the transactions being conducted are consistent with the obliged entity’s knowledge of the customer, the business and risk profile, including where necessary the source of funds; g. determining whether the customer, the beneficial owner of the customer and, where relevant, the person on whose behalf or for the benefit of whom a transaction or activity is being carried out is a politically exposed person, a family member or person known to be a close associate; h. where a transaction or activity is being conducted on behalf of or for the benefit of natural persons other than the customer, identifying and verifying the identity of those natural persons; i. verifying that any person purporting to act on behalf of the customer is so authorised and identify and verify their identity. OJ L, 19.6.2024",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Cliëntenonderzoeksmaatregelen",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "20",
+     "lid": "1"
+    }
+   ],
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 3 lid 2",
+     "kind": "law",
+     "text": "",
+     "verify": true,
+     "url": "https://wetten.overheid.nl/BWBR0024282"
+    }
+   ],
+   "search": "cliëntenonderzoek identificatie verificatie uiteindelijk belanghebbende UBO doel aard relatie"
+  },
+  {
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "*"
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "id": "NL:duty:ongoing-monitoring",
+   "title": "Ongoing monitoring of the business relationship and its transactions, against the client's risk profile",
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 3 lid 2 onder d",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Het cliëntenonderzoek stelt de instelling in staat om: d. een voortdurende controle op de zakelijke relatie en de tijdens de duur van deze relatie verrichte transacties uit te oefenen, teneinde te verzekeren dat deze overeenkomen met de kennis die de instelling heeft van de cliënt en diens risicoprofiel, met zo nodig een onderzoek naar de bron van de middelen die bij de zakelijke relatie of de transactie gebruikt worden;",
+     "text_en": "Customer due diligence enables the institution to: d. exercise ongoing monitoring of the business relationship and of the transactions carried out during that relationship, to ensure that these correspond to the institution's knowledge of the client and its risk profile, with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction;",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "3",
+     "lid": "2"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 26(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "De meldingsplichtige entiteiten verrichten een doorlopende monitoring van zakelijke relaties, met inbegrip van de tijdens de gehele duur van een zakelijke relatie door de cliënt verrichte transacties, met als doel ervoor te zorgen dat die transacties stroken met de kennis van de meldingsplichtige entiteit over de cliënt en diens bedrijfsactiviteit en risicoprofiel, en indien nodig, met de informatie over de oorsprong en bestemming van de geldmiddelen, en met als doel de transacties op te sporen die op grond van artikel 69, lid 2, grondiger zullen worden beoordeeld. Indien zakelijke relaties betrekking hebben op meer dan één product of dienst, zorgen de meldingsplichtige entiteiten ervoor dat de cliëntenonderzoeksmaatregelen al die producten en diensten dekken. Indien de tot een groep behorende meldingsplichtige entiteiten zakelijke relaties onderhouden met cliënten die ook cliënt zijn van andere entiteiten binnen die groep, ongeacht of het gaat om meldingsplichtige entiteiten of ondernemingen die niet aan AML/CFT-vereisten onderworpen zijn, houden zij bij het monitoren van de zakelijke relatie met hun cliënten rekening met informatie over die andere zakelijke relaties.",
+     "text_en": "Obliged entities shall conduct ongoing monitoring of business relationships, including transactions undertaken by the customer throughout the course of a business relationship, to ensure that those transactions are consistent with the obliged entity’s knowledge of the customer, the customer’s business activity and risk profile, and where necessary, with the information about the origin and destination of the funds and to detect those transactions that shall be made subject to a more thorough assessment pursuant to Article 69(2). Where business relationships cover more than one product or service, obliged entities shall ensure that the customer due diligence measures cover all those products and services. Where obliged entities belonging to a group have business relationships with customers that are also the customers of other entities within that group, whether obliged entities or undertakings not subject to AML/CFT requirements, they shall take into account information relating to those other business relationships for the purposes of monitoring the business relationship with their customers.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Doorlopende monitoring van de zakelijke relatie en monitoring van door cliënten verrichte transacties",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "26",
+     "lid": "1"
+    }
+   ],
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 3 lid 2 onder d",
+     "kind": "law",
+     "text": "",
+     "verify": true,
+     "url": "https://wetten.overheid.nl/BWBR0024282"
+    }
+   ],
+   "search": "monitoring controle transacties risicoprofiel alerts"
+  },
+  {
+   "id": "NL:duty:report-unusual",
+   "title": "Report unusual transactions to FIU-Nederland without delay (objective and subjective indicators)",
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "*"
+   ],
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 16 lid 1",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling meldt een verrichte of voorgenomen ongebruikelijke transactie onverwijld nadat het ongebruikelijke karakter van de transactie bekend is geworden, aan de Financiële inlichtingen eenheid.",
+     "text_en": "An institution reports an executed or intended unusual transaction to the Financial Intelligence Unit without delay after the unusual nature of the transaction has become known.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "16",
+     "lid": "1"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 69(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "De meldingsplichtige entiteiten en, in voorkomend geval, de bestuurders en werknemers van die entiteiten, verlenen hun volledige samenwerking aan de FIE door onverwijld: a. op eigen initiatief melding te doen aan de FIE, indien de meldingsplichtige entiteit weet, vermoedt of redelijkerwijs kan vermoeden dat geldmiddelen of activiteiten, ongeacht het bedrag, opbrengsten van criminele activiteiten zijn of verband houden met terrorismefinanciering of criminele activiteiten, en door in dergelijke gevallen te reageren op verzoeken van de FIE om bijkomende informatie; b. de FIE, op haar verzoek, alle nodige informatie te verstrekken, met inbegrip van informatie over transactiegegevens, binnen de opgelegde termijnen; Alle verdachte transacties, waaronder pogingen daartoe en vermoedens die voortvloeien uit het onvermogen om cliëntenonderzoek te verrichten, worden overeenkomstig de eerste alinea gemeld. Voor de toepassing van de eerste alinea reageren de meldingsplichtige entiteiten binnen vijf werkdagen op een verzoek om informatie van de FIE. In gerechtvaardigde en dringende gevallen kunnen de FIE’s die termijn inkorten, ook tot minder dan 24 uur. In afwijking van de derde alinea kan de FIE de antwoordtermijn verlengen tot meer dan vijf werkdagen indien zij dit gerechtvaardigd acht en mits de verlenging de analyse van de FIE niet ondermijnt.",
+     "text_en": "Obliged entities, and, where applicable, their directors and employees, shall cooperate fully with the FIU by promptly: a. reporting to the FIU, on their own initiative, where the obliged entity knows, suspects or has reasonable grounds to suspect that funds or activities, regardless of the amount involved, are the proceeds of criminal activity or are related to terrorist financing or criminal activity and by responding to requests by the FIU for additional information in such cases; b. providing the FIU, at its request, with all necessary information, including information on transaction records, within the deadlines imposed. All suspicious transactions, including attempted transactions and suspicions arising from the inability to conduct customer due diligence shall be reported in accordance with the first subparagraph. For the purposes of the first subparagraph, obliged entities shall reply to requests for information by the FIU within 5 working days. In justified and urgent cases, FIUs may shorten that deadline, including to less than 24 hours. By way of derogation from the third subparagraph, the FIU may extend the deadline for a response beyond the 5 working days where it considers it justified and provided that the extension does not undermine the FIU’s analysis.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Melding van vermoedens",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "69",
+     "lid": "1"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "FIU-Nederland",
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 16 lid 1",
+     "text": "Een instelling meldt een verrichte of voorgenomen ongebruikelijke transactie onverwijld nadat het ongebruikelijke karakter van de transactie bekend is geworden, aan de Financiële inlichtingen eenheid.",
+     "url": "https://www.viajuridica.nl/informatiesoorten/wetstoelichtingen/meldingsplicht-art-16-wwft",
+     "verify": true,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "An institution reports an executed or intended unusual transaction to the Financial Intelligence Unit without delay after the unusual nature of the transaction has become known.",
+     "en_type": "unofficial translation (Casefold)"
+    }
+   ],
+   "search": "melden ongebruikelijke transactie FIU melding"
+  },
+  {
+   "id": "NL:duty:record-keeping",
+   "title": "Keep the CDD data retrievable for five years after the relationship ends or the transaction",
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "*"
+   ],
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 33 lid 1 en 3",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "1. Een instelling die op grond van deze wet cliëntenonderzoek heeft verricht, of bij wie een cliënt is geïntroduceerd conform de procedure van artikel 5, legt op opvraagbare wijze de documenten en gegevens vast die zijn gebruikt voor de naleving van het bepaalde in artikel 3, tweede tot en met vierde lid, artikel 3a, eerste lid, artikel 6, eerste en tweede lid, artikel 7, tweede lid, en artikel 8, derde, vierde, zesde, zevende en negende lid. 3. Een instelling bewaart de in het eerste en tweede lid bedoelde gegevens op toegankelijke wijze gedurende vijf jaar na het tijdstip van het beëindigen van de zakelijke relatie of gedurende vijf jaar na het uitvoeren van de desbetreffende transactie.",
+     "text_en": "1. An institution that has carried out customer due diligence under this Act, or to which a client has been introduced in accordance with the procedure of Article 5, records in a retrievable manner the documents and data used to comply with Article 3(2) to (4), Article 3a(1), Article 6(1) and (2), Article 7(2), and Article 8(3), (4), (6), (7) and (9). […] 3. An institution keeps the data referred to in paragraphs 1 and 2 accessible for five years after the time of the […]",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "33",
+     "lid": "1"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 77(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "De meldingsplichtige entiteiten bewaren de volgende documenten en informatie: a. een kopie van de documenten en informatie verkregen bij het verrichten van een cliëntenonderzoek op grond van hoofdstuk III, met inbegrip van informatie verkregen via elektronische identificatiemiddelen; b. een register van de op grond van artikel 69, lid 2, uitgevoerde beoordeling, met inbegrip van de in aanmerking genomen informatie en omstandigheden en de resultaten van die beoordeling, ongeacht of die beoordeling al dan niet leidt tot een melding van verdachte transacties bij de FIE, en desgevallend een kopie van de melding over die verdachte transactie; c. de bewijsstukken en registratiegegevens van transacties, zijnde de originele documenten of de kopieën die krachtens het nationale recht dezelfde bewijskracht hebben, die nodig zijn om transacties te identificeren; d. indien zij deelnemen aan partnerschappen voor informatie-uitwisseling overeenkomstig hoofdstuk VI, kopieën van de documenten en informatie die in het kader daarvan zijn verkregen, en registers van alle gevallen van informatie-ui­ twisseling. De meldingsplichtige entiteiten zorgen ervoor dat de op grond van dit artikel bewaarde documenten, informatie en registers niet worden bewerkt.",
+     "text_en": "Obliged entities shall retain the following documents and information: a. a copy of the documents and information obtained in the performance of customer due diligence pursuant to Chapter III, including information obtained through electronic identification means; b. a record of the assessment undertaken pursuant to Article 69(2), including the information and circumstances considered and the results of such assessment, whether or not such assessment results in a suspicious transaction report being made to the FIU, and a copy of the suspicion transaction report, if any; c. the supporting evidence and records of transactions, consisting of the original documents or copies admissible in judicial proceedings under the applicable national law, which are necessary to identify transactions; d. when they participate in partnerships for information sharing pursuant to Chapter VI, copies of the documents and information obtained in the framework of those partnerships, and records of all instances of information sharing. Obliged entities shall ensure that documents, information and records kept pursuant to this Article are not redacted.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Bewaren van informatie",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "77",
+     "lid": "1"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 33 lid 1 en lid 3",
+     "text": "1. Een instelling die op grond van deze wet cliëntenonderzoek heeft verricht, of bij wie een cliënt is geïntroduceerd conform de procedure van artikel 5, legt op opvraagbare wijze de documenten en gegevens vast die zijn gebruikt voor de naleving van het bepaalde in artikel 3, tweede tot en met vierde lid, artikel 3a, eerste lid, artikel 6, eerste en tweede lid, artikel 7, tweede lid, en artikel 8, derde, vierde, zesde, zevende en negende lid. […] 3. Een instelling bewaart de in het eerste en tweede lid bedoelde gegevens op toegankelijke wijze gedurende vijf jaar na het tijdstip van het […]",
+     "url": "https://www.viajuridica.nl/informatiesoorten/wetstoelichtingen/bewaarplicht-clientenonderzoek-art-33-wwft",
+     "verify": true,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "1. An institution that has carried out customer due diligence under this Act, or to which a client has been introduced in accordance with the procedure of Article 5, records in a retrievable manner the documents and data used to comply with Article 3(2) to (4), Article 3a(1), Article 6(1) and (2), Article 7(2), and Article 8(3), (4), (6), (7) and (9). […] 3. An institution keeps the data referred to in paragraphs 1 and 2 accessible for five years after the time of the […]",
+     "en_type": "unofficial translation (Casefold)"
+    }
+   ],
+   "search": "bewaren vastleggen dossier vijf jaar"
+  },
+  {
+   "id": "NL:duty:ubo-discrepancy",
+   "title": "Report discrepancies with the UBO register to the Chamber of Commerce",
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "*"
+   ],
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 10c lid 1",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling doet melding aan de Kamer van Koophandel van iedere discrepantie die zij aantreft tussen een gegeven omtrent een uiteindelijk belanghebbende dat zij verstrekt heeft gekregen uit het handelsregister, bedoeld in artikel 2 van de Handelsregisterwet 2007, of uit het register, bedoeld in artikel 4 van de Implementatiewet registratie uiteindelijk belanghebbenden van trusts en soortgelijke juridische constructies, en de informatie over die uiteindelijk belanghebbende waarover zij uit anderen hoofde beschikt.",
+     "text_en": "An institution reports to the Chamber of Commerce every discrepancy it finds between information on a beneficial owner that it obtained from the trade register referred to in Article 2 of the Trade Register Act 2007, or from the register referred to in Article 4 of the Implementation Act on the registration of beneficial owners of trusts and similar legal arrangements, and the information on that beneficial owner that it holds from other sources.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "10c",
+     "lid": "1"
+    },
+    {
+     "law": "NL:iwt",
+     "ref": "Iwt (article not yet known)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "iwt",
+     "kind": "pending",
+     "text": "",
+     "text_en": "",
+     "en_type": "none",
+     "verify": true,
+     "url": "https://internetconsultatie.nl/implementatiewettervoorkomingvanwitwassenenterrorismefinanciering",
+     "read": "discrepancy reporting to the register moves to the Iwt (AMLD6); article not yet known",
+     "replaces": 0,
+     "law_short": "Iwt",
+     "art": null,
+     "lid": null
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 10c lid 1",
+     "text": "Een instelling doet melding aan de Kamer van Koophandel van iedere discrepantie die zij aantreft tussen een gegeven omtrent een uiteindelijk belanghebbende dat zij verstrekt heeft gekregen uit het handelsregister, bedoeld in artikel 2 van de Handelsregisterwet 2007, of uit het register, bedoeld in artikel 4 van de Implementatiewet registratie uiteindelijk belanghebbenden van trusts en soortgelijke juridische constructies, en de informatie over die uiteindelijk belanghebbende waarover zij uit anderen hoofde beschikt.",
+     "url": "https://www.viajuridica.nl/informatiesoorten/wetstoelichtingen/terugmeldplicht-ubo-registers-art-10c-wwft",
+     "verify": true,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "An institution reports to the Chamber of Commerce every discrepancy it finds between information on a beneficial owner that it obtained from the trade register referred to in Article 2 of the Trade Register Act 2007, or from the register referred to in Article 4 of the Implementation Act on the registration of beneficial owners of trusts and similar legal arrangements, and the information on that beneficial owner that it holds from other sources.",
+     "en_type": "unofficial translation (Casefold)"
+    }
+   ],
+   "search": "discrepantie UBO-register Kamer van Koophandel afwijking"
+  },
+  {
+   "id": "NL:duty:training",
+   "title": "Train employees and day-to-day policymakers periodically",
+   "level": "office",
+   "kind": "periodic",
+   "sectors": [
+    "*"
+   ],
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 35",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling draagt er zorg voor dat haar werknemers, alsmede de dagelijks beleidsbepalers voor zover relevant voor de uitoefening van hun taken en rekening houdend met de risico’s, aard en omvang van de instelling, worden doorgelicht, bekend zijn met de bepalingen van deze wet en periodiek opleidingen genieten die hen in staat stellen een ongebruikelijke transactie te herkennen en een cliëntenonderzoek goed en volledig uit te voeren.",
+     "text_en": "An institution ensures that its employees, and its day-to-day policymakers in so far as relevant to the performance of their tasks and taking into account the risks, nature and size of the institution, are screened, are familiar with the provisions of this Act and periodically receive training that enables them to recognise an unusual transaction and to carry out customer due diligence properly and completely.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "35",
+     "lid": null
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 12",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "Meldingsplichtige entiteiten nemen maatregelen om ervoor te zorgen dat werknemers of personen in een vergelijkbare positie van wie de functie zulks vereist, waaronder hun agenten en distributeurs, op de hoogte zijn van de vereisten die voortvloeien uit deze verordening, Verordening (EU) 2023/1113 en alle administratieve handelingen van een toezichthouder en van de door de meldingsplichtige entiteit ingevoerde bedrijfsbrede risicobeoordeling, interne gedragslijnen, procedures en controles, onder meer met betrekking tot de verwerking van persoonsgegevens voor de toepassing van deze verordening. De in de eerste alinea bedoelde maatregelen houden onder meer in dat de werknemers of personen in vergelijkbare posities, waaronder agenten en distributeurs, speciale permanente opleidingsprogramma’s volgen om verrichtingen die verband kunnen houden met witwassen of terrorismefinanciering, te leren herkennen en te leren hoe in die gevallen te werk moet worden gegaan. Die opleidingsprogramma’s zijn afgestemd op hun functies of activiteiten en op de risico’s van witwassen en terrorismefinanciering waaraan de meldingsplichtige entiteit is blootgesteld, en worden naar behoren gedocumenteerd.",
+     "text_en": "Obliged entities shall take measures to ensure that their employees or persons in comparable positions whose function so requires, including their agents and distributors are aware of the requirements arising from this Regulation, Regulation (EU) 2023/1113 and any administrative act issued by any supervisor, and of the business-wide risk assessment, internal policies, procedures and controls in place in the obliged entity, including in relation to the processing of personal data for the purposes of this Regulation. The measures referred to in the first paragraph shall include the participation of employees or persons in comparable positions, including agents and distributors, in specific, ongoing training programmes to help them recognise operations which may be related to money laundering or terrorist financing and to instruct them as to how to proceed in such cases. Such training programmes shall be appropriate to their functions or activities and to the risks of money laundering and terrorist financing to which the obliged entity is exposed, and shall be duly documented.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Kennis van de vereisten",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "12",
+     "lid": null
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 35",
+     "text": "Samenvatting: een instelling zorgt ervoor dat haar werknemers en dagelijks beleidsbepalers periodiek opleiding krijgen over de Wwft, zodat zij ongebruikelijke transacties herkennen en het cliëntenonderzoek goed uitvoeren.",
+     "url": "https://www.fiu-nederland.nl/wp-content/uploads/2025/02/kansspelautoriteit-leidraad_wwft_-12-2023.pdf",
+     "verify": true,
+     "kind": "summary",
+     "read": "supervisor guidance",
+     "text_en": "Summary: an institution ensures that its employees and day-to-day policymakers periodically receive training on the Wwft, so that they recognise unusual transactions and carry out customer due diligence properly.",
+     "en_type": "summary"
+    }
+   ],
+   "search": "opleiding training medewerkers bewustzijn"
+  },
+  {
+   "id": "NL:duty:sanctions-ao",
+   "title": "Administrative organisation and internal control for the sanctions regulations",
+   "level": "office",
+   "kind": "periodic",
+   "sectors": [
+    "banks",
+    "non-bank-lending",
+    "payment-institutions",
+    "electronic-money",
+    "currency-exchange",
+    "payment-service-agents",
+    "life-insurers",
+    "banks-and-e-money",
+    "trust-offices",
+    "investment-firms",
+    "investment-institutions",
+    "ucits",
+    "financial-service-providers",
+    "crypto-asset-service"
+   ],
+   "basis": [
+    {
+     "law": "NL:rtsw",
+     "ref": "Regeling toezicht Sanctiewet 1977 art. 2 lid 1",
+     "text": "De instelling waarborgt dat zij op het gebied van de administratieve organisatie en interne controle maatregelen heeft getroffen ter naleving van de Sanctieregelgeving.",
+     "url": "https://wetten.overheid.nl/BWBR0018806/",
+     "verify": false,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "The institution ensures that it has taken measures in the field of administrative organisation and internal control to comply with the sanctions regulations.",
+     "en_type": "unofficial translation (Casefold)",
+     "law_short": "Rtsw",
+     "art": "2",
+     "lid": "1"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "search": "sanctie administratieve organisatie interne controle sanctieregelgeving"
+  },
+  {
+   "id": "NL:duty:sanctions-hit",
+   "title": "Report a sanctions hit on a relation to the supervisor without delay",
+   "level": "client",
+   "kind": "screening",
+   "sectors": [
+    "banks",
+    "non-bank-lending",
+    "payment-institutions",
+    "electronic-money",
+    "currency-exchange",
+    "payment-service-agents",
+    "life-insurers",
+    "banks-and-e-money",
+    "trust-offices",
+    "investment-firms",
+    "investment-institutions",
+    "ucits",
+    "financial-service-providers",
+    "crypto-asset-service"
+   ],
+   "basis": [
+    {
+     "law": "NL:rtsw",
+     "ref": "Regeling toezicht Sanctiewet 1977 art. 3",
+     "text": "Indien de instelling constateert dat de identiteit van een relatie overeenkomt met een (rechts)persoon of entiteit, als bedoeld in de Sanctieregelgeving, meldt de instelling dit onverwijld aan de toezichthouder. Bij de melding legt de instelling tevens de gegevens over van de identiteit van die relatie aan de toezichthouder.",
+     "url": "https://wetten.overheid.nl/BWBR0018806/",
+     "verify": false,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "If the institution finds that the identity of a relation matches a (legal) person or entity referred to in the sanctions regulations, the institution reports this to the supervisor without delay. With the report, the institution also provides the supervisor with the identity data of that relation.",
+     "en_type": "unofficial translation (Casefold)",
+     "law_short": "Rtsw",
+     "art": "3",
+     "lid": null
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "search": "sanctiehit sanctielijst screening melden toezichthouder"
+  },
+  {
+   "id": "NL:duty:occasional-15000",
+   "title": "Customer due diligence for an occasional transaction of EUR 15,000 or more",
+   "level": "client",
+   "kind": "threshold",
+   "amount": 15000,
+   "payment": "any",
+   "tx": [
+    "occasional"
+   ],
+   "sectors": [
+    "banks",
+    "non-bank-lending",
+    "payment-institutions",
+    "electronic-money",
+    "currency-exchange",
+    "payment-service-agents",
+    "life-insurers",
+    "banks-and-e-money",
+    "trust-offices",
+    "investment-firms",
+    "investment-institutions",
+    "ucits",
+    "financial-service-providers",
+    "crypto-asset-service"
+   ],
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 3 lid 5 onder b",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling verricht het cliëntenonderzoek in de volgende gevallen: b. indien zij in of vanuit Nederland een incidentele transactie verricht ten behoeve van de cliënt van ten minste € 15.000, of twee of meer transacties waartussen een verband bestaat met een gezamenlijke waarde van ten minste € 15.000;",
+     "text_en": "An institution carries out customer due diligence in the following cases: b. if, in or from the Netherlands, it carries out for the client an occasional transaction of at least EUR 15,000, or two or more transactions between which there is a link with a combined value of at least EUR 15,000;",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "3",
+     "lid": "5"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": "2027-07-09",
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 3 lid 5 onder b",
+     "text": "Samenvatting van art. 3 lid 5 onder b: een instelling verricht cliëntenonderzoek \"indien zij in of vanuit Nederland een incidentele transactie verricht ten behoeve van de cliënt van ten minste € 15.000\", ook als die bestaat uit twee of meer transacties waartussen een verband bestaat.",
+     "url": "https://wetten.overheid.nl/BWBR0024282",
+     "verify": true,
+     "kind": "summary",
+     "read": "cross-reference only",
+     "text_en": "Summary of art. 3(5)(b): an institution carries out customer due diligence if it carries out, in or from the Netherlands, an occasional transaction for the client of at least EUR 15,000, also where that consists of two or more linked transactions.",
+     "en_type": "summary"
+    }
+   ],
+   "search": "incidentele transactie drempel"
+  },
+  {
+   "id": "NL:duty:tfr",
+   "title": "Transfer of funds or crypto-assets: send and check the payer and payee information (travel rule)",
+   "level": "client",
+   "kind": "threshold",
+   "amount": 0,
+   "payment": "transfer",
+   "tx": [
+    "transfer",
+    "crypto_transfer"
+   ],
+   "sectors": [
+    "banks",
+    "payment-institutions",
+    "electronic-money",
+    "payment-service-agents",
+    "banks-and-e-money",
+    "crypto-asset-service"
+   ],
+   "basis": [
+    {
+     "law": "NL:tfr",
+     "ref": "Verordening (EU) 2023/1113 (TFR)",
+     "text": "Samenvatting: betaaldienstverleners en aanbieders van cryptoactivadiensten zorgen dat elke overmaking vergezeld gaat van informatie over de betaler en de begunstigde en controleren die; voor overdrachten van cryptoactiva van meer dan € 1.000 van of naar een zelfgehost adres gelden extra controles.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2023/1113/oj",
+     "verify": true,
+     "kind": "summary",
+     "read": "not read: summary",
+     "text_en": "Summary: payment service providers and crypto-asset service providers ensure that every transfer is accompanied by information on the payer and the payee, and check it; for crypto-asset transfers above EUR 1,000 to or from a self-hosted address additional checks apply.",
+     "en_type": "summary",
+     "law_short": "TFR",
+     "art": null,
+     "lid": null
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "search": "overboeking overmaking betaler begunstigde gegevens"
+  },
+  {
+   "id": "NL:duty:wtt-purpose",
+   "title": "Know the purpose of the trust services and examine the integrity risks",
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "trust-offices"
+   ],
+   "basis": [
+    {
+     "law": "NL:wtt2018",
+     "ref": "Wtt 2018 art. 26 lid 1",
+     "text": "Een trustkantoor heeft kennis van het doel van hetgeen de cliënt beoogt met de trustdienstverlening en onderzoekt, mede aan de hand van de uitkomst van het in dit hoofdstuk voorgeschreven cliëntenonderzoek, of aan die dienstverlening integriteitrisico’s zijn verbonden.",
+     "url": "https://wetten.overheid.nl/BWBR0041583/2025-03-01/0",
+     "verify": false,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "A trust office knows the purpose of what the client intends with the trust services and examines, also on the basis of the outcome of the customer due diligence prescribed in this chapter, whether integrity risks are attached to those services.",
+     "en_type": "unofficial translation (Casefold)",
+     "law_short": "Wtt",
+     "art": "26",
+     "lid": "1"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "search": "doel trustdienstverlening integriteitsrisico"
+  },
+  {
+   "id": "NL:duty:wtt-memo",
+   "title": "Client acceptance memorandum for every client",
+   "level": "client",
+   "kind": "always",
+   "sectors": [
+    "trust-offices"
+   ],
+   "basis": [
+    {
+     "law": "NL:wtt2018",
+     "ref": "Wtt 2018 art. 26 lid 3",
+     "text": "Een trustkantoor beschikt voor iedere cliënt over een acceptatiememorandum waarin de uitkomst van het cliëntenonderzoek, het onderzoek naar de verbonden integriteitsrisico’s en de mate waarin deze worden ondervangen in samenhang tot elkaar zijn beschreven, en waarin de aanvaarding van de cliënt tot uitdrukking is gebracht.",
+     "url": "https://wetten.overheid.nl/BWBR0041583/2025-03-01/0",
+     "verify": false,
+     "kind": "law",
+     "read": "official text",
+     "text_en": "A trust office has, for every client, an acceptance memorandum that describes, in relation to one another, the outcome of the customer due diligence, the examination of the associated integrity risks and the extent to which these are mitigated, and that expresses the acceptance of the client.",
+     "en_type": "unofficial translation (Casefold)",
+     "law_short": "Wtt",
+     "art": "26",
+     "lid": "3"
+    }
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "search": "acceptatiememorandum"
+  },
+  {
+   "id": "NL:duty:tipping-off",
+   "title": "Do not tell the client or a third party that a report was made or is considered",
+   "level": "client",
+   "kind": "always",
+   "authority": "FIU-Nederland",
+   "sectors": [
+    "*"
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 23 lid 1",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling en de personen die werkzaam zijn voor een instelling zijn, behoudens voor zover uit deze wet de noodzaak tot bekendmaking voortvloeit, verplicht tot geheimhouding jegens een ieder van: a. een melding ingevolge artikel 16 door die instelling; b. nadere inlichtingen verstrekt ingevolge artikel 17 door die instelling; c. het gegeven dat een melding of verstrekking aanleiding heeft gegeven tot een onderzoek naar witwassen van geld of financieren van terrorisme of dat het voornemen bestaat een dergelijk onderzoek te verrichten; d. overleg over de naleving van artikel 16 met betrekking tot een transactie.",
+     "text_en": "An institution and the persons working for an institution are, except in so far as the need for disclosure follows from this Act, obliged to keep secret from everyone: a. a report made by that institution under Article 16; b. further information provided by that institution under Article 17; c. the fact that a report or the provision of information has given rise to an investigation into money laundering or terrorist financing, or that such an investigation is intended; d. consultation on compliance with Article 16 with regard to a transaction.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "23",
+     "lid": "1"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 73(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "De meldingsplichtige entiteiten en hun bestuurders, werknemers, of personen in vergelijkbare functies, zoals makelaars en distributeurs mogen de betrokken cliënt of derden niet meedelen dat transacties of activiteiten overeenkomstig artikel 69 worden of zijn beoordeeld, dat informatie wordt, zal worden of is doorgegeven overeenkomstig artikel 69 of artikel 70 of dat een onderzoek naar witwassen of terrorismefinanciering wordt of kan worden uitgevoerd.",
+     "text_en": "Obliged entities and their directors, employees, or persons in comparable positions, including agents and distributors, shall not disclose to the customer concerned or to other third persons the fact that transactions or activities are being or have been assessed in accordance with Article 69, that information is being, will be or has been transmitted in accordance with Article 69 or 70 or that a money laundering or terrorist financing analysis is being, or may be, carried out.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Mededelingsverbod",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "73",
+     "lid": "1"
+    }
+   ],
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 23",
+     "text": "Samenvatting: een instelling die een ongebruikelijke transactie heeft gemeld of overweegt te melden, maakt dat niet bekend aan de cliënt of aan derden (verbod op tipping-off).",
+     "url": "https://wetten.overheid.nl/BWBR0024282",
+     "verify": true,
+     "kind": "summary",
+     "read": "not read: summary",
+     "text_en": "Summary: an institution that has reported, or considers reporting, an unusual transaction does not disclose this to the client or to third parties (tipping-off prohibition).",
+     "en_type": "summary"
+    }
+   ],
+   "search": "geheimhouding tipping-off niet bekendmaken melding"
+  },
+  {
+   "id": "NL:duty:fiu-suspension",
+   "title": "Hold a transaction at the request of FIU-Nederland (up to five working days)",
+   "level": "client",
+   "kind": "always",
+   "authority": "FIU-Nederland",
+   "sectors": [
+    "*"
+   ],
+   "valid_from": "2026-07-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 17a lid 1",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "De Financiële inlichtingen eenheid kan ten behoeve van de uitvoering van de taak, bedoeld in artikel 13, aanhef en onderdelen a en b, een instelling verzoeken het uitvoeren van een transactie of meerdere transacties gedurende een periode van ten hoogste vijf werkdagen aan te houden ingeval de Financiële inlichtingen eenheid aanwijzingen heeft dat deze transactie of transacties verband kan of kunnen houden met witwassen of financieren van terrorisme, of indien een financiële inlichtingen eenheid uit een andere staat hierom verzoekt.",
+     "text_en": "For the performance of the task referred to in Article 13, opening words and points a and b, the Financial Intelligence Unit may request an institution to hold the execution of a transaction or several transactions for a period of at most five working days where the Financial Intelligence Unit has indications that this transaction or these transactions may be related to money laundering or terrorist financing, or where a financial intelligence unit of another state so requests.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "17a",
+     "lid": "1"
+    },
+    {
+     "law": "NL:iwt",
+     "ref": "Iwt (article not yet known)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "iwt",
+     "kind": "pending",
+     "text": "",
+     "text_en": "",
+     "en_type": "none",
+     "verify": true,
+     "url": "https://internetconsultatie.nl/implementatiewettervoorkomingvanwitwassenenterrorismefinanciering",
+     "read": "the FIU's power to suspend a transaction follows from AMLD6 and is implemented in the Iwt; article not yet known",
+     "replaces": 0,
+     "law_short": "Iwt",
+     "art": null,
+     "lid": null
+    }
+   ],
+   "independent": false,
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 17a",
+     "text": "Samenvatting: FIU-Nederland kan een instelling opdragen een transactie op te schorten of de instemming ermee te onthouden; de instelling volgt die opdracht op.",
+     "url": "https://www.fiu-nederland.nl",
+     "verify": true,
+     "kind": "summary",
+     "read": "authority inventory (kc-world), not read in the official text",
+     "text_en": "Summary: FIU-Nederland can order an institution to suspend a transaction or to withhold consent to it; the institution complies with the order.",
+     "en_type": "summary"
+    }
+   ],
+   "search": "aanhouden opschorten transactie verzoek FIU"
+  },
+  {
+   "id": "NL:duty:sanctions-freeze",
+   "title": "Sanctions: freeze the funds of a listed person and make no funds available to them",
+   "level": "client",
+   "kind": "freeze",
+   "authority": "supervisor",
+   "sectors": [
+    "*"
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "independent": true,
+   "basis": [
+    {
+     "law": "EU:2014/269",
+     "ref": "Sanctiewet 1977 jo. de EU-sanctieverordeningen (bijv. Verordening (EU) nr. 269/2014 art. 2)",
+     "text": "Samenvatting: iedereen in Nederland bevriest de tegoeden en economische middelen van personen en entiteiten op de sanctielijsten en stelt hun geen middelen ter beschikking; overtreding is een economisch delict. DNB en de AFM houden toezicht op de naleving door financiële instellingen en trustkantoren (Regeling toezicht Sanctiewet 1977).",
+     "url": "https://wetten.overheid.nl/BWBR0003296",
+     "verify": true,
+     "kind": "summary",
+     "read": "not read: summary",
+     "text_en": "Summary: everyone in the Netherlands freezes the funds and economic resources of persons and entities on the sanctions lists and makes no funds available to them; a violation is an economic offence. DNB and the AFM supervise compliance by financial institutions and trust offices (Regeling toezicht Sanctiewet 1977).",
+     "en_type": "summary",
+     "law_short": "Verordening 269/2014",
+     "art": "2",
+     "lid": null
+    }
+   ],
+   "search": "bevriezen tegoeden sanctielijst"
+  },
+  {
+   "id": "NL:duty:edd",
+   "title": "Risk-based CDD: enhanced at higher risk, simplified possible at lower risk (risk factors of the client's business type)",
+   "level": "client",
+   "kind": "risk_band",
+   "authority": "supervisor",
+   "independent": false,
+   "sectors": [
+    "*"
+   ],
+   "valid_from": "2000-01-01",
+   "valid_to": null,
+   "amount": null,
+   "payment": null,
+   "tx": [],
+   "frequency": null,
+   "basis": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 8 lid 1",
+     "valid_from": null,
+     "valid_to": "2027-07-09",
+     "regime": "wwft",
+     "kind": "law",
+     "text": "Een instelling verricht, in aanvulling op artikel 3, tweede tot en met vierde lid, verscherpt cliëntenonderzoek in ten minste de volgende gevallen: a. indien de zakelijke relatie of transactie naar haar aard een hoger risico op witwassen of financieren van terrorisme met zich brengt; b. indien de staat waar de cliënt woonachtig of gevestigd is of zijn zetel heeft op grond van artikel 9 van de vierde anti-witwasrichtlijn door de Europese Commissie is aangewezen als staat met een hoger risico op witwassen of financieren van terrorisme.",
+     "text_en": "In addition to Article 3(2) to (4), an institution carries out enhanced customer due diligence in at least the following cases: a. where the business relationship or transaction by its nature entails a higher risk of money laundering or terrorist financing; b. where the state in which the client resides or is established or has its seat has been designated by the European Commission, under Article 9 of the fourth anti-money laundering directive, as a state with a higher risk of money laundering or terrorist financing.",
+     "url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01",
+     "en_type": "unofficial translation (Casefold)",
+     "verify": false,
+     "read": "bwb-xml of the text valid from 2026-07-01, sha256 b6ee6fad70c3",
+     "heading": "",
+     "law_short": "Wwft",
+     "art": "8",
+     "lid": "1"
+    },
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 34(1)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "In de in de artikelen 29, 30, 31 en 36 tot en met 46 bedoelde gevallen alsmede in andere gevallen met een hoger risico die door de meldingsplichtige entiteiten op grond van artikel 20, lid 2, tweede alinea, worden vastgesteld, passen de meldingsplichtige entiteiten verscherpte zorgvuldigheidsmaatregelen toe om die risico’s op passende wijze te beheren en te beperken.",
+     "text_en": "In the cases referred to in Articles 29, 30, 31 and 36 to 46, as well as in other cases of higher risk that are identified by obliged entities pursuant to Article 20(2), second subparagraph, obliged entities shall apply enhanced due diligence measures to manage and mitigate such risks appropriately.",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Toepassingsgebied van verscherpte zorgvuldigheidsmaatregelen",
+     "replaces": 0,
+     "law_short": "AMLR",
+     "art": "34",
+     "lid": "1"
+    }
+   ],
+   "basis_manual": [
+    {
+     "law": "NL:wwft",
+     "ref": "Wwft art. 8 lid 1 (verscherpt); art. 6 (vereenvoudigd); bijlagen II en III bij Richtlijn (EU) 2015/849",
+     "text": "Samenvatting: een instelling verricht verscherpt cliëntenonderzoek bij een hoger risico op witwassen of financieren van terrorisme, en houdt daarbij ten minste rekening met de risicofactoren van bijlage III bij de vierde anti-witwasrichtlijn; bij een lager risico mag zij vereenvoudigd cliëntenonderzoek verrichten (bijlage II).",
+     "url": "https://wetten.overheid.nl/BWBR0024282",
+     "verify": true,
+     "kind": "summary",
+     "read": "not read: summary",
+     "text_en": "Summary: an institution carries out enhanced customer due diligence where the risk of money laundering or terrorist financing is higher, taking into account at least the risk factors of Annex III to the fourth anti-money laundering directive; where the risk is lower it may carry out simplified customer due diligence (Annex II).",
+     "en_type": "summary"
+    }
+   ],
+   "search": "verscherpt cliëntenonderzoek hoog risico"
+  },
+  {
+   "id": "NL:duty:occasional-10000",
+   "title": "Customer due diligence for an occasional transaction of EUR 10,000 or more",
+   "level": "client",
+   "kind": "threshold",
+   "amount": 10000,
+   "payment": "any",
+   "tx": [
+    "occasional"
+   ],
+   "sectors": [
+    "banks",
+    "non-bank-lending",
+    "payment-institutions",
+    "electronic-money",
+    "currency-exchange",
+    "payment-service-agents",
+    "life-insurers",
+    "banks-and-e-money",
+    "trust-offices",
+    "investment-firms",
+    "investment-institutions",
+    "ucits",
+    "financial-service-providers",
+    "crypto-asset-service"
+   ],
+   "valid_from": "2027-07-10",
+   "valid_to": null,
+   "frequency": null,
+   "authority": "supervisor",
+   "independent": false,
+   "search": "incidentele transactie drempel",
+   "replaces": "NL:duty:occasional-15000",
+   "basis": [
+    {
+     "law": "EU:amlr",
+     "ref": "AMLR art. 19(1)(b)",
+     "valid_from": "2027-07-10",
+     "valid_to": null,
+     "regime": "amlr",
+     "kind": "law",
+     "text": "De meldingsplichtige entiteiten passen cliëntenonderzoeksmaatregelen toe in de volgende omstandigheden: b. wanneer zij zorgen voor de uitvoering van een occasionele transactie ter waarde van ten minste 10 000 EUR of meer, of de tegenwaarde in de nationale munteenheid, ongeacht of die transactie wordt verricht in één verrichting of in onderling samenhangende transacties, of ten bedrage van een lagere waarde die is vastgesteld op grond van lid 9;",
+     "text_en": "Obliged entities shall apply customer due diligence measures in any of the following circumstances: b. when carrying out an occasional transaction of a value of at least EUR 10 000, or the equivalent in national currency, whether that transaction is carried out in a single operation or through linked transactions, or a lower value laid down pursuant to paragraph 9;",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj",
+     "en_type": "official",
+     "verify": false,
+     "read": "pdftotext of the text valid from 2027-07-10, sha256 2e6fc6897a37",
+     "heading": "Toepassing van de cliëntenonderzoeksmaatregelen",
+     "replaces": null,
+     "law_short": "AMLR",
+     "art": "19",
+     "lid": "1"
+    }
+   ]
+  }
+ ],
+ "authorities": [
+  {
+   "id": "NL:fiu-nl",
+   "short": "FIU-Nederland",
+   "name": "Financial Intelligence Unit - Nederland",
+   "role": "fiu_reporting",
+   "basis": "Arts. 12-13 Wwft (receives and analyses unusual-transaction reports); art. 17a Wwft suspension orders; not a supervisor (supervision per art. 1d Wwft)",
+   "url": "https://www.fiu-nederland.nl",
+   "verify": true,
+   "sectors": [
+    "*"
+   ],
+   "fatf": null
+  }
+ ]
+}

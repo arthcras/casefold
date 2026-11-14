@@ -1,0 +1,55 @@
+{
+ "note": "The fictitious Dutch trust office of the main demo client (nl-kalmora). The test offices per sector are in data/testcases/.",
+ "institutions": [
+  {
+   "id": "INST-NL",
+   "name": "Arbelune Trustkantoor B.V.",
+   "jurisdiction": "NL",
+   "fictitious": true,
+   "sector": {
+    "id": "NL:trust-offices-wtt-2018",
+    "name": "Trust offices (Wtt 2018)",
+    "local": "trustkantoren",
+    "group": "trust"
+   },
+   "regulator": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing (Wtt 2018) and Wwft supervision"
+   },
+   "guidance": {
+    "id": "NL:dnb-gp-wtt",
+    "short": "DNB Good Practices Wtt 2018",
+    "title": "DNB Good Practices Wtt 2018",
+    "url": "https://www.dnb.nl/media/tu5l3quf/dnb-good-practice-wtt-2018-nl.pdf"
+   },
+   "records": [
+    {
+     "id": "R-risk-assessment",
+     "duty": "NL:duty:risk-assessment",
+     "date": "2026-01-20",
+     "title": "evidence: risk assessment 2026"
+    },
+    {
+     "id": "R-training",
+     "duty": "NL:duty:training",
+     "date": "2025-04-10",
+     "title": "evidence: Wwft training 2025"
+    },
+    {
+     "id": "R-sanctions-ao",
+     "duty": "NL:duty:sanctions-ao",
+     "date": "2026-03-01",
+     "title": "evidence: sanctions procedure"
+    },
+    {
+     "id": "R-dnb-irap",
+     "duty": "NL:duty:dnb-irap",
+     "date": "2026-03-28",
+     "title": "evidence: IRAP 2026 filed"
+    }
+   ]
+  }
+ ]
+}

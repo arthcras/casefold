@@ -1,0 +1,1886 @@
+[
+ {
+  "case": "sectors",
+  "kind": "register",
+  "client": "Sector register: classification, supervisors and duties",
+  "template": false,
+  "office": null,
+  "category": null,
+  "category_order": 99,
+  "jurisdiction": "NL",
+  "sector_id": null,
+  "sector_local": null,
+  "supervisors": [],
+  "expected": null,
+  "licence": null,
+  "supervisor": "DNB",
+  "sector": "banks",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "nl-kalmora",
+  "kind": "case",
+  "client": "Kalmora Europe B.V.",
+  "template": false,
+  "office": "Arbelune Trustkantoor B.V.",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "Trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "nl-kalmora-docs",
+  "kind": "case",
+  "client": "Kalmora Europe B.V. · built from its own documents",
+  "template": false,
+  "office": "Arbelune Trustkantoor B.V.",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "Trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "nl-kalmora-new",
+  "kind": "case",
+  "client": "Kalmora Europe B.V. · new, from uploaded documents",
+  "template": true,
+  "office": "Arbelune Trustkantoor B.V.",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "Trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "INST-NL",
+  "kind": "office",
+  "client": "Arbelune Trustkantoor B.V. (office file)",
+  "template": false,
+  "office": "Arbelune Trustkantoor B.V.",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "Trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "nl-banks-1",
+  "kind": "case",
+  "client": "Test client 1 of banken",
+  "template": false,
+  "office": "Test office: banken",
+  "category": "Banken en krediet",
+  "category_order": 0,
+  "jurisdiction": "NL",
+  "sector_id": "NL:banks",
+  "sector_local": "banken",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Banking licence (bank)",
+   "basis": "Wft art. 2:11",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "banks",
+  "obliged_from": null,
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "test": true
+ },
+ {
+  "case": "nl-banks-2",
+  "kind": "case",
+  "client": "Test client 2 of banken",
+  "template": false,
+  "office": "Test office: banken",
+  "category": "Banken en krediet",
+  "category_order": 0,
+  "jurisdiction": "NL",
+  "sector_id": "NL:banks",
+  "sector_local": "banken",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Banking licence (bank)",
+   "basis": "Wft art. 2:11",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "banks",
+  "obliged_from": null,
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "nl-banks-and-e-money-instit-1",
+  "kind": "case",
+  "client": "Test client 1 of banken en elektronischgeldinstellingen met cryptodiensten",
+  "template": false,
+  "office": "Test office: banken en elektronischgeldinstellingen met cryptodiensten",
+  "category": "Cryptoactiva",
+  "category_order": 4,
+  "jurisdiction": "NL",
+  "sector_id": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+  "sector_local": "banken en elektronischgeldinstellingen met cryptodiensten",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml",
+    "aml": true
+   },
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "mica_crypto_services+licensing",
+    "aml": false
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "notification",
+   "name": "Notification to provide crypto-asset services (as licensed bank or e-money institution)",
+   "basis": "MiCA art. 60",
+   "granted_by": "AFM"
+  },
+  "supervisor": "DNB",
+  "sector": "banks and e-money institutions providing crypto-asset services",
+  "obliged_from": null,
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "test": true
+ },
+ {
+  "case": "nl-banks-and-e-money-instit-2",
+  "kind": "case",
+  "client": "Test client 2 of banken en elektronischgeldinstellingen met cryptodiensten",
+  "template": false,
+  "office": "Test office: banken en elektronischgeldinstellingen met cryptodiensten",
+  "category": "Cryptoactiva",
+  "category_order": 4,
+  "jurisdiction": "NL",
+  "sector_id": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+  "sector_local": "banken en elektronischgeldinstellingen met cryptodiensten",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml",
+    "aml": true
+   },
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "mica_crypto_services+licensing",
+    "aml": false
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "notification",
+   "name": "Notification to provide crypto-asset services (as licensed bank or e-money institution)",
+   "basis": "MiCA art. 60",
+   "granted_by": "AFM"
+  },
+  "supervisor": "DNB",
+  "sector": "banks and e-money institutions providing crypto-asset services",
+  "obliged_from": null,
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "nl-crypto-asset-service-pro-1",
+  "kind": "case",
+  "client": "Test client 1 of aanbieders van cryptoactivadiensten",
+  "template": false,
+  "office": "Test office: aanbieders van cryptoactivadiensten",
+  "category": "Cryptoactiva",
+  "category_order": 4,
+  "jurisdiction": "NL",
+  "sector_id": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+  "sector_local": "aanbieders van cryptoactivadiensten",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Authorisation as crypto-asset service provider",
+   "basis": "MiCA art. 59",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "crypto-asset service providers (MiCA CASPs other than banks/EMIs)",
+  "obliged_from": null,
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "test": true
+ },
+ {
+  "case": "nl-crypto-asset-service-pro-2",
+  "kind": "case",
+  "client": "Test client 2 of aanbieders van cryptoactivadiensten",
+  "template": false,
+  "office": "Test office: aanbieders van cryptoactivadiensten",
+  "category": "Cryptoactiva",
+  "category_order": 4,
+  "jurisdiction": "NL",
+  "sector_id": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+  "sector_local": "aanbieders van cryptoactivadiensten",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Authorisation as crypto-asset service provider",
+   "basis": "MiCA art. 59",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "crypto-asset service providers (MiCA CASPs other than banks/EMIs)",
+  "obliged_from": null,
+  "scenario": "Dutch branch of a foreign company: test the foreign parent",
+  "test": true
+ },
+ {
+  "case": "nl-currency-exchange-instit-1",
+  "kind": "case",
+  "client": "Test client 1 of wisselinstellingen",
+  "template": false,
+  "office": "Test office: wisselinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:currency-exchange-institutions",
+  "sector_local": "wisselinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as currency exchange institution",
+   "basis": "Wft art. 2:55",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "currency exchange institutions",
+  "obliged_from": null,
+  "scenario": "Natural person: no UBO test (the client is the natural person)",
+  "test": true
+ },
+ {
+  "case": "nl-currency-exchange-instit-2",
+  "kind": "case",
+  "client": "Test client 2 of wisselinstellingen",
+  "template": false,
+  "office": "Test office: wisselinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:currency-exchange-institutions",
+  "sector_local": "wisselinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as currency exchange institution",
+   "basis": "Wft art. 2:55",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "currency exchange institutions",
+  "obliged_from": null,
+  "scenario": "B.V. with two shareholders, 60% and 40%",
+  "test": true
+ },
+ {
+  "case": "nl-electronic-money-institu-1",
+  "kind": "case",
+  "client": "Test client 1 of elektronischgeldinstellingen",
+  "template": false,
+  "office": "Test office: elektronischgeldinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:electronic-money-institutions",
+  "sector_local": "elektronischgeldinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as electronic money institution",
+   "basis": "Wft art. 2:10a",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "electronic money institutions",
+  "obliged_from": null,
+  "scenario": "B.V. with five shareholders of 20% each: nobody qualifies, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "nl-electronic-money-institu-2",
+  "kind": "case",
+  "client": "Test client 2 of elektronischgeldinstellingen",
+  "template": false,
+  "office": "Test office: elektronischgeldinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:electronic-money-institutions",
+  "sector_local": "elektronischgeldinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as electronic money institution",
+   "basis": "Wft art. 2:10a",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "electronic money institutions",
+  "obliged_from": null,
+  "scenario": "Coöperatie U.A. with two members of 50% each",
+  "test": true
+ },
+ {
+  "case": "nl-financial-service-provid-1",
+  "kind": "case",
+  "client": "Test client 1 of financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "template": false,
+  "office": "Test office: financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "category": "Verzekeren en pensioen",
+  "category_order": 2,
+  "jurisdiction": "NL",
+  "sector_id": "NL:financial-service-providers-intermediating-in-life-insurance",
+  "sector_local": "financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as financial service provider (intermediary)",
+   "basis": "Wft art. 2:80",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "financial service providers intermediating in life insurance",
+  "obliged_from": null,
+  "scenario": "Natural person: no UBO test (the client is the natural person)",
+  "test": true
+ },
+ {
+  "case": "nl-financial-service-provid-2",
+  "kind": "case",
+  "client": "Test client 2 of financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "template": false,
+  "office": "Test office: financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "category": "Verzekeren en pensioen",
+  "category_order": 2,
+  "jurisdiction": "NL",
+  "sector_id": "NL:financial-service-providers-intermediating-in-life-insurance",
+  "sector_local": "financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as financial service provider (intermediary)",
+   "basis": "Wft art. 2:80",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "financial service providers intermediating in life insurance",
+  "obliged_from": null,
+  "scenario": "B.V. with two shareholders, 60% and 40%",
+  "test": true
+ },
+ {
+  "case": "nl-investment-firms-1",
+  "kind": "case",
+  "client": "Test client 1 of beleggingsondernemingen",
+  "template": false,
+  "office": "Test office: beleggingsondernemingen",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:investment-firms",
+  "sector_local": "beleggingsondernemingen",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml",
+    "aml": true
+   },
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential",
+    "aml": false
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as investment firm",
+   "basis": "Wft art. 2:96",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "investment firms",
+  "obliged_from": null,
+  "scenario": "Fund for joint account offered to 412 participants, with a licensed manager",
+  "test": true
+ },
+ {
+  "case": "nl-investment-firms-2",
+  "kind": "case",
+  "client": "Test client 2 of beleggingsondernemingen",
+  "template": false,
+  "office": "Test office: beleggingsondernemingen",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:investment-firms",
+  "sector_local": "beleggingsondernemingen",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml",
+    "aml": true
+   },
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential",
+    "aml": false
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as investment firm",
+   "basis": "Wft art. 2:96",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "investment firms",
+  "obliged_from": null,
+  "scenario": "B.V. held 100% by a listed issuer: excepted, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "nl-investment-institutions-1",
+  "kind": "case",
+  "client": "Test client 1 of beleggingsinstellingen",
+  "template": false,
+  "office": "Test office: beleggingsinstellingen",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:investment-institutions-aifs-and-their-managers",
+  "sector_local": "beleggingsinstellingen",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as manager of an alternative investment fund (AIFM)",
+   "basis": "Wft art. 2:65",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "investment institutions (AIFs) and their managers",
+  "obliged_from": null,
+  "scenario": "Fund for joint account offered to 412 participants, with a licensed manager",
+  "test": true
+ },
+ {
+  "case": "nl-investment-institutions-2",
+  "kind": "case",
+  "client": "Test client 2 of beleggingsinstellingen",
+  "template": false,
+  "office": "Test office: beleggingsinstellingen",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:investment-institutions-aifs-and-their-managers",
+  "sector_local": "beleggingsinstellingen",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as manager of an alternative investment fund (AIFM)",
+   "basis": "Wft art. 2:65",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "investment institutions (AIFs) and their managers",
+  "obliged_from": null,
+  "scenario": "C.V.: a managing partner with the votes and three limited partners",
+  "test": true
+ },
+ {
+  "case": "nl-life-insurers-1",
+  "kind": "case",
+  "client": "Test client 1 of levensverzekeraars",
+  "template": false,
+  "office": "Test office: levensverzekeraars",
+  "category": "Verzekeren en pensioen",
+  "category_order": 2,
+  "jurisdiction": "NL",
+  "sector_id": "NL:life-insurers",
+  "sector_local": "levensverzekeraars",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as life insurer",
+   "basis": "Wft art. 2:27",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "life insurers",
+  "obliged_from": null,
+  "scenario": "Coöperatie U.A. with two members of 50% each",
+  "test": true
+ },
+ {
+  "case": "nl-life-insurers-2",
+  "kind": "case",
+  "client": "Test client 2 of levensverzekeraars",
+  "template": false,
+  "office": "Test office: levensverzekeraars",
+  "category": "Verzekeren en pensioen",
+  "category_order": 2,
+  "jurisdiction": "NL",
+  "sector_id": "NL:life-insurers",
+  "sector_local": "levensverzekeraars",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as life insurer",
+   "basis": "Wft art. 2:27",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "life insurers",
+  "obliged_from": null,
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "nl-non-bank-lending-financi-1",
+  "kind": "case",
+  "client": "Test client 1 of niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "template": false,
+  "office": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "category": "Banken en krediet",
+  "category_order": 0,
+  "jurisdiction": "NL",
+  "sector_id": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+  "sector_local": "niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "none",
+   "name": "No specific licence for the AML-relevant activity",
+   "basis": "Wwft art. 1a lid 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "non-bank lending/financial undertakings (CRD Annex I activities)",
+  "obliged_from": null,
+  "scenario": "B.V. with two shareholders, 60% and 40%",
+  "test": true
+ },
+ {
+  "case": "nl-non-bank-lending-financi-2",
+  "kind": "case",
+  "client": "Test client 2 of niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "template": false,
+  "office": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "category": "Banken en krediet",
+  "category_order": 0,
+  "jurisdiction": "NL",
+  "sector_id": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+  "sector_local": "niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "none",
+   "name": "No specific licence for the AML-relevant activity",
+   "basis": "Wwft art. 1a lid 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "non-bank lending/financial undertakings (CRD Annex I activities)",
+  "obliged_from": null,
+  "scenario": "V.O.F. with two partners, 70% and 30%",
+  "test": true
+ },
+ {
+  "case": "nl-payment-institutions-1",
+  "kind": "case",
+  "client": "Test client 1 of betaalinstellingen",
+  "template": false,
+  "office": "Test office: betaalinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:payment-institutions",
+  "sector_local": "betaalinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as payment institution",
+   "basis": "Wft art. 2:3a",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "payment institutions",
+  "obliged_from": null,
+  "scenario": "B.V. with two shareholders and high-risk counterparties",
+  "test": true
+ },
+ {
+  "case": "nl-payment-institutions-2",
+  "kind": "case",
+  "client": "Test client 2 of betaalinstellingen",
+  "template": false,
+  "office": "Test office: betaalinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:payment-institutions",
+  "sector_local": "betaalinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as payment institution",
+   "basis": "Wft art. 2:3a",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "payment institutions",
+  "obliged_from": null,
+  "scenario": "B.V. held 100% by a listed issuer: excepted, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "nl-payment-service-agents-1",
+  "kind": "case",
+  "client": "Test client 1 of betaaldienstagenten",
+  "template": false,
+  "office": "Test office: betaaldienstagenten",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:payment-service-agents",
+  "sector_local": "betaaldienstagenten",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "registration",
+   "name": "Registration as agent of a payment institution (through the principal)",
+   "basis": "Wft art. 2:3a; PSD2 art. 19",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "payment service agents",
+  "obliged_from": null,
+  "scenario": "V.O.F. with two partners, 70% and 30%",
+  "test": true
+ },
+ {
+  "case": "nl-payment-service-agents-2",
+  "kind": "case",
+  "client": "Test client 2 of betaaldienstagenten",
+  "template": false,
+  "office": "Test office: betaaldienstagenten",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:payment-service-agents",
+  "sector_local": "betaaldienstagenten",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "registration",
+   "name": "Registration as agent of a payment institution (through the principal)",
+   "basis": "Wft art. 2:3a; PSD2 art. 19",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "payment service agents",
+  "obliged_from": null,
+  "scenario": "Natural person: no UBO test (the client is the natural person)",
+  "test": true
+ },
+ {
+  "case": "nl-trust-offices-wtt-2018-1",
+  "kind": "case",
+  "client": "Test client 1 of trustkantoren",
+  "template": false,
+  "office": "Test office: trustkantoren",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": "Foreign express trust administered in the Netherlands",
+  "test": true
+ },
+ {
+  "case": "nl-trust-offices-wtt-2018-2",
+  "kind": "case",
+  "client": "Test client 2 of trustkantoren",
+  "template": false,
+  "office": "Test office: trustkantoren",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "test": true
+ },
+ {
+  "case": "nl-ucits-and-their-managers-1",
+  "kind": "case",
+  "client": "Test client 1 of icbe's",
+  "template": false,
+  "office": "Test office: icbe's",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:ucits-and-their-managers",
+  "sector_local": "icbe's",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as manager of a UCITS",
+   "basis": "Wft art. 2:69b",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "UCITS and their managers",
+  "obliged_from": null,
+  "scenario": "Fund for joint account offered to 412 participants, with a licensed manager",
+  "test": true
+ },
+ {
+  "case": "nl-ucits-and-their-managers-2",
+  "kind": "case",
+  "client": "Test client 2 of icbe's",
+  "template": false,
+  "office": "Test office: icbe's",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:ucits-and-their-managers",
+  "sector_local": "icbe's",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as manager of a UCITS",
+   "basis": "Wft art. 2:69b",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "UCITS and their managers",
+  "obliged_from": null,
+  "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "test": true
+ },
+ {
+  "case": "OFF-banks-and-e-money-institutions",
+  "kind": "office",
+  "client": "Test office: banken en elektronischgeldinstellingen met cryptodiensten (office file)",
+  "template": false,
+  "office": "Test office: banken en elektronischgeldinstellingen met cryptodiensten",
+  "category": "Cryptoactiva",
+  "category_order": 4,
+  "jurisdiction": "NL",
+  "sector_id": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+  "sector_local": "banken en elektronischgeldinstellingen met cryptodiensten",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml",
+    "aml": true
+   },
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "mica_crypto_services+licensing",
+    "aml": false
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "notification",
+   "name": "Notification to provide crypto-asset services (as licensed bank or e-money institution)",
+   "basis": "MiCA art. 60",
+   "granted_by": "AFM"
+  },
+  "supervisor": "DNB",
+  "sector": "banks and e-money institutions providing crypto-asset services",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-banks",
+  "kind": "office",
+  "client": "Test office: banken (office file)",
+  "template": false,
+  "office": "Test office: banken",
+  "category": "Banken en krediet",
+  "category_order": 0,
+  "jurisdiction": "NL",
+  "sector_id": "NL:banks",
+  "sector_local": "banken",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Banking licence (bank)",
+   "basis": "Wft art. 2:11",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "banks",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-crypto-asset-service-providers",
+  "kind": "office",
+  "client": "Test office: aanbieders van cryptoactivadiensten (office file)",
+  "template": false,
+  "office": "Test office: aanbieders van cryptoactivadiensten",
+  "category": "Cryptoactiva",
+  "category_order": 4,
+  "jurisdiction": "NL",
+  "sector_id": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+  "sector_local": "aanbieders van cryptoactivadiensten",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Authorisation as crypto-asset service provider",
+   "basis": "MiCA art. 59",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "crypto-asset service providers (MiCA CASPs other than banks/EMIs)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-currency-exchange-institutions",
+  "kind": "office",
+  "client": "Test office: wisselinstellingen (office file)",
+  "template": false,
+  "office": "Test office: wisselinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:currency-exchange-institutions",
+  "sector_local": "wisselinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as currency exchange institution",
+   "basis": "Wft art. 2:55",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "currency exchange institutions",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-electronic-money-institutions",
+  "kind": "office",
+  "client": "Test office: elektronischgeldinstellingen (office file)",
+  "template": false,
+  "office": "Test office: elektronischgeldinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:electronic-money-institutions",
+  "sector_local": "elektronischgeldinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as electronic money institution",
+   "basis": "Wft art. 2:10a",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "electronic money institutions",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-financial-service-providers-in",
+  "kind": "office",
+  "client": "Test office: financiëledienstverleners (bemiddeling levensverzekeringen) (office file)",
+  "template": false,
+  "office": "Test office: financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "category": "Verzekeren en pensioen",
+  "category_order": 2,
+  "jurisdiction": "NL",
+  "sector_id": "NL:financial-service-providers-intermediating-in-life-insurance",
+  "sector_local": "financiëledienstverleners (bemiddeling levensverzekeringen)",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as financial service provider (intermediary)",
+   "basis": "Wft art. 2:80",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "financial service providers intermediating in life insurance",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-investment-firms",
+  "kind": "office",
+  "client": "Test office: beleggingsondernemingen (office file)",
+  "template": false,
+  "office": "Test office: beleggingsondernemingen",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:investment-firms",
+  "sector_local": "beleggingsondernemingen",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml",
+    "aml": true
+   },
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential",
+    "aml": false
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as investment firm",
+   "basis": "Wft art. 2:96",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "investment firms",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-investment-institutions-aifs-a",
+  "kind": "office",
+  "client": "Test office: beleggingsinstellingen (office file)",
+  "template": false,
+  "office": "Test office: beleggingsinstellingen",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:investment-institutions-aifs-and-their-managers",
+  "sector_local": "beleggingsinstellingen",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as manager of an alternative investment fund (AIFM)",
+   "basis": "Wft art. 2:65",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "investment institutions (AIFs) and their managers",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-life-insurers",
+  "kind": "office",
+  "client": "Test office: levensverzekeraars (office file)",
+  "template": false,
+  "office": "Test office: levensverzekeraars",
+  "category": "Verzekeren en pensioen",
+  "category_order": 2,
+  "jurisdiction": "NL",
+  "sector_id": "NL:life-insurers",
+  "sector_local": "levensverzekeraars",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as life insurer",
+   "basis": "Wft art. 2:27",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "life insurers",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-non-bank-lending-financial-und",
+  "kind": "office",
+  "client": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I) (office file)",
+  "template": false,
+  "office": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "category": "Banken en krediet",
+  "category_order": 0,
+  "jurisdiction": "NL",
+  "sector_id": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+  "sector_local": "niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "none",
+   "name": "No specific licence for the AML-relevant activity",
+   "basis": "Wwft art. 1a lid 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "non-bank lending/financial undertakings (CRD Annex I activities)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-payment-institutions",
+  "kind": "office",
+  "client": "Test office: betaalinstellingen (office file)",
+  "template": false,
+  "office": "Test office: betaalinstellingen",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:payment-institutions",
+  "sector_local": "betaalinstellingen",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as payment institution",
+   "basis": "Wft art. 2:3a",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "payment institutions",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-payment-service-agents",
+  "kind": "office",
+  "client": "Test office: betaaldienstagenten (office file)",
+  "template": false,
+  "office": "Test office: betaaldienstagenten",
+  "category": "Betalingsverkeer en geldwissel",
+  "category_order": 1,
+  "jurisdiction": "NL",
+  "sector_id": "NL:payment-service-agents",
+  "sector_local": "betaaldienstagenten",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "registration",
+   "name": "Registration as agent of a payment institution (through the principal)",
+   "basis": "Wft art. 2:3a; PSD2 art. 19",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "payment service agents",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-trust-offices-wtt-2018",
+  "kind": "office",
+  "client": "Test office: trustkantoren (office file)",
+  "template": false,
+  "office": "Test office: trustkantoren",
+  "category": "Trust- en domicilieverlening",
+  "category_order": 5,
+  "jurisdiction": "NL",
+  "sector_id": "NL:trust-offices-wtt-2018",
+  "sector_local": "trustkantoren",
+  "supervisors": [
+   {
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as trust office",
+   "basis": "Wtt 2018 art. 3",
+   "granted_by": "DNB"
+  },
+  "supervisor": "DNB",
+  "sector": "trust offices (Wtt 2018)",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "OFF-ucits-and-their-managers",
+  "kind": "office",
+  "client": "Test office: icbe's (office file)",
+  "template": false,
+  "office": "Test office: icbe's",
+  "category": "Beleggen en crowdfunding",
+  "category_order": 3,
+  "jurisdiction": "NL",
+  "sector_id": "NL:ucits-and-their-managers",
+  "sector_local": "icbe's",
+  "supervisors": [
+   {
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml+licensing",
+    "aml": true
+   },
+   {
+    "short": "FIU-Nederland",
+    "name": "Financial Intelligence Unit - Nederland",
+    "role": "fiu_reporting",
+    "aml": false
+   }
+  ],
+  "expected": null,
+  "licence": {
+   "kind": "licence",
+   "name": "Licence as manager of a UCITS",
+   "basis": "Wft art. 2:69b",
+   "granted_by": "AFM"
+  },
+  "supervisor": "AFM",
+  "sector": "UCITS and their managers",
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "EU_amlr_2027-07-10-en",
+  "kind": "law",
+  "client": "Regulation (EU) 2024/1624 (AMLR) (en, valid from 2027-07-10; pdftotext)",
+  "template": false,
+  "office": null,
+  "category": null,
+  "category_order": 99,
+  "jurisdiction": "NL",
+  "sector_id": null,
+  "sector_local": null,
+  "supervisors": [],
+  "expected": null,
+  "licence": null,
+  "supervisor": null,
+  "sector": null,
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "EU_amlr_2027-07-10-nl",
+  "kind": "law",
+  "client": "Verordening (EU) 2024/1624 (AMLR) (nl, valid from 2027-07-10; pdftotext)",
+  "template": false,
+  "office": null,
+  "category": null,
+  "category_order": 99,
+  "jurisdiction": "NL",
+  "sector_id": null,
+  "sector_local": null,
+  "supervisors": [],
+  "expected": null,
+  "licence": null,
+  "supervisor": null,
+  "sector": null,
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "NL_sw1977_2025-03-01-nl",
+  "kind": "law",
+  "client": "Sanctiewet 1977 (nl, valid from 2025-03-01; pdftotext)",
+  "template": false,
+  "office": null,
+  "category": null,
+  "category_order": 99,
+  "jurisdiction": "NL",
+  "sector_id": null,
+  "sector_local": null,
+  "supervisors": [],
+  "expected": null,
+  "licence": null,
+  "supervisor": null,
+  "sector": null,
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ },
+ {
+  "case": "NL_wwft_2026-07-01-nl",
+  "kind": "law",
+  "client": "Wet ter voorkoming van witwassen en financieren van terrorisme (nl, valid from 2026-07-01; bwb-xml)",
+  "template": false,
+  "office": null,
+  "category": null,
+  "category_order": 99,
+  "jurisdiction": "NL",
+  "sector_id": null,
+  "sector_local": null,
+  "supervisors": [],
+  "expected": null,
+  "licence": null,
+  "supervisor": null,
+  "sector": null,
+  "obliged_from": null,
+  "scenario": null,
+  "test": false
+ }
+]

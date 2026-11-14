@@ -1,0 +1,34 @@
+# Publish the viewer (web/) as a static site on GitHub Pages: the prototype the jury can open without installing anything.
+# One-time setting in the repo: Settings > Pages > Build and deployment > Source: "GitHub Actions".
+# The site is then at https://<owner>.github.io/<repo>/ . Everything in it is static: Relate runs in the page (WebAssembly),
+# the data are the committed exports in web/data, OCR runs in the page (web/vendor/tesseract). No secrets are used.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deployment
+        uses: actions/deploy-pages@v4

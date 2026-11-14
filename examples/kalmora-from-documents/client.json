@@ -1,0 +1,16 @@
+{
+  "id": "nl-kalmora-docs",
+  "fictitious": true,
+  "institution": "INST-NL",
+  "client": {
+    "name": "Kalmora Europe B.V.",
+    "jurisdiction": "NL",
+    "legal_form": "NL:lf:bv",
+    "sector": "Trading and logistics subsidiary administered by a trust office",
+    "risk": {"band": "high", "triggers": ["complex_structure"]}
+  },
+  "documents": {
+    "structure_chart.pdf": {"title": "Structuurschema groep (aangeleverd door de client)", "date": "2026-10-02"},
+    "ubo_register_extract.png": {"title": "Uittreksel UBO-register", "date": "2026-10-20"}
+  }
+}

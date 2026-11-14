@@ -1,0 +1,296 @@
+{
+ "id": "nl-crypto-asset-service-pro-2",
+ "fictitious": true,
+ "institution": "OFF-crypto-asset-service-providers",
+ "institution_data": {
+  "id": "OFF-crypto-asset-service-providers",
+  "name": "Test office: aanbieders van cryptoactivadiensten",
+  "jurisdiction": "NL",
+  "fictitious": true,
+  "sector": {
+   "id": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "name": "crypto-asset service providers (MiCA CASPs other than banks/EMIs)",
+   "local": "aanbieders van cryptoactivadiensten",
+   "group": "all",
+   "status": "supervised",
+   "obliged_from": null
+  },
+  "regulator": {
+   "id": "NL:afm",
+   "short": "AFM",
+   "name": "Stichting Autoriteit Financiële Markten",
+   "role": "prudential_and_aml"
+  },
+  "guidance": {
+   "id": "GUIDE:NL:afm:g1",
+   "title": "AFM Guideline on the Wwft and Sanctions Act",
+   "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf"
+  },
+  "guidance_all": [
+   {
+    "id": "NL:afm:g1",
+    "title": "AFM Guideline on the Wwft and Sanctions Act",
+    "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+    "verify": true
+   },
+   {
+    "id": "NL:afm:g2",
+    "title": "Sanctions Act 1977 Supervision Regulation",
+    "title_local": "Regeling toezicht Sanctiewet 1977",
+    "kind": "regulation",
+    "binding": true,
+    "url": "https://wetten.overheid.nl/BWBR0018806",
+    "verify": true
+   }
+  ],
+  "records": [
+   {
+    "id": "R-training",
+    "duty": "NL:duty:training",
+    "date": "2026-02-01",
+    "title": "evidence: training"
+   },
+   {
+    "id": "R-sanctions-ao",
+    "duty": "NL:duty:sanctions-ao",
+    "date": "2026-02-01",
+    "title": "evidence: sanctions ao"
+   }
+  ]
+ },
+ "legal_forms_extra": [
+  {
+   "id": "NL:lf:foreign-trust",
+   "country": "NL",
+   "local": "buitenlandse trust (beheerd in Nederland)",
+   "abbr": "trust",
+   "en": "foreign express trust",
+   "category": "trust",
+   "law": "Hague Trust Convention; Uitvoeringsbesluit Wwft 2018 art. 3(1)(e)",
+   "law_url": "",
+   "registered_in": "UBO-register (trusts)",
+   "ubo_rule": "Art. 3(1)(e): founder, trustee, protector, beneficiaries, other controllers",
+   "verify": false,
+   "legal_personality": false,
+   "entity_type": "trust"
+  }
+ ],
+ "scenario": "Dutch branch of a foreign company: test the foreign parent",
+ "client": {
+  "name": "Test client 2 of aanbieders van cryptoactivadiensten",
+  "jurisdiction": "NL",
+  "legal_form": "NL:lf:branch",
+  "activity": "Dutch branch of a foreign company: test the foreign parent",
+  "service_profile": {
+   "name": "crypto-asset custody and trading account",
+   "expected_monthly": 5000,
+   "cash_allowed": false
+  },
+  "business_type": {
+   "code": "trading",
+   "sbi": "46.90",
+   "name": "Wholesale and import/export",
+   "name_nl": "Groothandel en import/export",
+   "factors": []
+  },
+  "risk": {
+   "band": "medium",
+   "triggers": []
+  }
+ },
+ "entities": [
+  {
+   "id": "PAR",
+   "kind": "Company",
+   "name": "TCRY2 Parent Ltd (foreign)",
+   "country": "NL"
+  },
+  {
+   "id": "A",
+   "kind": "Person",
+   "name": "TCRY2 A (80% of the parent)",
+   "country": "NL"
+  },
+  {
+   "id": "B",
+   "kind": "Person",
+   "name": "TCRY2 B (20% of the parent)",
+   "country": "NL"
+  },
+  {
+   "id": "M",
+   "kind": "Person",
+   "name": "TCRY2 M (branch manager)",
+   "country": "NL"
+  }
+ ],
+ "relations": [
+  {
+   "from": "PAR",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 100,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "A",
+   "to": "PAR",
+   "type": "OWNS",
+   "pct": 80,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "B",
+   "to": "PAR",
+   "type": "OWNS",
+   "pct": 20,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "M",
+   "to": "client",
+   "type": "DIRECTOR_OF",
+   "source": "D1",
+   "where": "register"
+  }
+ ],
+ "documents": [
+  {
+   "id": "D1",
+   "title": "Register extract (test)",
+   "doctype": "register_extract",
+   "date": "2026-11-01",
+   "text": "Dutch branch of a foreign company: test the foreign parent"
+  },
+  {
+   "id": "D2",
+   "title": "Statutes (test)",
+   "doctype": "constitutional",
+   "date": "2026-11-01",
+   "text": "test"
+  },
+  {
+   "id": "D3",
+   "title": "Agreement (test)",
+   "doctype": "other",
+   "date": "2026-11-01",
+   "text": "test"
+  }
+ ],
+ "questions": [],
+ "signals": [],
+ "counterparties": [
+  {
+   "id": "S1",
+   "name": "TCRY Noordlicht Handel B.V.",
+   "type": "organisation",
+   "role": "customer",
+   "country": "NL",
+   "parent": null,
+   "key": "83c9cd8c310d",
+   "incoming": 7500,
+   "outgoing": 0,
+   "transactions": 2,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S2",
+   "name": "TCRY2 Rheinland Service GmbH",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "DE",
+   "parent": null,
+   "key": "a710f7253a63",
+   "incoming": 3500,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S3",
+   "name": "TCRY2 Schelde Diensten BV",
+   "type": "organisation",
+   "role": "payment service provider",
+   "country": "BE",
+   "parent": null,
+   "key": "059975d75535",
+   "incoming": 2500,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S1A",
+   "name": "TCRY2 Twente Logistiek B.V.",
+   "type": "organisation",
+   "role": "supplier of S1",
+   "country": "NL",
+   "parent": "S1",
+   "key": "bd8ceab7845f",
+   "incoming": 0,
+   "outgoing": 0,
+   "transactions": 0,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  }
+ ],
+ "transactions": [
+  {
+   "id": "M1",
+   "date": "2026-07-06",
+   "day": 20640,
+   "kind": "payment",
+   "amount": 3000,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  },
+  {
+   "id": "M2",
+   "date": "2026-08-04",
+   "day": 20669,
+   "kind": "payment",
+   "amount": 3500,
+   "payment": "transfer",
+   "with": "S2",
+   "series": "monitoring",
+   "description": "bank transfer with S2"
+  },
+  {
+   "id": "M3",
+   "date": "2026-09-08",
+   "day": 20704,
+   "kind": "payment",
+   "amount": 2500,
+   "payment": "transfer",
+   "with": "S3",
+   "series": "monitoring",
+   "description": "bank transfer with S3"
+  },
+  {
+   "id": "M4",
+   "date": "2026-10-05",
+   "day": 20731,
+   "kind": "payment",
+   "amount": 4500,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "note": "Sources that are loaded into the graph when the viewer opens: the example company (fictitious) with its services and its procedure, and published enforcement cases. Each source is cut into sections; a citation such as 'artikel 16 Wwft' becomes (:SourceSection)-[:CITES]->(:Article).",
+ "company": {"id": "EXAMPLE:voorbeeld-betaal", "name": "Voorbeeld Betaal B.V. (fictitious)", "sector": "NL:payment-institutions", "fictitious": true,
+   "services": [{"id": "SVC:account", "name": "Business payment account"}, {"id": "SVC:transfer", "name": "Money transfers (SEPA and international)"}, {"id": "SVC:acquiring", "name": "Card acceptance for web shops (acquiring)"}]},
+ "sources": [{"id": "SRC:voorbeeld-procedure", "kind": "procedure", "title": "Procedure cliëntenonderzoek, monitoring en melden (Voorbeeld Betaal B.V., fictief)", "file": "voorbeeld-betaal-procedure.txt", "company": "EXAMPLE:voorbeeld-betaal"}],
+ "cases": [
+  {"id": "CASE:dnb-bunq-2025", "title": "DNB: boete bunq B.V., onvoldoende opvolging van monitoringsalerts", "party": "bunq B.V.", "authority": "DNB", "date": "2025-08-25", "amount": 2600000, "sector": "NL:banks",
+   "summary": "Alerts uit de transactiemonitoring bij vier hoogrisicocliënten werden onvoldoende opgevolgd (januari 2021 tot mei 2022), waardoor mogelijke witwasrisico's niet tijdig werden onderkend of gemeld.",
+   "violated": [{"law": "Wwft", "art": "3", "lid": "2", "point": "d", "stated": true}], "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/boete-voor-bunq-b-v-wegens-onvoldoende-clientenonderzoek/"},
+  {"id": "CASE:dnb-ccv-2026", "title": "DNB: boete CCV Group B.V. (betaalinstelling), tekortschietende transactiemonitoring", "party": "CCV Group B.V.", "authority": "DNB", "date": "2026-07-13", "amount": 2656250, "sector": "NL:payment-institutions",
+   "summary": "Het monitoringsysteem kreeg ruim twee jaar niet alle merchanttransacties binnen en transactieprofielen waren ongeveer 23 maanden niet goed geladen; alerts werden onvoldoende beoordeeld en afgesloten.",
+   "violated": [{"law": "Wwft", "art": "3", "lid": "2", "stated": true}], "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2026/boete-aan-ccv-wegens-tekortkomingen-clientenonderzoek/"},
+  {"id": "CASE:dnb-abnamro-2026", "title": "DNB: boete ABN AMRO Bank N.V., onvoldoende kritische monitoring van hoogrisicoklanten", "party": "ABN AMRO Bank N.V.", "authority": "DNB", "date": "2026-07-09", "amount": 8500000, "sector": "NL:banks",
+   "summary": "De voortdurende controle op hoogrisicoklanten was van september 2023 tot september 2024 niet kritisch, diepgaand en doortastend genoeg en leunde te veel op onbevestigde verklaringen van klanten.",
+   "violated": [{"law": "Wwft", "art": "3", "lid": "2", "point": "d", "stated": false}], "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2026/boete-voor-abn-amro-bank-n-v-voor-onvoldoende-clientenonderzoek-bij-hoogrisicoklanten/"},
+  {"id": "CASE:om-abnamro-2021", "title": "OM: schikking ABN AMRO Bank N.V. (€ 480 miljoen), ernstige tekortkomingen als poortwachter", "party": "ABN AMRO Bank N.V.", "authority": "OM", "date": "2021-04-19", "amount": 480000000, "sector": "NL:banks",
+   "summary": "Van 2014 tot 2020 schoot de bank tekort in cliëntenonderzoek en risicoclassificatie, voortdurende controle, de afhandeling van alerts en het tijdig melden van ongebruikelijke transacties (€ 300 miljoen boete en € 180 miljoen ontneming).",
+   "violated": [{"law": "Wwft", "art": "3", "lid": "2", "stated": false}, {"law": "Wwft", "art": "16", "lid": "1", "stated": false}], "url": "https://www.om.nl/actueel/nieuws/2021/04/19/abn-amro-betaalt-480-miljoen-euro-vanwege-ernstige-tekortkomingen-bij-het-bestrijden-van-witwassen"},
+  {"id": "CASE:dnb-coinbase-2023", "title": "DNB: boete Coinbase Europe Limited, cryptodiensten zonder registratie", "party": "Coinbase Europe Limited", "authority": "DNB", "date": "2023-01-26", "amount": 3325000, "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "summary": "Van november 2020 tot de registratie op 22 september 2022 werden cryptodiensten in Nederland aangeboden zonder de registratie bij DNB die de Wwft toen vereiste.",
+   "violated": [], "url": "https://www.dnb.nl/nieuws-voor-de-sector/handhavingsmaatregel-2023/boete-voor-coinbase-europe-limited-vanwege-het-tot-22-september-2022-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland"}
+ ]
+}

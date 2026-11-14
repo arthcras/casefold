@@ -1,0 +1,10 @@
+.venv/
+.cursor/
+neo4j/.env
+__pycache__/
+*.pyc
+.DS_Store
+tests/cases/
+tests/offices/
+laws/sources/
+handover/

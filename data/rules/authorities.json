@@ -1,0 +1,143 @@
+{
+ "note": "The legal basis on which each authority acts. source \"inventory\": from the authority inventory (kc-world, Wwft art. 1d per supervisor); \"casefold\": written here, to verify.",
+ "authorities": {
+  "NL:dnb": {
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "url": "https://www.dnb.nl",
+   "verify": false,
+   "source": "inventory"
+  },
+  "NL:afm": {
+   "basis": "Art. 1d(1)(b) Wwft (institutions in art. 1a(3)(c,d,h,i), crypto-asset service providers other than banks/EMIs (1a(3)(k)), managers under art. 1a(6))",
+   "url": "https://www.afm.nl",
+   "verify": false,
+   "source": "inventory"
+  },
+  "NL:bft": {
+   "basis": "Art. 1d(1)(c) Wwft (institutions in art. 1a(4)(a,b,d,e))",
+   "url": "https://www.bureauft.nl",
+   "verify": false,
+   "source": "inventory"
+  },
+  "NL:deken": {
+   "basis": "Art. 1d(1)(d) Wwft jo. art. 22(2) Advocatenwet (institutions in art. 1a(4)(c))",
+   "url": "https://www.advocatenorde.nl",
+   "verify": true,
+   "source": "inventory"
+  },
+  "NL:dfei": {
+   "basis": "Art. 1d(1)(e) Wwft (Minister of Finance; institutions in art. 1a(4)(g,h,i,j,k,m,n)); exercised by DFEI since 1 Jan 2026 (previously Belastingdienst/Bureau Toezicht Wwft); also UBO-register enforcement and the EUR 3,000 cash ban for goods traders (Wet plan van aanpak witwassen, in force 1 Jan 2026)",
+   "url": "https://www.rijksoverheid.nl/ministeries/ministerie-van-financien/organisatie/organogram/dienst-financieel-economische-integriteit",
+   "verify": true,
+   "source": "inventory"
+  },
+  "NL:ksa": {
+   "basis": "Art. 1d(1)(f) Wwft (institutions in art. 1a(4)(l): gambling providers under the Wet op de kansspelen)",
+   "url": "https://kansspelautoriteit.nl",
+   "verify": false,
+   "source": "inventory"
+  },
+  "NL:fiu-nl": {
+   "basis": "Arts. 12-13 Wwft (receives and analyses UTRs); art. 17a Wwft suspension orders since 1 July 2026; not a supervisor (supervision per art. 1d Wwft)",
+   "url": "https://www.fiu-nederland.nl",
+   "verify": true,
+   "source": "inventory"
+  },
+  "NL:ap": {
+   "basis": "Not an AML supervisor; GDPR Art. 51 and art. 6 Uitvoeringswet AVG (UAVG)",
+   "url": "https://www.autoriteitpersoonsgegevens.nl",
+   "verify": true,
+   "source": "inventory"
+  },
+  "NL:kvk": {
+   "basis": "Handelsregisterwet 2007 (UBO register); receives discrepancy reports under Wwft art. 10c",
+   "url": "https://www.kvk.nl",
+   "verify": true,
+   "source": "casefold"
+  },
+  "EU:ecb": {
+   "basis": "SSM Regulation (EU) 1024/2013: grants and withdraws banking licences on a proposal of DNB; prudential supervision of significant banks",
+   "url": "https://www.bankingsupervision.europa.eu",
+   "verify": true,
+   "source": "casefold"
+  },
+  "EU:amla": {
+   "basis": "Verordening (EU) 2024/1620: direct AML supervision of selected credit and financial institutions and crypto-asset service providers from 2028; indirect oversight of national supervisors",
+   "url": "https://www.amla.europa.eu",
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:fiod": {
+   "basis": "Investigates money laundering and economic offences, including violations of the Wwft and the Sanctiewet 1977 (Wet op de economische delicten)",
+   "url": "https://www.fiod.nl",
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:om": {
+   "basis": "Prosecutes money laundering and economic offences (Wet op de economische delicten), including violations of the Wwft and the Sanctiewet 1977",
+   "url": "https://www.om.nl",
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:bz": {
+   "basis": "Sanctions policy and exemptions (ontheffingen) under the Sanctiewet 1977 and the EU sanctions regulations, together with other ministries",
+   "url": "https://www.rijksoverheid.nl/onderwerpen/internationale-sancties",
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:douane": {
+   "basis": "Declaration of cash of EUR 10,000 or more when entering or leaving the EU (Verordening (EU) 2018/1672)",
+   "url": "https://www.belastingdienst.nl/douane",
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:nba": {
+   "basis": "Licensing body: Wet op het accountantsberoep",
+   "url": null,
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:kroon": {
+   "basis": "Licensing body: Gerechtsdeurwaarderswet; Wet op het notarisambt",
+   "url": null,
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:nova": {
+   "basis": "Licensing body: Advocatenwet",
+   "url": null,
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:nrvt": {
+   "basis": "Licensing body: —",
+   "url": null,
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:gemeente": {
+   "basis": "Licensing body: Gemeentewet / local by-law (APV); Wok art. 30b",
+   "url": null,
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:knvb": {
+   "basis": "Licensing body: FIFA Football Agent Regulations; KNVB licensing regulations",
+   "url": null,
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:tbd": {
+   "basis": "To be designated by AMvB under the Iwt (art. 1.3, consultation version) for the sectors that come under the AMLR",
+   "url": "https://internetconsultatie.nl/implementatiewettervoorkomingvanwitwassenenterrorismefinanciering",
+   "verify": true,
+   "source": "casefold"
+  },
+  "NL:none-aml": {
+   "basis": "Not an obliged entity under the Wwft or the AMLR: no AML supervisor",
+   "url": null,
+   "verify": false,
+   "source": "casefold"
+  }
+ }
+}

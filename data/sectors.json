@@ -1,0 +1,893 @@
+{
+ "note": "Netherlands, kept simple: only the 14 sectors under the Wwft whose supervisor is DNB or the AFM (Wwft art. 1d lid 1 onder a en b, checked against the consolidated Wwft of 1 January 2026). FIU-Nederland receives the reports of every sector.",
+ "sectors": [
+  {
+   "id": "NL:banks",
+   "slug": "banks",
+   "name": "banks",
+   "local": "banken",
+   "group": "bank",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "banking",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+   "slug": "non-bank-lending-financial-undertakings-",
+   "name": "non-bank lending/financial undertakings (CRD Annex I activities)",
+   "local": "niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+   "group": "bank",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "banking",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory",
+   "local_source": "casefold"
+  },
+  {
+   "id": "NL:payment-institutions",
+   "slug": "payment-institutions",
+   "name": "payment institutions",
+   "local": "betaalinstellingen",
+   "group": "payment",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "payments",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:electronic-money-institutions",
+   "slug": "electronic-money-institutions",
+   "name": "electronic money institutions",
+   "local": "elektronischgeldinstellingen",
+   "group": "payment",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "payments",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:currency-exchange-institutions",
+   "slug": "currency-exchange-institutions",
+   "name": "currency exchange institutions",
+   "local": "wisselinstellingen",
+   "group": "payment",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "payments",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:payment-service-agents",
+   "slug": "payment-service-agents",
+   "name": "payment service agents",
+   "local": "betaaldienstagenten",
+   "group": "payment",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "payments",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:life-insurers",
+   "slug": "life-insurers",
+   "name": "life insurers",
+   "local": "levensverzekeraars",
+   "group": "insurance",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "insurance",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:banks-and-e-money-institutions-providing-crypto-asset-servic",
+   "slug": "banks-and-e-money-institutions-providing",
+   "name": "banks and e-money institutions providing crypto-asset services",
+   "local": "banken en elektronischgeldinstellingen met cryptodiensten",
+   "group": "crypto",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential_and_aml"
+    },
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "mica_crypto_services"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "aml_cft"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g1",
+     "title": "AFM Guideline on the Wwft and Sanctions Act",
+     "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g2",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "crypto",
+   "fatf_scope": "VASP",
+   "fatf_source": "inventory",
+   "local_source": "casefold"
+  },
+  {
+   "id": "NL:trust-offices-wtt-2018",
+   "slug": "trust-offices-wtt-2018",
+   "name": "trust offices (Wtt 2018)",
+   "local": "trustkantoren",
+   "group": "trust",
+   "basis": "Art. 1d(1)(a) Wwft (institutions in art. 1a(2) and 1a(3)(a,b,e,f,g,j), banks/EMIs offering crypto-asset services (1a(3)(k)), and trust offices (1a(4)(f))); Sanctiewet 1977 and Rtsw",
+   "supervisors": [
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "licensing_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:dnb",
+    "short": "DNB",
+    "name": "De Nederlandsche Bank",
+    "role": "licensing_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "trust",
+   "fatf_scope": "DNFBP",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:investment-firms",
+   "slug": "investment-firms",
+   "name": "investment firms",
+   "local": "beleggingsondernemingen",
+   "group": "investment",
+   "basis": "Art. 1d(1)(b) Wwft (institutions in art. 1a(3)(c,d,h,i), crypto-asset service providers other than banks/EMIs (1a(3)(k)), managers under art. 1a(6))",
+   "supervisors": [
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "licensing_conduct_and_aml"
+    },
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "prudential"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:afm",
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:afm:g1",
+     "title": "AFM Guideline on the Wwft and Sanctions Act",
+     "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g2",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "investment",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:investment-institutions-aifs-and-their-managers",
+   "slug": "investment-institutions-aifs-and-their-m",
+   "name": "investment institutions (AIFs) and their managers",
+   "local": "beleggingsinstellingen",
+   "group": "investment",
+   "basis": "Art. 1d(1)(b) Wwft (institutions in art. 1a(3)(c,d,h,i), crypto-asset service providers other than banks/EMIs (1a(3)(k)), managers under art. 1a(6))",
+   "supervisors": [
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:afm",
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:afm:g1",
+     "title": "AFM Guideline on the Wwft and Sanctions Act",
+     "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g2",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "investment",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:ucits-and-their-managers",
+   "slug": "ucits-and-their-managers",
+   "name": "UCITS and their managers",
+   "local": "icbe's",
+   "group": "investment",
+   "basis": "Art. 1d(1)(b) Wwft (institutions in art. 1a(3)(c,d,h,i), crypto-asset service providers other than banks/EMIs (1a(3)(k)), managers under art. 1a(6))",
+   "supervisors": [
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:afm",
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:afm:g1",
+     "title": "AFM Guideline on the Wwft and Sanctions Act",
+     "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g2",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "investment",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:financial-service-providers-intermediating-in-life-insurance",
+   "slug": "financial-service-providers-intermediati",
+   "name": "financial service providers intermediating in life insurance",
+   "local": "financiëledienstverleners (bemiddeling levensverzekeringen)",
+   "group": "insurance",
+   "basis": "Art. 1d(1)(b) Wwft (institutions in art. 1a(3)(c,d,h,i), crypto-asset service providers other than banks/EMIs (1a(3)(k)), managers under art. 1a(6))",
+   "supervisors": [
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "licensing_conduct_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:afm",
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "licensing_conduct_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:dnb:g1",
+     "title": "DNB Wwft Q&As and Good Practices",
+     "title_local": "DNB Q&As en Good Practices Wwft",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g2",
+     "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+     "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+     "verify": false
+    },
+    {
+     "id": "NL:dnb:g3",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    },
+    {
+     "id": "NL:dnb:g4",
+     "title": "DNB Good Practices on systematic integrity risk analysis",
+     "title_local": "DNB Good Practices SIRA",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g1",
+     "title": "AFM Guideline on the Wwft and Sanctions Act",
+     "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g2",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "insurance",
+   "fatf_scope": "FI",
+   "fatf_source": "inventory"
+  },
+  {
+   "id": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "slug": "crypto-asset-service-providers-mica-casp",
+   "name": "crypto-asset service providers (MiCA CASPs other than banks/EMIs)",
+   "local": "aanbieders van cryptoactivadiensten",
+   "group": "crypto",
+   "basis": "Art. 1d(1)(b) Wwft (institutions in art. 1a(3)(c,d,h,i), crypto-asset service providers other than banks/EMIs (1a(3)(k)), managers under art. 1a(6))",
+   "supervisors": [
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "prudential_and_aml"
+    }
+   ],
+   "aml_supervisor": {
+    "id": "NL:afm",
+    "short": "AFM",
+    "name": "Stichting Autoriteit Financiële Markten",
+    "role": "prudential_and_aml"
+   },
+   "guidance": [
+    {
+     "id": "NL:afm:g1",
+     "title": "AFM Guideline on the Wwft and Sanctions Act",
+     "title_local": "Leidraad Wwft en Sanctiewet (AFM)",
+     "kind": "guideline",
+     "binding": false,
+     "url": "https://fiu-nederland.nl/wp-content/uploads/2025/02/Leidraad-Wwft-en-sanctiewet-AFM-5-6-2024.pdf",
+     "verify": true
+    },
+    {
+     "id": "NL:afm:g2",
+     "title": "Sanctions Act 1977 Supervision Regulation",
+     "title_local": "Regeling toezicht Sanctiewet 1977",
+     "kind": "regulation",
+     "binding": true,
+     "url": "https://wetten.overheid.nl/BWBR0018806",
+     "verify": true
+    }
+   ],
+   "verify": false,
+   "status": "supervised",
+   "category": "crypto",
+   "fatf_scope": "VASP",
+   "fatf_source": "inventory"
+  }
+ ]
+}

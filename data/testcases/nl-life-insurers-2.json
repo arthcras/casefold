@@ -1,0 +1,313 @@
+{
+ "id": "nl-life-insurers-2",
+ "fictitious": true,
+ "institution": "OFF-life-insurers",
+ "institution_data": {
+  "id": "OFF-life-insurers",
+  "name": "Test office: levensverzekeraars",
+  "jurisdiction": "NL",
+  "fictitious": true,
+  "sector": {
+   "id": "NL:life-insurers",
+   "name": "life insurers",
+   "local": "levensverzekeraars",
+   "group": "all",
+   "status": "supervised",
+   "obliged_from": null
+  },
+  "regulator": {
+   "id": "NL:dnb",
+   "short": "DNB",
+   "name": "De Nederlandsche Bank",
+   "role": "prudential_and_aml"
+  },
+  "guidance": {
+   "id": "GUIDE:NL:dnb:g1",
+   "title": "DNB Wwft Q&As and Good Practices",
+   "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/"
+  },
+  "guidance_all": [
+   {
+    "id": "NL:dnb:g1",
+    "title": "DNB Wwft Q&As and Good Practices",
+    "title_local": "DNB Q&As en Good Practices Wwft",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+    "verify": false
+   },
+   {
+    "id": "NL:dnb:g2",
+    "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+    "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+    "verify": false
+   },
+   {
+    "id": "NL:dnb:g3",
+    "title": "Sanctions Act 1977 Supervision Regulation",
+    "title_local": "Regeling toezicht Sanctiewet 1977",
+    "kind": "regulation",
+    "binding": true,
+    "url": "https://wetten.overheid.nl/BWBR0018806",
+    "verify": true
+   },
+   {
+    "id": "NL:dnb:g4",
+    "title": "DNB Good Practices on systematic integrity risk analysis",
+    "title_local": "DNB Good Practices SIRA",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+    "verify": true
+   }
+  ],
+  "records": [
+   {
+    "id": "R-risk-assessment",
+    "duty": "NL:duty:risk-assessment",
+    "date": "2026-02-01",
+    "title": "evidence: risk assessment"
+   },
+   {
+    "id": "R-training",
+    "duty": "NL:duty:training",
+    "date": "2025-06-01",
+    "title": "evidence: training"
+   },
+   {
+    "id": "R-sanctions-ao",
+    "duty": "NL:duty:sanctions-ao",
+    "date": "2026-02-01",
+    "title": "evidence: sanctions ao"
+   }
+  ]
+ },
+ "legal_forms_extra": [
+  {
+   "id": "NL:lf:foreign-trust",
+   "country": "NL",
+   "local": "buitenlandse trust (beheerd in Nederland)",
+   "abbr": "trust",
+   "en": "foreign express trust",
+   "category": "trust",
+   "law": "Hague Trust Convention; Uitvoeringsbesluit Wwft 2018 art. 3(1)(e)",
+   "law_url": "",
+   "registered_in": "UBO-register (trusts)",
+   "ubo_rule": "Art. 3(1)(e): founder, trustee, protector, beneficiaries, other controllers",
+   "verify": false,
+   "legal_personality": false,
+   "entity_type": "trust"
+  }
+ ],
+ "scenario": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+ "client": {
+  "name": "Test client 2 of levensverzekeraars",
+  "jurisdiction": "NL",
+  "legal_form": "NL:lf:nv",
+  "activity": "N.V. that is itself a listed issuer: excepted, fallback to the directors",
+  "service_profile": {
+   "name": "life insurance with a single premium",
+   "expected_monthly": 2000,
+   "cash_allowed": false
+  },
+  "business_type": {
+   "code": "listed_group",
+   "sbi": "64.20",
+   "name": "Listed group company",
+   "name_nl": "Beursgenoteerd concern",
+   "factors": [
+    {
+     "id": "A2-1a",
+     "annex": "II",
+     "ref": "Richtlijn (EU) 2015/849 bijlage II, punt 1 onder a",
+     "text": "public companies listed on a stock exchange and subject to disclosure requirements"
+    }
+   ]
+  },
+  "risk": {
+   "band": "low",
+   "triggers": []
+  },
+  "listed": true
+ },
+ "entities": [
+  {
+   "id": "G",
+   "kind": "Person",
+   "name": "TLIF2 G (30% of the shares)",
+   "country": "NL"
+  },
+  {
+   "id": "M1",
+   "kind": "Person",
+   "name": "TLIF2 M1 (director)",
+   "country": "NL"
+  },
+  {
+   "id": "M2",
+   "kind": "Person",
+   "name": "TLIF2 M2 (director)",
+   "country": "NL"
+  }
+ ],
+ "relations": [
+  {
+   "from": "G",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 30,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "M1",
+   "to": "client",
+   "type": "DIRECTOR_OF",
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "M2",
+   "to": "client",
+   "type": "DIRECTOR_OF",
+   "source": "D1",
+   "where": "register"
+  }
+ ],
+ "documents": [
+  {
+   "id": "D1",
+   "title": "Register extract (test)",
+   "doctype": "register_extract",
+   "date": "2026-11-01",
+   "text": "N.V. that is itself a listed issuer: excepted, fallback to the directors"
+  },
+  {
+   "id": "D2",
+   "title": "Statutes (test)",
+   "doctype": "constitutional",
+   "date": "2026-11-01",
+   "text": "test"
+  },
+  {
+   "id": "D3",
+   "title": "Agreement (test)",
+   "doctype": "other",
+   "date": "2026-11-01",
+   "text": "test"
+  }
+ ],
+ "questions": [],
+ "signals": [],
+ "counterparties": [
+  {
+   "id": "S1",
+   "name": "TLIF Noordlicht Handel B.V.",
+   "type": "organisation",
+   "role": "customer",
+   "country": "NL",
+   "parent": null,
+   "key": "3ddeb2f817a8",
+   "incoming": 3000,
+   "outgoing": 0,
+   "transactions": 2,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S2",
+   "name": "TLIF2 Rheinland Service GmbH",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "DE",
+   "parent": null,
+   "key": "f4361d0e296b",
+   "incoming": 1400,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S3",
+   "name": "TLIF2 Schelde Diensten BV",
+   "type": "organisation",
+   "role": "payment service provider",
+   "country": "BE",
+   "parent": null,
+   "key": "b19fdacc2c9c",
+   "incoming": 1000,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S1A",
+   "name": "TLIF2 Twente Logistiek B.V.",
+   "type": "organisation",
+   "role": "supplier of S1",
+   "country": "NL",
+   "parent": "S1",
+   "key": "9b212c9fa621",
+   "incoming": 0,
+   "outgoing": 0,
+   "transactions": 0,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  }
+ ],
+ "transactions": [
+  {
+   "id": "M1",
+   "date": "2026-07-06",
+   "day": 20640,
+   "kind": "payment",
+   "amount": 1200,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  },
+  {
+   "id": "M2",
+   "date": "2026-08-04",
+   "day": 20669,
+   "kind": "payment",
+   "amount": 1400,
+   "payment": "transfer",
+   "with": "S2",
+   "series": "monitoring",
+   "description": "bank transfer with S2"
+  },
+  {
+   "id": "M3",
+   "date": "2026-09-08",
+   "day": 20704,
+   "kind": "payment",
+   "amount": 1000,
+   "payment": "transfer",
+   "with": "S3",
+   "series": "monitoring",
+   "description": "bank transfer with S3"
+  },
+  {
+   "id": "M4",
+   "date": "2026-10-05",
+   "day": 20731,
+   "kind": "payment",
+   "amount": 1800,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  }
+ ]
+}

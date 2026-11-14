@@ -1,0 +1,113 @@
+{
+ "note": "Business typologies of clients: activity code (SBI 2008, the Dutch version of NACE rev. 2; codes to verify) and the risk factors they carry, from Annex II (lower risk) and Annex III (higher risk) of Directive (EU) 2015/849, to which the Wwft refers. The risk band follows: higher if any Annex III factor, lower if only Annex II factors, otherwise standard.",
+ "factors": {
+  "A3-1c": {
+   "annex": "III",
+   "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder c",
+   "text": "legal persons or arrangements that are personal asset-holding vehicles"
+  },
+  "A3-1d": {
+   "annex": "III",
+   "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder d",
+   "text": "companies that have nominee shareholders or shares in bearer form"
+  },
+  "A3-1e": {
+   "annex": "III",
+   "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder e",
+   "text": "businesses that are cash-intensive"
+  },
+  "A3-1f": {
+   "annex": "III",
+   "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder f",
+   "text": "the ownership structure of the company appears unusual or excessively complex given the nature of the business"
+  },
+  "A2-1a": {
+   "annex": "II",
+   "ref": "Richtlijn (EU) 2015/849 bijlage II, punt 1 onder a",
+   "text": "public companies listed on a stock exchange and subject to disclosure requirements"
+  }
+ },
+ "types": {
+  "holding_spv": {
+   "sbi": "64.20",
+   "name": "Holding / special purpose vehicle without staff",
+   "name_nl": "Financiële holding zonder personeel",
+   "factors": [
+    "A3-1d",
+    "A3-1f"
+   ]
+  },
+  "personal_holding": {
+   "sbi": "64.20",
+   "name": "Personal asset-holding vehicle",
+   "name_nl": "Persoonlijke vermogensholding",
+   "factors": [
+    "A3-1c"
+   ]
+  },
+  "listed_group": {
+   "sbi": "64.20",
+   "name": "Listed group company",
+   "name_nl": "Beursgenoteerd concern",
+   "factors": [
+    "A2-1a"
+   ]
+  },
+  "cash_intensive": {
+   "sbi": "56.10",
+   "name": "Restaurant / cash-intensive business",
+   "name_nl": "Restaurant (contantintensief)",
+   "factors": [
+    "A3-1e"
+   ]
+  },
+  "ecommerce": {
+   "sbi": "47.91",
+   "name": "Online retail",
+   "name_nl": "Detailhandel via internet",
+   "factors": []
+  },
+  "trading": {
+   "sbi": "46.90",
+   "name": "Wholesale and import/export",
+   "name_nl": "Groothandel en import/export",
+   "factors": []
+  },
+  "construction": {
+   "sbi": "41.20",
+   "name": "Construction",
+   "name_nl": "Algemene burgerlijke en utiliteitsbouw",
+   "factors": []
+  },
+  "consultancy": {
+   "sbi": "70.22",
+   "name": "Management consultancy",
+   "name_nl": "Organisatie-adviesbureau",
+   "factors": []
+  },
+  "real_estate": {
+   "sbi": "68.10",
+   "name": "Real estate investment",
+   "name_nl": "Handel in eigen onroerend goed",
+   "factors": []
+  },
+  "charity": {
+   "sbi": "94.99",
+   "name": "Charitable organisation (ANBI)",
+   "name_nl": "Ideële organisatie (ANBI)",
+   "factors": []
+  },
+  "sports_club": {
+   "sbi": "93.12",
+   "name": "Professional sports club",
+   "name_nl": "Sportclub (betaald voetbal)",
+   "factors": []
+  },
+  "private_individual": {
+   "sbi": null,
+   "name": "Private individual",
+   "name_nl": "Particulier",
+   "factors": []
+  }
+ }
+}

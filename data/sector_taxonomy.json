@@ -1,0 +1,161 @@
+{
+ "note": "Sector classification of the Netherlands: two levels. Level 1 is the FATF scope (FI = financial institutions, VASP = virtual asset service providers, DNFBP = designated non-financial businesses and professions), taken from the sector inventory; for the AMLR sectors Casefold assigns it (source \"casefold\"). Level 2 is a Casefold category that groups sectors with a similar business and similar duties.",
+ "scopes": [
+  {
+   "id": "FI",
+   "name": "Financial institutions",
+   "name_nl": "Financiële instellingen"
+  },
+  {
+   "id": "VASP",
+   "name": "Virtual asset service providers",
+   "name_nl": "Aanbieders van cryptodiensten"
+  },
+  {
+   "id": "DNFBP",
+   "name": "Designated non-financial businesses and professions",
+   "name_nl": "Aangewezen niet-financiële beroepen en ondernemingen"
+  },
+  {
+   "id": "OTHER",
+   "name": "Other obliged entities under the AMLR",
+   "name_nl": "Overige meldingsplichtige entiteiten (AMLR)"
+  },
+  {
+   "id": "NONE",
+   "name": "Not an AML obliged entity",
+   "name_nl": "Geen meldingsplichtige instelling"
+  }
+ ],
+ "categories": [
+  {
+   "id": "banking",
+   "name": "Banking and credit",
+   "name_nl": "Banken en krediet",
+   "sectors": [
+    "banks",
+    "non-bank-lending",
+    "mortgage-and-consumer-credit"
+   ]
+  },
+  {
+   "id": "payments",
+   "name": "Payments and currency exchange",
+   "name_nl": "Betalingsverkeer en geldwissel",
+   "sectors": [
+    "payment-institutions",
+    "electronic-money",
+    "currency-exchange",
+    "payment-service-agents"
+   ]
+  },
+  {
+   "id": "insurance",
+   "name": "Insurance and pensions",
+   "name_nl": "Verzekeren en pensioen",
+   "sectors": [
+    "financial-service-providers",
+    "life-insurers",
+    "non-life-insurance-intermediaries",
+    "non-life-insurers",
+    "pension-funds"
+   ]
+  },
+  {
+   "id": "investment",
+   "name": "Investment and crowdfunding",
+   "name_nl": "Beleggen en crowdfunding",
+   "sectors": [
+    "investment-firms",
+    "investment-institutions",
+    "ucits",
+    "crowdfunding"
+   ]
+  },
+  {
+   "id": "crypto",
+   "name": "Crypto-assets",
+   "name_nl": "Cryptoactiva",
+   "sectors": [
+    "banks-and-e-money",
+    "crypto-asset-service"
+   ]
+  },
+  {
+   "id": "trust",
+   "name": "Trust and registered-office services",
+   "name_nl": "Trust- en domicilieverlening",
+   "sectors": [
+    "trust-offices",
+    "domicile"
+   ]
+  },
+  {
+   "id": "legal_tax",
+   "name": "Legal, tax and accountancy",
+   "name_nl": "Juridisch, fiscaal en accountancy",
+   "sectors": [
+    "audit-firms",
+    "bailiffs",
+    "civil-law-notaries",
+    "external-accountants",
+    "lawyers",
+    "other-independent-legal",
+    "tax-advisers"
+   ]
+  },
+  {
+   "id": "real_estate",
+   "name": "Real estate",
+   "name_nl": "Vastgoed",
+   "sectors": [
+    "real-estate-brokers",
+    "real-estate-appraisers"
+   ]
+  },
+  {
+   "id": "goods",
+   "name": "Trade in goods and valuables",
+   "name_nl": "Handel in goederen en waardevolle zaken",
+   "sectors": [
+    "professional-traders",
+    "intermediaries-in-vehicles",
+    "art-dealers",
+    "pawnshops",
+    "dealers-in-precious",
+    "dealers-in-high-value",
+    "free-zones"
+   ]
+  },
+  {
+   "id": "gaming",
+   "name": "Gambling",
+   "name_nl": "Kansspelen",
+   "sectors": [
+    "gaming-arcades",
+    "land-based-casinos",
+    "lotteries",
+    "online-gambling"
+   ]
+  },
+  {
+   "id": "sport",
+   "name": "Professional football",
+   "name_nl": "Betaald voetbal",
+   "sectors": [
+    "football-agents",
+    "professional-football-clubs"
+   ]
+  },
+  {
+   "id": "other",
+   "name": "Other",
+   "name_nl": "Overig",
+   "sectors": [
+    "investment-migration",
+    "listed-issuers",
+    "non-financial-mixed-holding"
+   ]
+  }
+ ]
+}

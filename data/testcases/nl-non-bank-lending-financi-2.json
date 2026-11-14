@@ -1,0 +1,296 @@
+{
+ "id": "nl-non-bank-lending-financi-2",
+ "fictitious": true,
+ "institution": "OFF-non-bank-lending-financial-und",
+ "institution_data": {
+  "id": "OFF-non-bank-lending-financial-und",
+  "name": "Test office: niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "jurisdiction": "NL",
+  "fictitious": true,
+  "sector": {
+   "id": "NL:non-bank-lending-financial-undertakings-crd-annex-i-activiti",
+   "name": "non-bank lending/financial undertakings (CRD Annex I activities)",
+   "local": "niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+   "group": "all",
+   "status": "supervised",
+   "obliged_from": null
+  },
+  "regulator": {
+   "id": "NL:dnb",
+   "short": "DNB",
+   "name": "De Nederlandsche Bank",
+   "role": "prudential_and_aml"
+  },
+  "guidance": {
+   "id": "GUIDE:NL:dnb:g1",
+   "title": "DNB Wwft Q&As and Good Practices",
+   "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/"
+  },
+  "guidance_all": [
+   {
+    "id": "NL:dnb:g1",
+    "title": "DNB Wwft Q&As and Good Practices",
+    "title_local": "DNB Q&As en Good Practices Wwft",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+    "verify": false
+   },
+   {
+    "id": "NL:dnb:g2",
+    "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+    "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+    "verify": false
+   },
+   {
+    "id": "NL:dnb:g3",
+    "title": "Sanctions Act 1977 Supervision Regulation",
+    "title_local": "Regeling toezicht Sanctiewet 1977",
+    "kind": "regulation",
+    "binding": true,
+    "url": "https://wetten.overheid.nl/BWBR0018806",
+    "verify": true
+   },
+   {
+    "id": "NL:dnb:g4",
+    "title": "DNB Good Practices on systematic integrity risk analysis",
+    "title_local": "DNB Good Practices SIRA",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+    "verify": true
+   }
+  ],
+  "records": [
+   {
+    "id": "R-training",
+    "duty": "NL:duty:training",
+    "date": "2026-02-01",
+    "title": "evidence: training"
+   },
+   {
+    "id": "R-sanctions-ao",
+    "duty": "NL:duty:sanctions-ao",
+    "date": "2026-02-01",
+    "title": "evidence: sanctions ao"
+   }
+  ]
+ },
+ "legal_forms_extra": [
+  {
+   "id": "NL:lf:foreign-trust",
+   "country": "NL",
+   "local": "buitenlandse trust (beheerd in Nederland)",
+   "abbr": "trust",
+   "en": "foreign express trust",
+   "category": "trust",
+   "law": "Hague Trust Convention; Uitvoeringsbesluit Wwft 2018 art. 3(1)(e)",
+   "law_url": "",
+   "registered_in": "UBO-register (trusts)",
+   "ubo_rule": "Art. 3(1)(e): founder, trustee, protector, beneficiaries, other controllers",
+   "verify": false,
+   "legal_personality": false,
+   "entity_type": "trust"
+  }
+ ],
+ "scenario": "V.O.F. with two partners, 70% and 30%",
+ "client": {
+  "name": "Test client 2 of niet-bancaire kredietverleners en financiële ondernemingen (CRD bijlage I)",
+  "jurisdiction": "NL",
+  "legal_form": "NL:lf:vof",
+  "activity": "V.O.F. with two partners, 70% and 30%",
+  "service_profile": {
+   "name": "business payment account",
+   "expected_monthly": 50000,
+   "cash_allowed": false
+  },
+  "business_type": {
+   "code": "cash_intensive",
+   "sbi": "56.10",
+   "name": "Restaurant / cash-intensive business",
+   "name_nl": "Restaurant (contantintensief)",
+   "factors": [
+    {
+     "id": "A3-1e",
+     "annex": "III",
+     "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder e",
+     "text": "businesses that are cash-intensive"
+    }
+   ]
+  },
+  "risk": {
+   "band": "high",
+   "triggers": [
+    "high_risk"
+   ]
+  }
+ },
+ "entities": [
+  {
+   "id": "A",
+   "kind": "Person",
+   "name": "TNON2 A (partner, 70%)",
+   "country": "NL"
+  },
+  {
+   "id": "B",
+   "kind": "Person",
+   "name": "TNON2 B (partner, 30%)",
+   "country": "NL"
+  }
+ ],
+ "relations": [
+  {
+   "from": "A",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 70,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "B",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 30,
+   "source": "D1",
+   "where": "register"
+  }
+ ],
+ "documents": [
+  {
+   "id": "D1",
+   "title": "Register extract (test)",
+   "doctype": "register_extract",
+   "date": "2026-11-01",
+   "text": "V.O.F. with two partners, 70% and 30%"
+  },
+  {
+   "id": "D2",
+   "title": "Statutes (test)",
+   "doctype": "constitutional",
+   "date": "2026-11-01",
+   "text": "test"
+  },
+  {
+   "id": "D3",
+   "title": "Agreement (test)",
+   "doctype": "other",
+   "date": "2026-11-01",
+   "text": "test"
+  }
+ ],
+ "questions": [],
+ "signals": [],
+ "counterparties": [
+  {
+   "id": "S1",
+   "name": "TNON Noordlicht Handel B.V.",
+   "type": "organisation",
+   "role": "customer",
+   "country": "NL",
+   "parent": null,
+   "key": "65d26936aee0",
+   "incoming": 75000,
+   "outgoing": 0,
+   "transactions": 2,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S2",
+   "name": "TNON2 Rheinland Service GmbH",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "DE",
+   "parent": null,
+   "key": "b04b3a5875c0",
+   "incoming": 35000,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S3",
+   "name": "TNON2 Schelde Diensten BV",
+   "type": "organisation",
+   "role": "payment service provider",
+   "country": "BE",
+   "parent": null,
+   "key": "759b4896d49a",
+   "incoming": 25000,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  },
+  {
+   "id": "S1A",
+   "name": "TNON2 Twente Logistiek B.V.",
+   "type": "organisation",
+   "role": "supplier of S1",
+   "country": "NL",
+   "parent": "S1",
+   "key": "ca5c02b18aac",
+   "incoming": 0,
+   "outgoing": 0,
+   "transactions": 0,
+   "kycc_level": "light",
+   "checks_done": 2,
+   "checks_total": 2
+  }
+ ],
+ "transactions": [
+  {
+   "id": "M1",
+   "date": "2026-07-06",
+   "day": 20640,
+   "kind": "payment",
+   "amount": 30000,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  },
+  {
+   "id": "M2",
+   "date": "2026-08-04",
+   "day": 20669,
+   "kind": "payment",
+   "amount": 35000,
+   "payment": "transfer",
+   "with": "S2",
+   "series": "monitoring",
+   "description": "bank transfer with S2"
+  },
+  {
+   "id": "M3",
+   "date": "2026-09-08",
+   "day": 20704,
+   "kind": "payment",
+   "amount": 25000,
+   "payment": "transfer",
+   "with": "S3",
+   "series": "monitoring",
+   "description": "bank transfer with S3"
+  },
+  {
+   "id": "M4",
+   "date": "2026-10-05",
+   "day": 20731,
+   "kind": "payment",
+   "amount": 45000,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  }
+ ]
+}

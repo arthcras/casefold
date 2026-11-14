@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casefold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: a top bar (brand, view, date, engine) over three columns: controls, the graph with its answers below, the inspector. Stacks on narrow screens.
+   Identity: a case file in ink. Ink blue for structure, a Dutch-orange signal for what needs attention, status colours only for results. */
+:root{
+ --bg:#eef0f3;--panel:#ffffff;--sunk:#f6f7f9;--line:#dfe3e8;--line2:#c9d0d8;--fg:#121a26;--muted:#5b6676;
+ --ink:#1d3f73;--accent:#1d3f73;--signal:#e2660f;--ok:#1f8a56;--bad:#c2334d;--warn:#b77712;
+ --file:#2f6fb5;--rule:#a86b1f;--kycc:#6c4fc0;--doc:#5f7d95;--mem:#1f8a56;
+ --f:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--h:"Space Grotesk","Inter",system-ui,sans-serif;--m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+ --r:10px;--shadow:0 1px 2px rgba(18,26,38,.06),0 4px 16px rgba(18,26,38,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0f15;--panel:#121821;--sunk:#0f141c;--line:#232c38;--line2:#2f3a48;--fg:#e7ecf3;--muted:#93a0b2;
+ --ink:#8fb3f0;--accent:#8fb3f0;--signal:#ff8a3d;--ok:#4cc58a;--bad:#ef6a83;--warn:#e9ad4c;--file:#6ea8ea;--rule:#e0a457;--kycc:#a993ee;--doc:#8fa9bf;--mem:#4cc58a;
+ --shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b0f15;--panel:#121821;--sunk:#0f141c;--line:#232c38;--line2:#2f3a48;--fg:#e7ecf3;--muted:#93a0b2;
+ --ink:#8fb3f0;--accent:#8fb3f0;--signal:#ff8a3d;--ok:#4cc58a;--bad:#ef6a83;--warn:#e9ad4c;--file:#6ea8ea;--rule:#e0a457;--kycc:#a993ee;--doc:#8fa9bf;--mem:#4cc58a;
+ --shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));
+ background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.brand svg{flex:none}
+.brand b{display:block;font:700 19px/1 var(--h);letter-spacing:-.01em}
+.brand span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.datepick{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.datepick select{width:auto;min-width:0}
+.engine{font:11px/1.4 var(--m);color:var(--muted);max-width:360px;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--sunk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.engine b{color:var(--ok);font-weight:500}.engine br{display:none}
+
+/* grid */
+.app{display:grid;grid-template-columns:300px minmax(0,1fr) 360px;grid-template-rows:minmax(420px,62vh) auto;min-height:calc(100vh - 58px)}
+aside{grid-column:1;grid-row:1/3;background:var(--panel);border-right:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:18px;overflow:auto;max-height:calc(100vh - 58px);position:sticky;top:58px}
+.insp{background:var(--panel);border-left:1px solid var(--line);padding:18px;overflow:auto;grid-column:3;grid-row:1/3;max-height:calc(100vh - 58px);position:sticky;top:58px}
+.stage{position:relative;min-width:0;grid-column:2;grid-row:1;background:radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/22px 22px,var(--bg)}
+#cy{position:absolute;inset:0}
+.status{position:absolute;left:14px;bottom:14px;font:11px var(--m);color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;box-shadow:var(--shadow);max-width:calc(100% - 28px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tools{position:absolute;right:14px;top:14px;display:flex;gap:6px}
+.ask{grid-column:2;grid-row:2;border-top:1px solid var(--line);padding:18px 20px 28px;background:var(--panel);min-width:0}
+
+/* controls */
+.grp{display:flex;flex-direction:column;gap:8px}
+.grp>h3{margin:0;font:600 11px var(--f);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.grp>h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:2px 0 -2px;font-weight:600}
+.nav{display:flex;flex-direction:column;gap:8px}
+select,input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line2);border-radius:8px;background:var(--panel);color:var(--fg);font-size:13.5px}
+select:hover,input[type=text]:hover{border-color:var(--muted)}
+.seg{display:flex;gap:2px;padding:3px;border-radius:10px;background:var(--sunk);border:1px solid var(--line)}
+.seg button{flex:1 1 0;font-size:12.5px;padding:6px 12px;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-weight:500}
+.seg button.on{background:var(--panel);color:var(--fg);box-shadow:var(--shadow)}
+.top .seg button.on{background:var(--ink);color:var(--panel)}
+button.b{border:1px solid var(--line2);background:var(--panel);color:var(--fg);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px}
+button.b:hover{border-color:var(--ink)}
+button.p{background:var(--ink);border-color:var(--ink);color:var(--panel);font-weight:600}
+button.p:hover{filter:brightness(1.1)}
+.sups{display:flex;flex-wrap:wrap;gap:6px}
+.sup{font:11.5px var(--m);padding:3px 9px;border:1px solid var(--line2);border-radius:999px;color:var(--muted);background:var(--sunk);cursor:pointer}
+.sup.aml{border-color:var(--ink);color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent);font-weight:500}
+label.t{display:flex;gap:8px;align-items:center;padding:2px 0;cursor:pointer;font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.miss button{display:block;width:100%;text-align:left;margin:4px 0;padding:6px 9px;border:1px dashed var(--bad);color:var(--bad);background:transparent;border-radius:8px;font-size:12.5px;cursor:pointer}
+.srcform{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:var(--r);padding:12px;background:var(--sunk)}
+.srcform input[type=file]{font-size:12px;max-width:100%;color:var(--muted)}
+#srcList{display:flex;flex-direction:column;gap:6px}
+.srcitem{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.35}
+.kind{flex:none;font:600 10px var(--m);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:5px;color:var(--panel);background:var(--muted)}
+.kind.procedure{background:var(--ink)}.kind.case{background:var(--bad)}.kind.law{background:var(--rule)}.kind.guidance{background:var(--ok)}
+.srcitem small{display:block;color:var(--muted);font-size:11.5px}
+
+/* answers */
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tab{font-size:12.5px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted);cursor:pointer}.tab.on{border-color:var(--ink);color:var(--ink);font-weight:600}
+.path{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:10px}.path b{color:var(--fg);font-weight:600}.path button{font-size:12.5px;border:0;background:none;color:var(--ink);cursor:pointer;padding:0}
+.xq{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.xq button{font-size:12.5px;text-align:left;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);cursor:pointer;max-width:100%}.xq button:hover{border-color:var(--ink)}.xq .act{border-style:dashed;color:var(--ink)}
+tr.pick{cursor:pointer}tr.pick:hover td{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.ask .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ask select{flex:1 1 380px;width:auto;min-width:0;max-width:100%;text-overflow:ellipsis}.ask input{flex:0 1 220px;width:auto}
+.res{margin-top:10px;overflow-x:auto;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;font-size:12.5px;width:100%}th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font:600 10.5px var(--f);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);position:sticky;top:0;background:var(--sunk);z-index:1}
+td{max-width:460px;overflow-wrap:anywhere}.ms{font:11px var(--m);color:var(--muted);margin-top:8px}
+.ov{border:1px solid var(--line);border-radius:var(--r);padding:0;margin:0 0 12px;background:var(--panel);overflow:hidden}
+.ov>summary{cursor:pointer;font:600 13.5px var(--h);padding:11px 14px;list-style:none;display:flex;gap:8px;align-items:center}
+.ov>summary::-webkit-details-marker{display:none}
+.ov>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+.ov[open]>summary::before{transform:rotate(45deg)}
+.ov>.res,.ov>.note,.ov>.testbody{margin:0 14px 14px}
+.ov .res{max-height:300px}
+#ohead{font-size:13px}
+
+/* testing */
+.ov.test{border-color:var(--ink);box-shadow:var(--shadow)}
+.ov.test>summary{font-size:15px;background:color-mix(in srgb,var(--ink) 6%,var(--panel))}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 10px}
+.kpi{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;background:var(--sunk)}
+.kpi b{display:block;font:700 28px/1 var(--h);font-variant-numeric:tabular-nums}
+.kpi span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.kpi.ok b{color:var(--ok)}.kpi.warn b{color:var(--warn)}.kpi.bad b{color:var(--bad)}
+.bar{display:flex;height:8px;border-radius:999px;overflow:hidden;background:var(--line);margin-bottom:12px}
+.bar i{display:block}.bar .ok{background:var(--ok)}.bar .warn{background:var(--warn)}.bar .bad{background:var(--bad)}
+.pill{display:inline-block;font:600 10.5px var(--m);letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,transparent)}
+.pill.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 15%,transparent)}
+.pill.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent)}
+.test tbody tr{box-shadow:inset 3px 0 0 transparent}
+.test tbody tr.r-bad{box-shadow:inset 3px 0 0 var(--bad)}.test tbody tr.r-warn{box-shadow:inset 3px 0 0 var(--warn)}.test tbody tr.r-ok{box-shadow:inset 3px 0 0 var(--ok)}
+.chip{font:11.5px var(--m);padding:2px 7px;border-radius:6px;background:var(--sunk);border:1px solid var(--line);white-space:nowrap}
+.duty{font-weight:500}
+.lvl{font:10.5px var(--m);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.wwb{display:block;color:var(--bad);font-size:12px;padding-left:12px;position:relative}
+.wwb::before{content:"";position:absolute;left:0;top:.5em;width:6px;height:6px;border-radius:50%;background:var(--bad)}
+.sugg{margin-top:4px;font-size:12px;color:var(--warn)}
+.sugg button{margin-left:6px;padding:2px 9px;font-size:11.5px;border-color:var(--warn);color:var(--warn)}
+.cases-here{margin:0 14px 14px;font-size:12.5px;color:var(--muted)}.cases-here a{color:var(--bad)}
+.lede{font-size:12.5px;color:var(--muted);margin:0 0 4px;max-width:90ch}
+
+/* inspector */
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:13px}dt{color:var(--muted);font-size:12px}dd{margin:0;overflow-wrap:anywhere}
+.insp h2{font:600 18px/1.25 var(--h)!important;text-wrap:balance}
+.q{background:var(--sunk);border-left:3px solid var(--ink);padding:9px 11px;font-size:13px;line-height:1.55;overflow-wrap:anywhere;white-space:pre-wrap;border-radius:0 8px 8px 0}
+.rel{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0;background:var(--panel);color:var(--fg);font-size:13px;cursor:pointer}
+.rel:hover{border-color:var(--ink)}
+.rel .y{font:10.5px var(--m);color:var(--muted)}.note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.flag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid currentColor;margin:2px 4px 2px 0}
+.fine{font-size:11.5px;color:var(--muted);line-height:1.5;margin:0}
+
+@media (max-width:1100px){.app{grid-template-columns:260px minmax(0,1fr)}.insp{grid-column:1/3;grid-row:3;position:static;max-height:none;border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:760px){.app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 55vh auto auto}
+ aside,.insp,.stage,.ask{grid-column:1;grid-row:auto;position:static;max-height:none;border:0;border-bottom:1px solid var(--line)}
+ .stage{height:55vh}.engine{display:none}.kpis{gap:6px}.kpi b{font-size:22px}
+ aside,.ask,.insp{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.relate{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 8px;font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.relate details{flex-basis:100%}.relate summary{cursor:pointer;color:var(--ink);font-weight:500}
+.relate pre{margin:8px 0 0;padding:12px;background:var(--sunk);border:1px solid var(--line);border-radius:8px;font:11.5px/1.5 var(--m);color:var(--fg);overflow-x:auto;white-space:pre}
+.relate-badge{font:600 10.5px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--panel);background:var(--signal);padding:2px 7px;border-radius:5px}
+.test table{min-width:980px;table-layout:fixed}
+.test th:nth-child(1){width:104px}.test th:nth-child(2){width:230px}.test th:nth-child(3){width:150px}.test th:nth-child(4){width:250px}.test th:nth-child(5){width:110px}
+.test .chip{white-space:normal;display:inline-block}
+
+/* Relate inside: a drawer of live probes, one card per Relate feature */
+.relbtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--signal);color:var(--signal);background:transparent;border-radius:999px;padding:5px 12px;font:600 12px var(--f);cursor:pointer;white-space:nowrap}
+.relbtn:hover{background:var(--signal);color:var(--panel)}
+.relbtn i{font-style:normal;font:500 11px var(--m);opacity:.85}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:50;width:min(780px,100%);background:var(--panel);border-left:1px solid var(--line);box-shadow:-12px 0 40px rgba(18,26,38,.18);display:flex;flex-direction:column}
+.dhead{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px max(16px,env(safe-area-inset-right,0px)) 14px 22px;border-bottom:1px solid var(--line)}
+.dhead b{font:700 20px/1.2 var(--h);letter-spacing:-.01em;display:block}
+.dhead span{font-size:12.5px;color:var(--muted)}
+.dbody{overflow:auto;padding:14px max(16px,env(safe-area-inset-right,0px)) 30px 22px;display:grid;gap:12px}
+.rcard{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--sunk);min-width:0}
+.rcard h4{margin:0;display:flex;gap:8px;align-items:baseline;font:600 14.5px/1.3 var(--h)}
+.rcard h4 .no{font:500 11px var(--m);color:var(--signal)}
+.rcard h4 .on{margin-left:auto;font:500 10.5px var(--m);color:var(--muted);white-space:nowrap}
+.rcard p{margin:4px 0 8px;font-size:12.5px;color:var(--muted);max-width:68ch}
+.rcard pre{margin:0 0 8px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:7px;font:11.5px/1.45 var(--m);white-space:pre-wrap;word-break:break-word;color:var(--fg)}
+.rcard .res{max-height:220px}
+.rcard .ms{font:11px var(--m);color:var(--muted);margin-top:6px}
+.rcard .ms b{color:var(--ok);font-weight:500}
+.rcard .err{font:12px var(--m);color:var(--bad);margin-top:6px}
+.rcard button{margin-right:6px}
+.rsec{font:600 11px var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 0}
+.plan{font:11.5px/1.5 var(--m)}.plan div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plan em{font-style:normal;color:var(--signal)}
+.cli{display:grid;gap:8px}.cli div{font-size:12.5px}.cli code{font:11.5px var(--m);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 5px;word-break:break-word}
+.sugg .vec{color:var(--muted);margin-left:6px}.sugg .vec b{color:var(--ok);font-weight:600}
+
+/* New client from documents */
+.drawer.nc{width:min(900px,100%)}
+.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.ncbtns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.ncbtns label.b{display:inline-flex;align-items:center;border:1px solid var(--ink);color:var(--ink);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer;font:500 13px var(--f)}
+.ncbtns label.b:focus-within{outline:2px solid var(--signal)}
+.nc table{border-collapse:collapse;width:100%;font-size:12.5px}.nc th,.nc td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.nc th{font:500 10.5px var(--m);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.nc tr.ok td{color:var(--muted)}.nc tr.rej td{text-decoration:line-through;color:var(--muted)}.nc tr.gap td{background:color-mix(in srgb,var(--signal) 16%,transparent)}
+.nc .warn{color:var(--signal);font-weight:600}.nc h5{margin:14px 0 6px;font:600 13px var(--h)}
+.nc .kpis{display:flex;flex-wrap:wrap;gap:8px}.nc .kpis div{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel);font-size:12.5px}.nc .kpis div.warn{border-color:var(--signal)}
+.nc textarea{width:100%;box-sizing:border-box;font:12px var(--m);background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:8px;margin-bottom:6px}
+.nc .res{max-height:none}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="brand">
+  <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="7" width="30" height="23" rx="4" fill="var(--ink)"/><path d="M2 11a4 4 0 0 1 4-4h7l3 3h12a4 4 0 0 1 4 4v1H2z" fill="var(--signal)"/><circle cx="12" cy="21" r="2.6" fill="var(--panel)"/><circle cx="22" cy="17.5" r="2.6" fill="var(--panel)"/><circle cx="23" cy="25" r="2.6" fill="var(--panel)"/><path d="M12 21l10-3.5M12 21l11 4" stroke="var(--panel)" stroke-width="1.4"/></svg>
+  <div><b>Casefold</b><span>KYC compliance on Relate by Neo4j · one graph file per client, office and law · Wwft → AMLR</span></div>
+ </div>
+ <div class="seg" id="viewAs" role="group" aria-label="View"><button id="vUser" class="on" type="button" title="What a compliance officer of the office sees">User</button><button id="vAdmin" type="button" title="The sector register, sources and testing">Admin</button></div>
+ <label class="datepick" id="datePick" hidden><span>Date</span><select id="onSel"></select></label>
+ <div class="engine" id="engine">Loading Relate (WebAssembly)…</div>
+ <button class="relbtn" id="relBtn" type="button" title="Every Relate feature Casefold uses, run live in this page">Relate inside <i>9 live probes</i></button>
+</header>
+<div id="relDrawer" class="drawer" hidden role="dialog" aria-modal="false" aria-labelledby="relTitle"><div class="dhead"><div><b id="relTitle">Relate inside Casefold</b><span>Each card runs a Relate feature live, in this page, on Relate 1.0.1 compiled to WebAssembly. Times are measured here.</span></div><button class="b" id="relClose" type="button">Close</button></div><div class="dbody" id="relBody"></div></div>
+<div id="ncDrawer" class="drawer nc" hidden role="dialog" aria-modal="false" aria-labelledby="ncTitle"><div class="dhead"><div><b id="ncTitle">New client from documents</b><span>A test case: everything happens in this page, on Relate in WebAssembly. The documents are read here (text layer, or OCR with Tesseract in WebAssembly); nothing is sent anywhere.</span></div><button class="b" id="ncClose" type="button">Close</button></div>
+ <div class="dbody" id="ncBody">
+  <section class="rcard"><h4><span class="no">01</span>The client</h4><p id="ncClient"></p></section>
+  <section class="rcard"><h4><span class="no">02</span>Documents from the client</h4><p>Name each file after its type, or choose the type. A structure chart must be a PDF with real lines (from PowerPoint, Visio, Word); scans and photos are read with OCR.</p>
+   <div class="ncbtns"><label class="b" for="ncFiles">Choose files</label><input type="file" id="ncFiles" multiple accept=".pdf,.png,.jpg,.jpeg,.txt" class="vh"><button class="b" id="ncExample" type="button">Use the example documents</button><button class="b p" id="ncRead" type="button" disabled>Read into the graph</button></div>
+   <div id="ncDocs" class="res"></div><div id="ncLog" class="ms" aria-live="polite"></div></section>
+  <section class="rcard"><h4><span class="no">03</span>What the structure chart says</h4><p>Every box and line of the chart is a proposal, pointing to where it is drawn. Nothing enters the client's structure until you confirm it.</p>
+   <div id="ncProps" class="res"></div><div id="ncPropBtns" hidden><button class="b p" id="ncConfirmAll" type="button">Confirm all</button><button class="b" id="ncConfirmSel" type="button">Confirm selected</button><button class="b" id="ncReject" type="button">Reject selected</button></div></section>
+  <section class="rcard"><h4><span class="no">04</span>Review</h4><div id="ncReview"></div></section>
+ </div></div>
+<div class="app">
+ <aside>
+  <div class="nav">
+   <div id="blkUser" class="nav">
+    <div class="lab"><label for="office">Office</label></div><select id="office"></select>
+    <div class="lab"><label for="client">Client</label></div><select id="client"></select>
+    <button id="toOffice" class="b" type="button" hidden>← Back to the office</button>
+    <button id="newClient" class="b p" type="button" title="Start a client file from the documents the client delivers (test case)">+ New client from documents</button>
+   </div>
+   <div id="blkAdmin" class="nav" hidden>
+    <div class="grp"><h3>Sector register</h3><p class="fine">Filter the knowledge graph; the overview below shows what it finds, with the testing of the example company first.</p></div>
+    <div class="lab"><label for="jur">Jurisdiction</label></div><select id="jur"></select>
+    <div class="lab">Entry</div>
+    <div class="seg" role="group" aria-label="Entry"><button id="modeSec" class="on" type="button">Sector → its authorities</button><button id="modeAuth" type="button">Authority → its sectors</button></div>
+    <div id="navBody" class="nav">
+     <div id="blkAuth" hidden><div class="lab"><label for="auth">Authority</label></div><select id="auth"></select></div>
+     <div id="blkSec"><div class="lab"><label for="sec" id="secLab">Sector</label></div><select id="sec"></select></div>
+    </div>
+    <div class="grp"><h3>Laws</h3><select id="lawSel" aria-label="Law in the graph"></select></div>
+    <div class="grp"><h3>Sources in the graph</h3><div id="srcList" class="note"></div></div>
+    <div class="srcform">
+     <label class="lab" for="srcKind">Add a source</label>
+     <select id="srcKind"><option value="procedure">Procedure of the example company</option><option value="guidance">Guidance of the supervisor</option><option value="law">Law</option><option value="case">Enforcement case</option></select>
+     <select id="srcIssuer" hidden><option value="DNB">issued by DNB</option><option value="AFM">issued by the AFM</option></select>
+     <select id="srcLaw" hidden><option value="Wwft">Wwft</option><option value="AMLR">AMLR</option><option value="Rtsw">Rtsw</option><option value="Wtt">Wtt 2018</option><option value="Sanctiewet">Sanctiewet 1977</option></select>
+     <input type="text" id="srcTitle" placeholder="Title (for example: DNB Leidraad Wwft en Sw)">
+     <input type="file" id="srcFile" accept=".pdf,.xml,.txt,.md">
+     <button class="b p" id="srcAdd" type="button">Read into the graph</button>
+     <div class="note" id="srcMsg"></div>
+    </div>
+   </div>
+   <div class="lab" id="supsLab">Supervisory framework of the office</div><div id="sups" class="sups"></div>
+   <select id="case" hidden></select><div class="note" id="file" style="margin-top:6px"></div>
+  </div>
+  <div class="grp"><h3>Layers</h3>
+   <label class="t"><input type="checkbox" data-l="file" checked><span class="dot" style="background:var(--file)"></span>Client file</label>
+   <label class="t"><input type="checkbox" data-l="ocr"><span class="dot" style="background:var(--doc)"></span>OCR passages</label>
+   <label class="t"><input type="checkbox" data-l="rulebook" checked><span class="dot" style="background:var(--rule)"></span>Rulebook, supervisor and sector duties</label>
+   <label class="t"><input type="checkbox" data-l="kycc" checked><span class="dot" style="background:var(--kycc)"></span>KYCC network</label>
+   <label class="t"><input type="checkbox" data-l="memory"><span class="dot" style="background:var(--mem)"></span>Memory and reasoning</label></div>
+  <div class="grp"><h3>Required, not yet in the file</h3><div class="miss" id="miss"></div></div>
+  <p class="fine">The graph and every answer come from Cypher queries that run in this page, in Relate compiled to WebAssembly. Click a node for its properties and connections; double-click to show only its neighbours. All clients, offices and the example company are fictitious; enforcement cases are published decisions, each with its source.</p>
+ </aside>
+ <div class="stage"><div class="tools"><button class="b" id="fit">Fit</button><button class="b" id="all">Show all</button></div><div id="cy"></div><div class="status" id="status">Loading…</div></div>
+ <section class="insp" id="insp"><p class="note">Pick a node. A red document type is required but missing; its connections show the legal form rule, the law article or the risk trigger behind it. Law articles marked "to verify" still need checking against the current consolidated text.</p></section>
+ <section class="ask">
+  <div id="paneO" hidden><div class="path" id="ohead"></div><div id="obody"></div></div>
+  <div class="tabs" id="tabs" role="tablist"><button id="tabX" class="tab" type="button" role="tab" hidden>Regulation: questions from this file</button><button id="tabQ" class="tab on" type="button" role="tab">Ask the open file (Cypher)</button></div>
+  <div id="paneX" hidden>
+   <div class="path" id="xpath"></div>
+   <div class="xq" id="xq"></div>
+   <div class="res" id="xres"></div>
+  </div>
+  <div id="paneQ">
+  <div class="row"><select id="qsel"></select><input type="text" id="qparam" placeholder="parameter" hidden><button class="b p" id="qrun">Run</button></div>
+  <div class="res" id="qres"></div>
+  </div>
+ </section>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="chart.js"></script>
+<script type="module">
+const RELATE = 'https://cdn.jsdelivr.net/npm/@relate/relate-wasm@1.0.1/relate.js';
+const $=id=>document.getElementById(id), css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LAYER={Case:'file',Client:'file',Document:'file',Question:'file',Signal:'file',Party:'file',Person:'file',Company:'file',Chunk:'ocr',
+  Jurisdiction:'rulebook',Law:'rulebook',Article:'rulebook',Obligation:'rulebook',LegalForm:'rulebook',RiskTrigger:'rulebook',DocumentType:'rulebook',
+  Source:'file',SourceSection:'file',LawVersion:'rulebook',LawArticle:'rulebook',LawParagraph:'rulebook',LawPoint:'rulebook',Institution:'rulebook',Sector:'rulebook',Regulator:'rulebook',UboRule:'rulebook',UboGround:'rulebook',GroundType:'rulebook',TrustGroup:'rulebook',SectorDuty:'rulebook',MonitoringRule:'rulebook',OfficeRecord:'rulebook',Service:'file',Transaction:'file',ClientFile:'file',BusinessType:'file',RiskFactor:'rulebook',CounterpartyKey:'kycc',Licence:'rulebook',SectorCategory:'rulebook',FatfScope:'rulebook',OfficeFile:'file',Foundation:'file',Counterparty:'kycc',Country:'kycc',ScreeningHit:'kycc',Session:'memory',Ask:'memory',Answer:'memory',Step:'memory',Episode:'memory',Pattern:'memory',ToolCall:'memory',Claim:'memory'};
+const COLOR={file:'--file',rulebook:'--rule',kycc:'--kycc',ocr:'--doc',memory:'--mem',world:'--muted'};
+function layerOf(t,p){return LAYER[t]||'file';}
+const RING={Source:4,SourceSection:5,LawVersion:0,LawArticle:1,LawParagraph:2,LawPoint:3,UboGround:4,GroundType:5,Foundation:1,TrustGroup:0,Institution:1,Sector:2,Regulator:3,UboRule:3,ToolCall:4,Claim:4,Episode:1,Session:2,Pattern:2,Ask:3,Answer:3,Step:4,Client:0,Case:1,Person:1,Company:1,LegalForm:1,RiskTrigger:1,Counterparty:1,Document:2,Signal:2,Obligation:2,Country:3,ScreeningHit:3,Question:3,DocumentType:3,Chunk:3,Article:4,Law:5,Jurisdiction:5};
+let relate, db, cy, CASE, QUERIES=[], hidden=new Set(['ocr','memory']);
+window.CF={get db(){return db;},get CASE(){return CASE;},get QUERIES(){return QUERIES;},$:id=>document.getElementById(id),esc:s=>esc(s),loadCase:id=>loadCase(id),drawGraph:()=>drawGraph()};
+// A local embedding computed in this page: signed hashing of character trigrams (256 dimensions). No model download and no text leaves the browser;
+// casefold/embed.py swaps in a local sentence model for the files on disk. Accents are folded so 'opleiding' and 'opleidingen' land close together.
+const EMB_D=256;
+function emb(t){const v=new Float32Array(EMB_D);const s=' '+String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim()+' ';
+ for(let i=0;i<s.length-2;i++){let h=2166136261;for(let j=i;j<i+3;j++){h^=s.charCodeAt(j);h=Math.imul(h,16777619);}v[(h>>>0)%EMB_D]+=((h>>>9)&1)?1:-1;}
+ let n=0;for(const x of v)n+=x*x;n=Math.sqrt(n)||1;return Array.from(v,x=>x/n);}
+function run(cypher, params){const t=performance.now();const r=JSON.parse(db.execute(cypher.trim().replace(/;\s*$/,''), params?JSON.stringify(params):null));r.ms=performance.now()-t;if(r.error)throw new Error(r.error);return r;}
+function label(t,p){if(t==='Source')return ({procedure:'Procedure',guidance:'Guidance',law:'Law',case:'Case'}[p.kind]||'Source')+': '+(p.title||'').slice(0,60);if(t==='SourceSection')return '§ '+(p.number||'')+' '+(p.heading||'').slice(0,40);if(t==='LawVersion')return (p.title||p.law)+' ('+p.lang+', '+p.version+')';if(t==='LawArticle')return 'Art. '+p.number+(p.heading?' '+p.heading:'');if(t==='LawParagraph')return 'lid '+p.number;if(t==='LawPoint')return p.label+'.';if(t==='SectorDuty')return 'Duty: '+(p.title||'').slice(0,70);if(t==='MonitoringRule')return 'Monitoring: '+(p.title||'').slice(0,60);if(t==='OfficeRecord')return (p.title||'')+' '+(p.date||'');if(t==='SectorCategory')return 'Category: '+(p.name_nl||p.name||'');if(t==='FatfScope')return 'FATF: '+(p.id||'');if(t==='OfficeFile')return 'Office file: '+(p.name||'').replace('Test office: ','');if(t==='Sector'&&p.local)return p.local;if(t==='BusinessType')return 'Business type: '+(p.name_nl||p.name||'')+(p.sbi?' (SBI '+p.sbi+')':'');if(t==='RiskFactor')return 'Risk factor '+(p.id||'');if(t==='CounterpartyKey')return 'counterparty #'+(p.key||'');if(t==='Licence')return 'Licence: '+(p.kind==='none'?'none':(p.name||''));if(t==='ClientFile')return 'Client file '+(p.case||'')+' · '+((p.actions||[]).length+(p.monitoring||[]).length)+' signals';if(t==='Service')return 'Service: '+(p.name||'');if(t==='Transaction')return (p.id||'')+' '+(p.kind||'')+' EUR '+(p.amount||'')+' '+(p.payment||'');if(t==='UboRule')return 'UBO rule '+(p.name||'')+(p.verify?' (to verify)':'');if(t==='Institution')return (p.name||'')+' (fictitious)';if(t==='Regulator')return p.short||p.name||'';if(t==='UboGround')return p.name||'';if(t==='GroundType')return p.key||'';if(t==='Step')return (p.kind||'')+': '+(p.text||'').slice(0,70);if(t==='Episode')return 'Episode: '+(p.decision||'');if(t==='Session')return 'Session '+(p.started||'').slice(0,16);if(t==='Ask')return p.text||'';if(t==='Claim')return (p.status==='grounded'?'✓ ':'✗ ')+(p.text||'').slice(0,60);if(t==='ToolCall')return 'query '+(p.ord||'')+': '+(p.why||'').slice(0,50);if(t==='Answer'&&p.by==='ai')return 'AI: '+(p.text||'').slice(0,60);return String(p.name||p.title||p.ref||p.short||(t==='Chunk'?(p.text||'').split('\n')[0]:p.text)||p.code||p.id||p.key||t).slice(0,90);}
+function style(){return [
+ {selector:'node',style:{'background-color':e=>css(COLOR[e.data('layer')]),'label':'data(l)','font-size':9,'font-family':'Inter, system-ui, sans-serif','color':css('--fg'),'text-valign':'bottom','text-margin-y':4,'text-wrap':'ellipsis','text-max-width':130,'width':14,'height':14,'min-zoomed-font-size':6,'border-width':2,'border-color':css('--panel'),'text-outline-color':css('--bg'),'text-outline-width':2}},
+ {selector:'node[t="Sector"]',style:{'shape':'hexagon','width':30,'height':30,'font-size':12,'font-weight':600,'background-color':css('--ink')}},
+ {selector:'node[t="Regulator"]',style:{'shape':'diamond','width':22,'height':22,'font-weight':600}},
+ {selector:'node[t="Institution"]',style:{'shape':'round-rectangle','width':24,'height':18,'background-color':css('--signal'),'font-weight':600}},
+ {selector:'node[t="Source"]',style:{'shape':'round-tag','width':20,'height':20,'background-color':e=>css(((e.data('p')||{}).kind==='case')?'--bad':'--file')}},
+ {selector:'node[t="SourceSection"]',style:{'shape':'round-rectangle','width':12,'height':9,'font-size':8}},
+ {selector:'node[t="Client"]',style:{'width':34,'height':34,'font-size':13,'font-weight':600}},
+ {selector:'node[t="Document"]',style:{'background-color':css('--doc'),'shape':'round-rectangle','width':14,'height':18}},
+ {selector:'node[t="Chunk"]',style:{'shape':'round-rectangle','width':10,'height':7,'font-size':7}},
+ {selector:'node[t="DocumentType"]',style:{'shape':'round-rectangle','width':22,'height':13}},
+ {selector:'node[st="received"]',style:{'background-color':css('--ok')}},
+ {selector:'node[st="missing"]',style:{'background-color':css('--bad'),'border-width':2,'border-style':'dashed','border-color':css('--bad')}},
+ {selector:'node[?verify]',style:{'border-width':2,'border-color':css('--warn'),'border-style':'dotted'}},
+ {selector:'node[t="Person"],node[t="Company"]',style:{'shape':'ellipse','width':18,'height':18}},
+ {selector:'node[t="Step"]',style:{'shape':'round-rectangle','width':12,'height':8,'font-size':7}},
+ {selector:'node[t="Claim"]',style:{'shape':'tag','width':12,'height':12}},
+ {selector:'node[t="ToolCall"]',style:{'shape':'hexagon','width':12,'height':12}},
+ {selector:'node[t="Pattern"]',style:{'shape':'star','width':20,'height':20}},
+ {selector:'node[t="Signal"],node[t="ScreeningHit"]',style:{'background-color':css('--warn'),'shape':'triangle'}},
+ {selector:'edge',style:{'width':1,'line-color':css('--line2'),'target-arrow-shape':'triangle','target-arrow-color':css('--line2'),'arrow-scale':.6,'curve-style':'straight'}},
+ {selector:'edge[y="CITES"]',style:{'line-color':css('--signal'),'target-arrow-color':css('--signal'),'width':1.6,'line-style':'dashed'}},
+ {selector:'edge[y="REPLACED_BY"]',style:{'line-color':css('--warn'),'target-arrow-color':css('--warn'),'width':2}},
+ {selector:'edge[y="OWNS"]',style:{'width':2.4,'line-color':css('--file'),'target-arrow-color':css('--file')}},
+ {selector:'edge[y="REQUIRES"]',style:{'line-style':'dashed'}},
+ {selector:'edge[y="NEXT"],edge[y="SUPPORTED_BY"],edge[y="READ"]',style:{'line-color':css('--mem'),'target-arrow-color':css('--mem'),'width':1.6}},
+ {selector:'.faded',style:{'opacity':.12}},{selector:'node:selected',style:{'border-width':3,'border-color':css('--signal')}},
+ {selector:'edge.hi',style:{'line-color':css('--muted'),'target-arrow-color':css('--muted'),'label':'data(y)','font-size':7,'color':css('--muted'),'text-rotation':'autorotate','text-background-color':css('--panel'),'text-background-opacity':1}}];}
+function layout(e){(e||cy.elements(':visible')).layout({name:'concentric',animate:false,padding:30,minNodeSpacing:6,concentric:n=>10-(RING[n.data('t')]??3),levelWidth:()=>1,spacingFactor:1.2}).run();cy.fit(cy.elements(':visible'),30);}
+function applyHidden(){cy.nodes().forEach(n=>n.style('display',hidden.has(n.data('layer'))?'none':'element'));cy.edges().forEach(e=>e.style('display',e.source().style('display')==='none'||e.target().style('display')==='none'?'none':'element'));}
+function table(r){if(!r.rows.length)return '<div class="note">No rows.</div>';const cols=r.columns;const fmt=v=>v==null?'':Array.isArray(v)?v.map(x=>typeof x==='object'?JSON.stringify(x):x).join('; '):typeof v==='object'?JSON.stringify(v):String(v);
+  return `<table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${r.rows.map(row=>`<tr>${cols.map(c=>`<td>${esc(fmt(row[c]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;}
+function focusNav(){if(!cy||!cy.nodes().length)return;if(CASE&&CASE.kind==='register')applyHidden();   // start from the whole register, so another sector can be focused
+const sid=$('sec')&&$('sec').value,au=$('auth')&&$('auth').value;
+ let n=sid&&sid!=='*'?cy.nodes().filter(x=>x.data('t')==='Sector'&&(x.data('p')||{}).id===sid):cy.collection();
+ if(!n.length&&au)n=cy.nodes().filter(x=>x.data('t')==='Regulator'&&(x.data('p')||{}).short===au);
+ if(!n.length)return;n=n[0];if(n.style('display')==='none')return;
+ cy.$(':selected').unselect();n.select();select(n);
+ if(CASE&&CASE.kind==='register'){const k=n.closedNeighborhood();cy.elements().not(k).style('display','none');k.style('display','element');layout(k);cy.animate({fit:{eles:k,padding:40}},{duration:350});}
+ else cy.animate({fit:{eles:n.closedNeighborhood().filter(':visible'),padding:40}},{duration:350});}
+function select(n){cy.elements().removeClass('faded hi');cy.elements().not(n.closedNeighborhood()).addClass('faded');n.connectedEdges().addClass('hi');
+ const d=n.data(),p=d.p||{},skip=new Set(['text_en','text_local','quote','embedding','_vid','text']);
+ const rows=Object.entries(p).filter(([k])=>!skip.has(k)).map(([k,v])=>`<dt>${esc(k.replace(/_/g,' '))}</dt><dd>${/^https?:/.test(String(v))?`<a href="${esc(v)}" target="_blank" rel="noopener">${esc(String(v).slice(0,60))}</a>`:esc(Array.isArray(v)?v.join(', '):v)}</dd>`).join('');
+ const txt=(p.text_en?`<div class="lab">Text (English)</div><div class="q">${esc(p.text_en)}</div>`:'')+(p.text_local?`<div class="lab">Text (original)</div><div class="q">${esc(p.text_local)}</div>`:'')+(p.text&&d.t!=='Document'?`<div class="lab">Text</div><div class="q">${esc(p.text)}</div>`:'');
+ const flags=(p.verify===true?'<span class="flag" style="color:var(--warn)">to verify</span>':p.verify===false?'<span class="flag" style="color:var(--ok)">checked</span>':'')+(d.st?`<span class="flag" style="color:var(${d.st==='missing'?'--bad':'--ok'})">${esc(d.st)}</span>`:'');
+ const sim=(p.embedding&&CASE.vectors.includes(d.t))?`<button class="b" id="simBtn" style="margin:8px 0">Similar passages (vector search)</button><div id="simRes"></div>`:'';
+ const rels=n.connectedEdges().map(e=>{const o=e.source().id()===n.id()?e.target():e.source(),ep=e.data('p')||{},x=[ep.pct!=null?ep.pct+'%':'',ep.condition||'',ep.when||'',ep.where||'',ep.quote?ep.quote.slice(0,160):''].filter(Boolean).join(' · ');
+   return `<button class="rel" data-id="${esc(o.id())}"><div class="y">${e.source().id()===n.id()?'→':'←'} ${esc(e.data('y'))}</div>${esc(o.data('l'))}${x?`<div class="note">${esc(x)}</div>`:''}</button>`;}).join('');
+ $('insp').innerHTML=`<div class="note">${esc(d.t)}</div><h2 style="margin:4px 0 6px;font-size:17px">${esc(d.l)}</h2><div>${flags}</div>${rows?`<dl>${rows}</dl>`:''}${txt}${sim}<div class="lab" style="margin-top:12px">Connections (${n.connectedEdges().length})</div>${rels}`;
+ $('insp').querySelectorAll('.rel').forEach(b=>b.onclick=()=>{const t=cy.getElementById(b.dataset.id);cy.$(':selected').unselect();t.select();select(t);cy.animate({center:{eles:t}},{duration:200});});
+ if(sim)$('simBtn').onclick=()=>{try{const r=run(`MATCH (k:Chunk) SEARCH k IN (VECTOR INDEX chunk_vec FOR $v LIMIT 6) SCORE AS similarity MATCH (d:Document)-[:HAS_CHUNK]->(k) WHERE k._vid <> $id RETURN d.file AS file, k.page AS page, round(similarity,3) AS similarity, left(k.text,120) AS text ORDER BY similarity DESC`,{v:p.embedding,id:p._vid});
+   $('simRes').innerHTML=table(r)+`<div class="ms">vector search in the browser · ${r.ms.toFixed(1)} ms</div>`;}catch(e){$('simRes').innerHTML=`<div class="note">${esc(e.message)}</div>`;}};}
+function drawGraph(){const t=performance.now();
+ const nodes=run("MATCH (n) RETURN n._vid AS id, labels(n) AS labels, properties(n) AS p").rows;
+ const rels=run("MATCH (a)-[r]->(b) RETURN a._vid AS s, b._vid AS t, type(r) AS y, properties(r) AS p").rows;
+ const req=Object.fromEntries(run("MATCH (c:Client)-[:REQUIRES]->(t:DocumentType) WHERE NOT EXISTS { (c)-[:CLIENT_OF]->(:Institution)-[:IN_SECTOR]->(s:Sector) WHERE s.cdd = false OR (s.cdd_until IS NOT NULL AND s.cdd_until < '"+new Date().toISOString().slice(0,10)+"') OR (s.cdd_from IS NOT NULL AND s.cdd_from > '"+new Date().toISOString().slice(0,10)+"') } RETURN t._vid AS id, EXISTS { (:Document)-[:OF_TYPE]->(t) } AS received").rows.map(r=>[r.id,r.received]));
+ const ms=performance.now()-t;
+ cy.elements().remove();
+ cy.add(nodes.map(n=>{const t=n.labels.includes('Person')?'Person':n.labels.includes('Company')?'Company':n.labels.includes('Foundation')?'Foundation':n.labels[0];return {group:'nodes',data:{id:n.id,t,layer:layerOf(n.labels[0],n.p),l:label(t,n.p),p:n.p,verify:n.p.verify===true,st:n.id in req?(req[n.id]?'received':'missing'):''}};}));
+ cy.add(rels.map((r,i)=>({group:'edges',data:{id:'e'+i,source:r.s,target:r.t,y:r.y,p:r.p}})));
+ applyHidden();layout();
+ $('status').textContent=`${CASE.client} · ${nodes.length} nodes · ${rels.length} relationships · read with Cypher in ${ms.toFixed(0)} ms`;
+ const miss=cy.nodes('[st="missing"]');$('miss').innerHTML=miss.length?miss.map(n=>`<button data-id="${esc(n.id())}">${esc(n.data('l'))}</button>`).join(''):'<div class="note">Nothing missing.</div>';
+ $('miss').querySelectorAll('button').forEach(b=>b.onclick=()=>{const t=cy.getElementById(b.dataset.id);cy.$(':selected').unselect();t.select();select(t);cy.animate({center:{eles:t},zoom:1.4},{duration:200});});
+ const c=cy.nodes('[t="Client"]').length?cy.nodes('[t="Client"]'):cy.nodes('[t="TrustGroup"]');if(c.length)select(c[0]);else $('insp').innerHTML='';}
+async function loadCase(id){const t=performance.now();CASE=await (await fetch('data/'+id+'.json')).json();db.reset();const scope=CASE.kind||'case';$('qsel').innerHTML=QUERIES.filter(q=>(q.scope||'case')===scope).map(q=>`<option value="${q.id}">${q.id} · ${esc(q.title)}</option>`).join('');setQuery();$('qres').innerHTML='';
+ const out=db.executeScript(CASE.script, JSON.stringify(CASE.params)).map(s=>JSON.parse(s));const err=out.find(r=>r.error);if(err)throw new Error(err.error);
+ $('engine').innerHTML=`<b>Relate ${esc(relate.version||'1.0.1')}</b> · WebAssembly · ${esc(CASE.file)} loaded in ${(performance.now()-t).toFixed(0)} ms${CASE.vectors.length?`<br>vector indexes: ${esc(CASE.vectors.join(', '))} (${esc(CASE.embedding_model)})`:''}`;
+ $('file').textContent=CASE.file;drawGraph();focusNav();$('qres').innerHTML='';}
+function setQuery(){const q=QUERIES.find(x=>x.id===$('qsel').value);const p=q.params.filter(x=>!['v','k'].includes(x));$('qparam').hidden=!p.length;
+ $('qparam').placeholder=p.length?p[0]+(p[0]==='doctype'?' (e.g. source_of_wealth)':p[0]==='on'?' (date, e.g. 2027-07-10)':' (e.g. nominee)'):'';$('qparam').value=p[0]==='article'?'16':p[0]==='doctype'?'source_of_wealth':p[0]==='term'?(CASE&&CASE.kind==='law'?'melding':'nominee'):p[0]==='on'?new Date().toISOString().slice(0,10):'';}
+function ask(){const q=QUERIES.find(x=>x.id===$('qsel').value);const p=q.params.filter(x=>!['v','k'].includes(x));const params=p.length?{[p[0]]:$('qparam').value}:null;
+ try{const r=run(q.cypher,params);$('qres').innerHTML=table(r)+`<div class="ms">${r.rows.length} rows · ran in your browser in ${r.ms.toFixed(1)} ms</div>`;}catch(e){$('qres').innerHTML=`<div class="note">${esc(e.message)}</div>`;}}
+(async()=>{
+ cy=cytoscape({container:$('cy'),style:style(),wheelSensitivity:.25});cy.on('tap','node',e=>select(e.target));cy.on('tap',e=>{if(e.target===cy)cy.elements().removeClass('faded hi');});
+ cy.on('dbltap','node',e=>{const k=e.target.closedNeighborhood();cy.elements().not(k).style('display','none');k.style('display','element');layout(k);});
+ $('fit').onclick=()=>cy.fit(cy.elements(':visible'),30);$('all').onclick=()=>{applyHidden();cy.elements().removeClass('faded hi');layout();};
+ document.querySelectorAll('[data-l]').forEach(i=>i.onchange=()=>{i.checked?hidden.delete(i.dataset.l):hidden.add(i.dataset.l);applyHidden();layout();});
+ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>cy.style(style()));
+ try{relate=await import(RELATE);await relate.default();db=new relate.RelateDb();}
+ catch(e){$('engine').textContent='Relate (WebAssembly) could not be loaded from the CDN: '+e.message+'. Serve the page over http (cd web && python3 -m http.server).';return;}
+ QUERIES=await (await fetch('data/queries.json')).json();$('qsel').onchange=setQuery;$('qrun').onclick=ask;
+ const idx=await (await fetch('data/index.json')).json();
+ // the entry: jurisdiction, then sector, then its supervisor(s), then the files: the sector register, the office file(s) and the client files
+ const JUR={NL:'Nederland'};
+ let VIEW='user', MODE='sector';
+ const jurs=[...new Set(idx.map(c=>c.jurisdiction).filter(Boolean))].sort();
+ $('jur').innerHTML=jurs.map(j=>`<option value="${j}">${esc(JUR[j]||j)}</option>`).join('');
+ const sectorsOf=j=>{const m={};idx.filter(c=>c.jurisdiction===j&&c.sector_id).forEach(c=>{m[c.sector_id]=m[c.sector_id]||{id:c.sector_id,name:c.sector_local||c.sector,cat:c.category,order:c.category_order,from:c.obliged_from,sups:c.supervisors||[],expected:c.expected,lic:c.licence};});return Object.values(m);};
+ const fillAuth=()=>{const j=$('jur').value;const m={};sectorsOf(j).forEach(x=>x.sups.forEach(g=>{m[g.short]=m[g.short]||{n:0,aml:0,name:g.name};m[g.short].n++;if(g.aml)m[g.short].aml++;}));$('auth').innerHTML=`<option value="">All authorities</option>`+Object.keys(m).sort((a,b)=>m[b].aml-m[a].aml||m[b].n-m[a].n||a.localeCompare(b)).map(k=>`<option value="${esc(k)}">${esc(k)}${m[k].name&&m[k].name!==k?' — '+esc(m[k].name):''} · ${m[k].aml?m[k].aml+' sector(s) as AML supervisor':m[k].n+' sector(s)'}</option>`).join('');};
+ const fillSectors=()=>{const j=$('jur').value,au=$('auth').value;const cats={};sectorsOf(j).filter(x=>!au||x.sups.some(g=>g.short===au)).forEach(x=>{(cats[x.order+'|'+x.cat]=cats[x.order+'|'+x.cat]||[]).push(x);});
+  $('sec').innerHTML=`<option value="*">All sectors: the sector register</option>`+Object.keys(cats).sort((a,b)=>parseInt(a)-parseInt(b)).map(k=>`<optgroup label="${esc(k.split('|')[1])}">${cats[k].sort((a,b)=>a.name.localeCompare(b.name)).map(x=>`<option value="${x.id}">${esc(x.name)}${x.from?' (AMLR from '+x.from+')':''}</option>`).join('')}</optgroup>`).join('');};
+ const label=c=>c.kind==='register'?($('sec').value==='*'?'Sector register (all sectors, no client data)':'Sector register, zoomed to this sector'):c.kind==='office'?'Office file: '+(c.office||'').replace('Test office: ','test office ')+(c.test||(c.office||'').startsWith('Test office')?'':' (demo)'):'Client file: '+(c.test?'client '+c.case.slice(-1)+' · '+(c.scenario||''):c.client+' (demo)');
+ const fillFiles=()=>{const j=$('jur').value,sid=$('sec').value;
+  const files=sid==='*'?idx.filter(c=>c.kind==='register'):idx.filter(c=>c.jurisdiction===j&&c.sector_id===sid).sort((a,b)=>(a.kind==='office'?0:1)-(b.kind==='office'?0:1)||(a.test===b.test?0:a.test?-1:1)||a.case.localeCompare(b.case)).concat(idx.filter(c=>c.kind==='register'));
+  const x=sectorsOf(j).find(y=>y.id===sid);
+  $('sups').innerHTML=sid==='*'?'<span class="note">every supervisor; see question r03</span>':(x&&x.sups.length?x.sups.map(g=>`<span class="sup${g.aml?' aml':''}" data-auth="${esc(g.short)}" title="${esc((g.name||'')+' — '+(g.role||''))}">${esc(g.short)}${g.name&&g.name!==g.short&&g.aml?' ('+esc(g.name)+')':''}${g.aml?' · AML':' · '+esc((g.role||'').replace(/_/g,' '))}</span>`).join(''):'<span class="note">none</span>')+(x&&x.expected?`<span class="note">expected: ${esc(x.expected)}</span>`:'')+(x&&x.lic?`<div class="note" style="flex-basis:100%">${x.lic.kind==='none'?'No licence needed: AML supervision only':esc(x.lic.kind)+': '+esc(x.lic.name)+' ('+esc(x.lic.basis)+(x.lic.granted_by?', '+esc(x.lic.granted_by):'')+')'}</div>`:'');
+  $('case').innerHTML=files.map(c=>`<option value="${c.case}" title="${esc(c.scenario||'')}">${esc(label(c))}</option>`).join('');return files;};
+ // ---- Explore with questions: every question is a Cypher query on the sector register (a second Relate database in this page).
+ //      A row is a thing (sector, authority, law, duty); pick it and the follow-up questions for that kind of thing appear.
+ //      The path of questions and answers is the user's own line of reasoning.
+ const reg=new relate.RelateDb();{const id='sectors';const R=(await fetch('data/'+id+'.json')).json();const RR=await R;const o=reg.executeScript(RR.script,JSON.stringify(RR.params)).map(x=>JSON.parse(x));const e=o.find(r=>r.error);if(e)console.error(e.error);}
+ const XQ=QUERIES.filter(q=>q.scope==='explore');const KIND={Sector:'sector',Regulator:'authority',Law:'law',SectorDuty:'duty'};
+ const today=()=>($('onSel')&&$('onSel').value)||new Date().toISOString().slice(0,10);
+ let XPATH=[];
+ const xrun=(q,id)=>{const params={};if(q.params.includes('id'))params.id=id;if(q.params.includes('on'))params.on=today();const t=performance.now();const r=JSON.parse(reg.execute(q.cypher.trim().replace(/;\s*$/,''),JSON.stringify(params)));if(r.error)throw new Error(r.error);r.ms=performance.now()-t;return r;};
+ const drawPath=()=>{$('xpath').innerHTML=(XPATH.length?`<button data-back="-1">Start</button>`:'<span>Start: pick a question</span>')+XPATH.map((p,i)=>` › <button data-back="${i}" title="${esc(p.q)}">${esc(p.short)}</button>`+(p.pick?` › <b>${esc(p.pick)}</b>`:'')).join('')+(XPATH.length?` <button id="xcopy" title="Copy this line of reasoning">⧉ copy path</button>`:'');
+  $('xpath').querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{const i=+b.dataset.back;XPATH=XPATH.slice(0,i+1);if(i<0){XPATH=[];xstart();}else{const p=XPATH[i];if(!p.qid){if(VIEW==='user'){regStart();return;}drawPath();$('xres').innerHTML='';}else xask(p.qid,p.ctx,true);if(p.pickCtx)followups(p.pickCtx);}});
+  const c=$('xcopy');if(c)c.onclick=()=>{const txt=XPATH.map(p=>p.q+(p.pick?' → '+p.pick:'')).join('\n');navigator.clipboard.writeText(txt).catch(()=>{});};};
+ const qbtn=(q,ctx)=>`<button data-q="${q.id}" data-type="${ctx?ctx.type:''}" data-id="${esc(ctx?ctx.id:'')}" data-name="${esc(ctx?ctx.name:'')}">${esc(q.title.replace('$on','today'))}</button>`;
+ const bindQ=()=>$('xq').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>xask(b.dataset.q,b.dataset.type?{type:b.dataset.type,id:b.dataset.id,name:b.dataset.name}:null));
+ const xstart=()=>{if(VIEW==='user'){regStart();return;}XPATH=[];drawPath();$('xq').innerHTML=XQ.filter(q=>q.from==='-').map(q=>qbtn(q,null)).join('');bindQ();$('xres').innerHTML='<p class="note">Start with a question. Each answer is a list of things; pick one and ask the next question about it. The questions you take are your line of reasoning, shown above.</p>';};
+ const followups=ctx=>{let h=XQ.filter(q=>q.from===ctx.type).map(q=>qbtn(q,ctx)).join('');
+  if(VIEW==='admin'&&ctx.type==='Sector'){h+=`<button class="act" data-open="${esc(ctx.id)}">Open the office file and client files of this sector</button>`;}
+  if(VIEW==='admin'&&(ctx.type==='Regulator'||ctx.type==='Sector'||ctx.type==='Law'||ctx.type==='SectorDuty'))h+=`<button class="act" data-focus="${esc(ctx.type+':'+ctx.id)}">Show it in the sector register graph</button>`;
+  $('xq').innerHTML=h;bindQ();
+  $('xq').querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{$('sec').value=b.dataset.open;fillFiles();const f=[...$('case').options][0];if(f){$('case').value=f.value;loadCase(f.value).catch(err=>$('engine').textContent=err.message);}});
+  $('xq').querySelectorAll('[data-focus]').forEach(b=>b.onclick=async()=>{if(!CASE||CASE.kind!=='register'){$('sec').value='*';fillFiles();await loadCase('sectors');}const n=cy.getElementById(b.dataset.focus);if(n.length){applyHidden();cy.$(':selected').unselect();n.select();select(n);const k=n.closedNeighborhood();cy.elements().not(k).style('display','none');k.style('display','element');layout(k);cy.animate({fit:{eles:k,padding:40}},{duration:350});}});};
+ const xask=(qid,ctx,fromPath)=>{const q=XQ.find(x=>x.id===qid);let r;try{r=xrun(q,ctx&&ctx.id);}catch(e){$('xres').innerHTML=`<div class="note">${esc(e.message)}</div>`;return;}
+  const short=q.title.replace(/[,?].*$/,'').replace('$on','today');
+  if(!fromPath)XPATH.push({qid,q:q.title.replace('$on','today'),short,ctx,pick:null});drawPath();
+  const cols=r.columns.filter(c=>!c.startsWith('_')&&c!=='cat_order');
+  $('xres').innerHTML=`<div class="tw"><table><thead><tr>${cols.map(c=>`<th>${esc(c.replace(/_/g,' '))}</th>`).join('')}</tr></thead><tbody>${r.rows.map((row,i)=>`<tr${row._type&&row._id?` class="pick" data-i="${i}" title="Pick this ${esc(KIND[row._type]||row._type)} and ask about it"`:''}>${cols.map(c=>`<td>${esc(Array.isArray(row[c])?row[c].join('; '):row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="ms">${r.rows.length} rows · Cypher on the sector register, in your browser, ${r.ms.toFixed(1)} ms${r.rows.some(x=>x._type)?' · pick a row to ask the next question':''}</div>`;
+  $('xq').innerHTML=ctx?'':XQ.filter(x=>x.from==='-').map(x=>qbtn(x,null)).join('');bindQ();
+  if(ctx)followups(ctx);
+  $('xres').querySelectorAll('tr.pick').forEach(tr=>tr.onclick=()=>{const row=r.rows[+tr.dataset.i];const name=row.sector||row.authority||row.law||row.duty||row.name||row._id;
+   const nctx={type:row._type,id:row._id,name};XPATH[XPATH.length-1].pick=(KIND[row._type]||row._type)+': '+name;XPATH[XPATH.length-1].pickCtx=nctx;drawPath();followups(nctx);
+   if(row._type==='Sector'&&[...$('sec').options].some(o=>o.value===row._id)){/* keep the left side in step */ }
+   $('xres').querySelectorAll('tr.pick').forEach(x=>x.style.outline='');tr.style.outline='2px solid var(--accent)';});};
+ $('tabX').onclick=()=>{$('tabX').classList.add('on');$('tabQ').classList.remove('on');$('paneX').hidden=false;$('paneQ').hidden=true;};
+ $('tabQ').onclick=()=>{$('tabQ').classList.add('on');$('tabX').classList.remove('on');$('paneQ').hidden=false;$('paneX').hidden=true;};
+ window.casefoldExplore={xask,xstart};
+ // ---- User view (as in the office app): office, then client; the Regulation tab asks from the sector of the open file.
+ const offices=idx.filter(c=>c.kind==='office');
+ const curEntry=()=>idx.find(c=>c.case===(CASE&&CASE.case));
+ const fillOffices=()=>{const cats={};offices.forEach(o=>{const k=o.category_order+'|'+o.category;(cats[k]=cats[k]||[]).push(o);});
+  const nm=o=>(o.office||'').startsWith('Test office')?'Test office · '+(o.sector_local||o.sector):(o.office||'')+' (demo · '+(o.sector_local||o.sector)+')';
+  $('office').innerHTML=Object.keys(cats).sort((a,b)=>parseInt(a)-parseInt(b)).map(k=>`<optgroup label="${esc(k.split('|')[1])}">${cats[k].sort((a,b)=>nm(a).localeCompare(nm(b))).map(o=>`<option value="${o.case}">${esc(nm(o))}</option>`).join('')}</optgroup>`).join('');};
+ const fillClients=()=>{const o=idx.find(c=>c.case===$('office').value);const cl=idx.filter(c=>c.kind==='case'&&!c.template&&o&&c.office===o.office).sort((a,b)=>a.case.localeCompare(b.case));
+  $('client').innerHTML=`<option value="">— none: the office file —</option>`+cl.map(c=>`<option value="${c.case}" title="${esc(c.scenario||'')}">${esc(c.test?'Client '+c.case.slice(-1)+' · '+(c.scenario||''):c.client)}</option>`).join('');};
+ const regStart=()=>{const e=curEntry();if(!e||!e.sector_id)return;const ctx={type:'Sector',id:e.sector_id,name:e.sector_local||e.sector};
+  XPATH=[{qid:null,q:e.kind==='office'?'Office file: '+e.office:'Client file: '+e.client,short:e.kind==='office'?'This office':'This client',ctx:null,pick:'sector: '+ctx.name,pickCtx:ctx}];drawPath();followups(ctx);
+  $('xres').innerHTML='<p class="note">The questions start from the sector of the open file: who supervises it and on what basis, which laws and licence apply, which duties you have today. Pick a row in an answer to ask the next question. The path above is your line of reasoning; copy it into the file note.</p>';};
+ const openUser=async id=>{await loadCase(id);const e=curEntry();$('toOffice').hidden=!e||e.kind==='office';
+  if(e&&e.sector_id){if(![...$('sec').options].some(o=>o.value===e.sector_id)){MODE='sector';$('auth').value='';fillSectors();}$('sec').value=e.sector_id;fillFiles();}
+  $('supsLab').textContent='Supervisory framework of the office';regStart();};
+ // ---- Sources and testing: a law, the supervisor's guidance, the example company's procedure or an enforcement case is read into the graph
+ //      (in this page, in Relate). A citation such as "artikel 16 Wwft" becomes (:SourceSection)-[:CITES]->(:Article); the testing query then
+ //      follows duty -> article valid on the date -> procedure section that cites it (or a GAP) -> guidance -> cases where it went wrong.
+ const ORD={eerste:1,tweede:2,derde:3,vierde:4,vijfde:5,zesde:6,zevende:7,achtste:8,negende:9,tiende:10};
+ const LAWS=[['Regeling toezicht Sanctiewet 1977','Rtsw'],['Rtsw','Rtsw'],['Wwft','Wwft'],['AMLR','AMLR'],['Verordening (EU) 2024/1624','AMLR'],['Wtt 2018','Wtt'],['Wtt','Wtt'],['TFR','TFR'],['Sanctiewet 1977','Sanctiewet']];
+ const lawAlt=LAWS.map(x=>x[0].replace(/[()/.]/g,m=>'\\'+m)).join('|');
+ const lawShort=s=>{const h=LAWS.find(x=>s.toLowerCase().startsWith(x[0].toLowerCase()));return h?h[1]:s;};
+ function citations(text){
+  const t=text.replace(/\b(eerste|tweede|derde|vierde|vijfde|zesde|zevende|achtste|negende|tiende)\s+lid\b/gi,(m,w)=>'lid '+ORD[w.toLowerCase()]).replace(/\s+/g,' ');
+  const out=[],seen=new Set(),add=(law,art,lid,ref)=>{const k=law+'|'+art+'|'+(lid||'');if(!seen.has(k)){seen.add(k);out.push({law:lawShort(law),art,lid:lid||null,ref:ref.trim()});}};
+  const p1=new RegExp('\\b(?:art(?:ikel|icle)?\\.?)\\s*(\\d+[a-z]{0,2})((?:\\s*,?\\s*(?:lid|paragraph)\\s*(\\d+))|\\((\\d+)\\))?[^.;\\n]{0,40}?\\b(?:van\\s+de\\s+|of\\s+the\\s+)?('+lawAlt+')','gi');
+  const p2=new RegExp('\\b('+lawAlt+')\\s*,?\\s*art(?:ikel|icle)?\\.?\\s*(\\d+[a-z]{0,2})(?:\\s*lid\\s*(\\d+)|\\((\\d+)\\))?','gi');
+  for(const m of t.matchAll(p1))add(m[5],m[1],m[3]||m[4],m[0]);
+  for(const m of t.matchAll(p2))add(m[1],m[2],m[3]||m[4],m[0]);
+  return out;}
+ function sectionsFromText(text,kind){
+  const lines=text.replace(/\r/g,'').split('\n').map(s=>s.trim());const secs=[];let cur={number:'0',heading:'(opening)',lines:[]};
+  for(const s of lines){if(!s)continue;
+   const m=(kind==='law'?s.match(/^(?:Artikel|Article)\s+(\d+[a-z]{0,3})()\s*(\S.{0,100})?$/):s.match(/^(?:(?:Artikel|Article)\s+(\d+[a-z]{0,3})|(\d+(?:\.\d+){0,3})\.?)\s+(\S.{0,100})$/))||s.match(/^(?:Artikel|Article)\s+(\d+[a-z]{0,3})()$/);
+   if(m&&s.length<=110&&!/[;,]$/.test(s)){if(cur.lines.length||cur.number!=='0')secs.push(cur);cur={number:m[1]||m[2],heading:(m[3]||'').trim(),lines:[]};}else cur.lines.push(s);}
+  secs.push(cur);return secs.filter(x=>x.lines.length||x.heading).map(x=>({number:x.number,heading:x.heading,text:x.lines.join(' ')}));}
+ function sectionsFromBwbXml(xml){const d=new DOMParser().parseFromString(xml,'application/xml');const out=[];const seen=new Set();
+  for(const a of d.getElementsByTagName('artikel')){const nr=a.querySelector('kop > nr');if(!nr)continue;const n=nr.textContent.trim();if(seen.has(n))continue;seen.add(n);
+   [...a.getElementsByTagName('meta-data')].forEach(m=>m.remove());const kop=a.querySelector('kop');const head=kop?(kop.querySelector('titel')||{}).textContent||'':'';if(kop)kop.remove();
+   out.push({number:n,heading:head.trim(),text:a.textContent.replace(/\s+/g,' ').trim()});}
+  const title=(d.querySelector('citeertitel')||{}).textContent||'';return {sections:out,title};}
+ async function readFile(f,kind){const ext=f.name.toLowerCase().split('.').pop();
+  if(ext==='pdf'){if(!window.pdfjsLib)throw new Error('pdf.js did not load; save the PDF as text first');
+   window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+   const pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;let txt='';
+   for(let i=1;i<=pdf.numPages;i++){const c=await (await pdf.getPage(i)).getTextContent();txt+=c.items.map(it=>it.str+(it.hasEOL?'\n':'')).join('')+'\n';}
+   if(txt.replace(/\s/g,'').length<50*pdf.numPages)throw new Error('this PDF has no text layer (a scan): read it with casefold/law_ingest.py --ocr (tesseract) first');
+   return {sections:sectionsFromText(txt,kind),method:'pdf.js',title:''};}
+  const raw=await f.text();
+  if(ext==='xml'&&raw.includes('<artikel')){const r=sectionsFromBwbXml(raw);return {...r,method:'bwb-xml'};}
+  return {sections:sectionsFromText(raw,kind),method:'text',title:''};}
+ const SRC_SCHEMA=["CREATE CONSTRAINT source_id IF NOT EXISTS FOR (n:Source) REQUIRE n.id IS UNIQUE","CREATE CONSTRAINT source_section_id IF NOT EXISTS FOR (n:SourceSection) REQUIRE n.id IS UNIQUE",
+   "CREATE FULLTEXT INDEX section_text IF NOT EXISTS FOR (n:SourceSection) ON EACH [n.heading, n.text]"];
+ const SRC_SCRIPT=`MERGE (s:Source {id:$s.id}) SET s._vid='Source:' + $s.id, s.kind=$s.kind, s.title=$s.title, s.file=$s.file, s.method=$s.method, s.added=$s.added, s.issuer=$s.issuer, s.party=$s.party, s.authority=$s.authority, s.date=$s.date, s.amount=$s.amount, s.url=$s.url, s.law=$s.law, s.summary=$s.summary;
+UNWIND $secs AS x MATCH (s:Source {id:$s.id}) MERGE (y:SourceSection {id:x.id}) SET y._vid='SourceSection:' + x.id, y.number=x.number, y.heading=x.heading, y.text=x.text, y.kind=$s.kind MERGE (s)-[:HAS_SECTION]->(y);
+UNWIND $cites AS c MATCH (y:SourceSection {id:c.section}) MATCH (a:Article) WHERE a.law_short = c.law AND a.art = c.art AND (c.lid IS NULL OR a.lid IS NULL OR a.lid = c.lid) MERGE (y)-[r:CITES]->(a) SET r.ref=c.ref, r.stated=c.stated;
+UNWIND [x IN [$s.issuer] WHERE x IS NOT NULL] AS g MATCH (r:Regulator {short:g}), (s:Source {id:$s.id}) MERGE (r)-[:ISSUED]->(s);
+UNWIND [x IN [$s.company] WHERE x IS NOT NULL] AS c MATCH (i:Institution {id:c}), (s:Source {id:$s.id}) MERGE (i)-[:HAS_PROCEDURE]->(s);
+UNWIND [x IN [$s.sector] WHERE x IS NOT NULL] AS c MATCH (k:Sector {id:c}), (s:Source {id:$s.id}) MERGE (s)-[:IN_SECTOR]->(k)`;
+ const COMPANY_SCRIPT=`MERGE (i:Institution {id:$c.id}) SET i._vid='Institution:' + $c.id, i.name=$c.name, i.example=true, i.fictitious=true
+WITH i MATCH (k:Sector {id:$c.sector}) MERGE (i)-[:IN_SECTOR]->(k);
+UNWIND $c.services AS v MATCH (i:Institution {id:$c.id}) MERGE (x:Service {id:v.id}) SET x._vid='Service:' + v.id, x.name=v.name MERGE (i)-[:OFFERS]->(x)`;
+ const runScript=(dbs,script,params)=>{for(const d of dbs){if(!d)continue;for(const st of SRC_SCHEMA){try{d.execute(st,null);}catch(e){}}
+   const o=d.executeScript(script,JSON.stringify(params)).map(x=>JSON.parse(x));const e=o.find(x=>x.error);if(e)throw new Error(e.error);}};
+ const graphDbs=()=>[reg].concat(CASE&&CASE.kind==='register'?[db]:[]);
+ const SOURCES=[],REPLAY=[];   // every source script, replayed into the register graph when it is opened
+ function addSource(meta,sections,extraCites){
+  const id=meta.id||('SRC:'+meta.kind+':'+Date.now());
+  const secs=sections.map((x,i)=>({id:id+':'+(i+1),number:x.number,heading:x.heading,text:x.text}));
+  let cites=[];
+  secs.forEach(x=>citations((x.heading||'')+' '+x.text).forEach(c=>cites.push({...c,section:x.id,stated:true})));
+  if(meta.kind==='law'&&meta.law)secs.forEach(x=>{if(/^\d+[a-z]{0,3}$/.test(x.number))cites.push({law:meta.law,art:x.number,lid:null,ref:meta.law+' art. '+x.number,section:x.id,stated:true});});
+  if(extraCites)cites=cites.concat(extraCites.map(c=>({...c,section:secs[0].id})));
+  const s={id,kind:meta.kind,title:meta.title,file:meta.file||null,method:meta.method||null,added:new Date().toISOString().slice(0,16),issuer:meta.issuer||null,party:meta.party||null,authority:meta.authority||null,
+    date:meta.date||null,amount:meta.amount||null,url:meta.url||null,law:meta.law||null,summary:meta.summary||null,company:meta.company||null,sector:meta.sector||null};
+  runScript(graphDbs(),SRC_SCRIPT,{s,secs,cites});REPLAY.push([SRC_SCRIPT,{s,secs,cites}]);
+  const linked=JSON.parse(reg.execute("MATCH (:Source {id:$id})-[:HAS_SECTION]->(:SourceSection)-[c:CITES]->(a:Article) RETURN count(DISTINCT a) AS n, collect(DISTINCT a.ref)[0..6] AS refs",JSON.stringify({id}))).rows[0];
+  SOURCES.push({id,kind:meta.kind,title:meta.title,sections:secs.length,cites:cites.length,linked:linked.n});
+  drawSources();return {sections:secs.length,citations:cites.length,linked:linked.n,refs:linked.refs};}
+ const KINDNL={law:'law',guidance:'guidance',procedure:'procedure',case:'case'};
+ function drawSources(){$('srcList').innerHTML=SOURCES.length?SOURCES.map(s=>`<div class="srcitem"><span class="kind ${s.kind}">${esc(KINDNL[s.kind])}</span><div>${esc(s.title)}<small>${s.sections} sections · ${s.linked} articles linked</small></div></div>`).join(''):'<span class="note">No sources yet.</span>';}
+ const TEST_Q=`MATCH (i:Institution {example:true})-[:IN_SECTOR]->(s:Sector {id:$sector})-[:HAS_DUTY]->(d:SectorDuty)
+WHERE d.valid_from <= $on AND (d.valid_to IS NULL OR d.valid_to >= $on)
+OPTIONAL MATCH (d)-[:DEFINED_IN]->(a:Article) WHERE (a.valid_from IS NULL OR a.valid_from <= $on) AND (a.valid_to IS NULL OR a.valid_to >= $on)
+OPTIONAL MATCH (i)-[:HAS_PROCEDURE]->(p:Source)-[:HAS_SECTION]->(ps:SourceSection)-[pc:CITES]->(a)
+WITH i, s, d, a, collect(DISTINCT '§ ' + ps.number + ' ' + ps.heading + CASE WHEN pc.stated = false THEN ' (no article in the text; confirmed by hand ' + coalesce(pc.confirmed, '') + ')' ELSE '' END) AS covered
+OPTIONAL MATCH (g:Source {kind:'guidance'})-[:HAS_SECTION]->(gs:SourceSection)-[:CITES]->(a)
+WITH i, s, d, a, covered, collect(DISTINCT g.title + ' § ' + gs.number) AS guidance
+OPTIONAL MATCH (d)-[:DEFINED_IN]->(:Article)<-[cc:CITES]-(:SourceSection)<-[:HAS_SECTION]-(c:Source {kind:'case'})
+WITH i, s, d, a, covered, guidance, collect(DISTINCT c.authority + ' ' + c.date + ': ' + c.party + CASE WHEN cc.stated THEN '' ELSE ' (article derived from the description)' END) AS cases
+RETURN CASE WHEN size(covered) > 0 THEN 'covered' WHEN a.art IS NULL THEN 'no article' ELSE 'GAP' END AS result, d.level AS level, d.title AS duty, a.ref AS article,
+       covered AS procedure, guidance, cases AS went_wrong_before, d.search AS search, d.id AS duty_id, a.id AS article_id
+ORDER BY CASE result WHEN 'GAP' THEN 0 WHEN 'no article' THEN 1 ELSE 2 END, level DESC, duty`;
+ function suggest(term,company){if(!term)return [];
+  try{return JSON.parse(reg.execute("CALL db.index.fulltext.queryNodes('section_text', $q) YIELD node, score MATCH (i:Institution {id:$c})-[:HAS_PROCEDURE]->(:Source)-[:HAS_SECTION]->(node) WHERE score >= 2.0 AND node.number <> '0' RETURN node.id AS id, node.number AS n, node.heading AS h, round(score, 2) AS score ORDER BY score DESC LIMIT 2",JSON.stringify({q:term.split(/\s+/).join(' OR '),c:company}))).rows;}catch(e){return [];}}
+ function renderTest(sector){const co=JSON.parse(reg.execute("MATCH (i:Institution {example:true})-[:IN_SECTOR]->(s:Sector {id:$s}) OPTIONAL MATCH (i)-[:OFFERS]->(v:Service) OPTIONAL MATCH (i)-[:HAS_PROCEDURE]->(p:Source) RETURN i.id AS id, i.name AS name, collect(DISTINCT v.name) AS services, collect(DISTINCT p.title) AS procedures",JSON.stringify({s:sector}))).rows[0];
+  if(!co)return '';const on=$('onSel').value;let r;const t0=performance.now();try{r=JSON.parse(reg.execute(TEST_Q,JSON.stringify({sector,on})));r.ms=performance.now()-t0;if(r.error)throw new Error(r.error);}catch(e){return `<div class="note">${esc(e.message)}</div>`;}
+  const casesHere=JSON.parse(reg.execute("MATCH (c:Source {kind:'case'})-[:IN_SECTOR]->(:Sector {id:$s}) RETURN c.authority + ' ' + c.date + ': ' + c.title AS t, c.url AS url ORDER BY c.date DESC",JSON.stringify({s:sector}))).rows;
+  const ROWS=r.rows.map(x=>{const sg=x.result==='GAP'&&x.article_id?suggest(x.search,co.id):[];if(sg.length)sg.vec=vecSuggest(x.search+' '+x.duty,co.id);const res=x.result==='GAP'&&sg.length?'to assess':x.result==='GAP'?'gap':x.result;
+   const cls=res==='gap'?'bad':res==='covered'?'ok':'warn';return {x,sg,res,cls};});
+  const n=k=>ROWS.filter(y=>y.cls===k).length,cov=n('ok'),ass=n('warn'),gaps=n('bad'),tot=ROWS.length||1;
+  const rows=ROWS.map(({x,sg,res,cls})=>`<tr class="r-${cls}"><td><span class="pill ${cls}">${esc(res)}</span></td>
+   <td><div class="duty">${esc(x.duty)}</div><div class="lvl">${esc(x.level==='office'?'office duty':'KYC duty per client')}</div></td>
+   <td>${x.article?`<span class="chip">${esc(x.article)}</span>`:''}</td>
+   <td>${esc((x.procedure||[]).join('; '))}${sg.length?`<div class="sugg">No article cited. Relate full-text search proposes ${sg.map(s=>`<span>§ ${esc(s.n)} ${esc(s.h)} <span class="note">(${s.score})</span><button class="b" data-confirm="${esc(s.id)}" data-art="${esc(x.article_id)}" title="Record that this section covers the duty">confirm</button></span>`).join(' ')}${sg.vec?`<span class="vec">· vector index ${sg.vec.id===sg[0].id?`<b>agrees</b> (cosine ${sg.vec.sim})`:`proposes § ${esc(sg.vec.n)} ${esc(sg.vec.h)} (cosine ${sg.vec.sim})`}</span>`:''}</div>`:''}</td>
+   <td>${esc((x.guidance||[]).join('; '))}</td>
+   <td>${(x.went_wrong_before||[]).map(c=>`<span class="wwb">${esc(c)}</span>`).join('')}</td></tr>`).join('');
+  return `<details open class="ov test"><summary>Testing · ${esc(co.name)} · ${esc(on)}</summary><div class="testbody">
+   <p class="lede">Services: ${esc(co.services.join(' · '))}. Procedure: ${esc(co.procedures.join(', ')||'none')}. Every row is a path in the graph: duty → article valid on ${esc(on)} → the section of the procedure that cites it, the supervisor's guidance that cites it, and published enforcement cases on the same duty.</p>
+   <div class="kpis"><div class="kpi ok"><b>${cov}</b><span>covered</span></div><div class="kpi warn"><b>${ass}</b><span>to assess</span></div><div class="kpi bad"><b>${gaps}</b><span>gaps</span></div></div>
+   <div class="bar" role="img" aria-label="${cov} covered, ${ass} to assess, ${gaps} gaps"><i class="ok" style="flex:${cov}"></i><i class="warn" style="flex:${ass}"></i><i class="bad" style="flex:${gaps}"></i></div>
+   <div class="relate"><span class="relate-badge">Relate</span> One Cypher query over the graph in this page: ${ROWS.length} duties tested in ${r.ms.toFixed(1)} ms. <details><summary>Show the Cypher</summary><pre>${esc(TEST_Q.replace('$sector',"'"+sector+"'").replace(/\$on/g,"'"+on+"'"))}</pre></details></div>
+   <div class="res" style="max-height:440px"><table><thead><tr><th>result</th><th>duty</th><th>article</th><th>procedure (source)</th><th>guidance</th><th>went wrong before</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+   ${casesHere.length?`<div class="cases-here"><b>Enforcement in this sector:</b> ${casesHere.map(c=>`<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.t)}</a>`).join(' · ')}</div>`:''}</details>`;}
+ window.casefoldTest={citations,sectionsFromText,renderTest,addSource};
+ // ---- Admin view: the knowledge graph (sector register) with the filter, and an overview of what the filter finds.
+ const ensureRegister=async()=>{if(!CASE||CASE.kind!=='register'){await loadCase('sectors');try{for(const [sc,pa] of REPLAY)runScript([db],sc,pa);drawGraph();}catch(e){console.error('replay',e);}}};
+ const renderOverview=()=>{const sid=$('sec').value,au=MODE==='authority'?$('auth').value:'';let ctx=null,qs,head;
+  if(sid&&sid!=='*'){const x=sectorsOf($('jur').value).find(y=>y.id===sid);ctx={type:'Sector',id:sid};qs=['x10','x12','x11','x13','x15','x14'];head='Sector: '+(x?x.name:sid);}
+  else if(au){const r=JSON.parse(reg.execute("MATCH (g:Regulator {short:$s}) RETURN g.id AS id",JSON.stringify({s:au}))).rows[0];if(r)ctx={type:'Regulator',id:r.id};qs=['x21','x20','x22','x23'];head='Authority: '+au;}
+  else{qs=['x01','x02','x03'];head='All sectors, authorities and laws';}
+  $('ohead').innerHTML=`<b>${esc(head)}</b>&nbsp;· what the sector register says (click a sector or authority to filter on it)`;
+  $('obody').innerHTML=(sid&&sid!=='*'?renderTest(sid):'')+qs.map(id=>{const q=XQ.find(x=>x.id===id);if(!q)return '';let r;try{r=xrun(q,ctx&&ctx.id);}catch(e){return `<div class="note">${esc(e.message)}</div>`;}const cols=r.columns.filter(c=>!c.startsWith('_')&&c!=='cat_order');
+   return `<details open class="ov"><summary>${esc(q.title.replace('$on','today'))} <span class="note">· ${r.rows.length}</span></summary><div class="res"><table><thead><tr>${cols.map(c=>`<th>${esc(c.replace(/_/g,' '))}</th>`).join('')}</tr></thead><tbody>${r.rows.map(row=>`<tr${row._type==='Sector'||row._type==='Regulator'?` class="pick" data-type="${row._type}" data-id="${esc(row._id)}"`:''}>${cols.map(c=>`<td>${esc(Array.isArray(row[c])?row[c].join('; '):row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;}).join('');
+  $('obody').querySelectorAll('tr.pick').forEach(tr=>tr.onclick=()=>{if(tr.dataset.type==='Sector'){if(![...$('sec').options].some(o=>o.value===tr.dataset.id))setMode('sector');$('sec').value=tr.dataset.id;adminRefresh();}
+   else{const s=JSON.parse(reg.execute("MATCH (g:Regulator {id:$id}) RETURN g.short AS s",JSON.stringify({id:tr.dataset.id}))).rows[0];if(s)setMode('authority',s.s);}});};
+ const adminRefresh=async()=>{$('lawSel').value='';$('tabs').hidden=true;$('paneQ').hidden=true;$('paneO').hidden=false;fillFiles();await ensureRegister();const sid=$('sec').value,au=MODE==='authority'?$('auth').value:'';
+  if(sid==='*'&&!au){applyHidden();cy.elements().removeClass('faded hi');layout();}else focusNav();renderOverview();};
+ const setMode=(m,au)=>{MODE=m;$('modeSec').classList.toggle('on',m==='sector');$('modeAuth').classList.toggle('on',m==='authority');
+  $('blkAuth').hidden=m!=='authority';$('secLab').textContent=m==='authority'?'Sector (where this authority has a role)':'Sector';
+  if(m==='authority'){$('navBody').prepend($('blkAuth'));if(au)$('auth').value=au;}else $('auth').value='';
+  const keep=$('sec').value;fillSectors();$('sec').value=m==='authority'&&au?'*':([...$('sec').options].some(o=>o.value===keep)?keep:'*');adminRefresh();};
+ const setView=async v=>{VIEW=v;$('vUser').classList.toggle('on',v==='user');$('vAdmin').classList.toggle('on',v==='admin');
+  $('blkUser').hidden=v!=='user';$('datePick').hidden=v!=='admin';$('blkAdmin').hidden=v!=='admin';$('tabs').hidden=v==='admin';$('paneO').hidden=v!=='admin';
+  $('paneX').hidden=v==='admin'||!$('tabX').classList.contains('on');$('paneQ').hidden=v==='admin'||!$('tabQ').classList.contains('on');
+  if(v==='admin'){$('supsLab').textContent='Authorities of this sector (click one to see all its sectors)';await adminRefresh();}
+  else{MODE='sector';$('auth').value='';$('blkAuth').hidden=true;$('modeSec').classList.add('on');$('modeAuth').classList.remove('on');fillSectors();await openUser($('client').value||$('office').value);}};
+ const fail=err=>$('engine').textContent=err.message;
+ const lawFiles=idx.filter(c=>c.kind==='law');
+ $('lawSel').innerHTML='<option value="">— none: the sector register —</option>'+lawFiles.map(c=>`<option value="${c.case}">${esc(c.client)}</option>`).join('');
+ $('lawSel').onchange=async()=>{const v=$('lawSel').value;if(!v){adminRefresh().catch(fail);return;}
+  try{await loadCase(v);}catch(e){fail(e);return;}$('lawSel').value=v;$('paneO').hidden=true;$('tabs').hidden=false;$('tabQ').click();$('tabX').hidden=true;
+  $('supsLab').textContent='Law in the graph: articles, paragraphs (leden) and points (onderdelen), verbatim as read in';$('sups').innerHTML='';};
+ $('vUser').onclick=()=>setView('user').catch(fail);$('vAdmin').onclick=()=>setView('admin').catch(fail);
+ $('modeSec').onclick=()=>setMode('sector');$('modeAuth').onclick=()=>setMode('authority',$('auth').value||'DNB');
+ $('auth').onchange=()=>{fillSectors();$('sec').value='*';adminRefresh().catch(fail);};
+ $('jur').onchange=()=>{fillAuth();fillSectors();adminRefresh().catch(fail);};
+ $('sec').onchange=()=>adminRefresh().catch(fail);
+ $('office').onchange=()=>{fillClients();openUser($('office').value).catch(fail);};
+ $('client').onchange=()=>openUser($('client').value||$('office').value).catch(fail);
+ $('toOffice').onclick=()=>{$('client').value='';openUser($('office').value).catch(fail);};
+ $('sups').onclick=e=>{const t=e.target.closest('[data-auth]');if(!t)return;
+  if(VIEW==='admin'){setMode('authority',t.dataset.auth);return;}
+  return;   // the question explorer is switched off for now (queries/explore/ stays in the repo)
+  const r=JSON.parse(reg.execute("MATCH (g:Regulator {short:$s}) RETURN g.id AS id, g.short AS s",JSON.stringify({s:t.dataset.auth}))).rows[0];if(!r)return;
+  $('tabX').click();regStart();const first=XPATH[0];const sctx=first.pickCtx;XPATH=[first,{qid:'x10',q:'Who supervises this sector, in which role, and on what legal basis?',short:'Who supervises',ctx:sctx,pick:'authority: '+r.s,pickCtx:{type:'Regulator',id:r.id,name:r.s}}];xask('x21',{type:'Regulator',id:r.id,name:r.s});};
+ {const t=new Date().toISOString().slice(0,10);$('onSel').innerHTML=`<option value="${t}">today, ${t} (Wwft)</option><option value="2027-07-10">10 July 2027 (AMLR applies)</option>`;}
+ $('onSel').onchange=()=>{if(VIEW==='admin')renderOverview();};
+ const CONFIRM=`MATCH (y:SourceSection {id:$sec}), (a:Article {id:$art}) MERGE (y)-[r:CITES]->(a) SET r.stated=false, r.ref='confirmed by hand', r.confirmed=$when`;
+ $('obody').addEventListener('click',e=>{const b=e.target.closest('[data-confirm]');if(!b)return;e.preventDefault();
+  const pa={sec:b.dataset.confirm,art:b.dataset.art,when:new Date().toLocaleString('nl-NL',{dateStyle:'short',timeStyle:'short'})};
+  try{for(const d of graphDbs())d.execute(CONFIRM,JSON.stringify(pa));REPLAY.push([CONFIRM,pa]);renderOverview();}catch(err){console.error(err);}});
+ $('srcKind').onchange=()=>{const k=$('srcKind').value;$('srcIssuer').hidden=k!=='guidance';$('srcLaw').hidden=k!=='law';};
+ try{const SI=await (await fetch('data/sources/index.json')).json();
+  runScript([reg],COMPANY_SCRIPT,{c:SI.company});REPLAY.push([COMPANY_SCRIPT,{c:SI.company}]);
+  for(const x of SI.sources){const txt=await (await fetch('data/sources/'+x.file)).text();addSource({...x,method:'text'},sectionsFromText(txt));}
+  for(const c of SI.cases)addSource({id:c.id,kind:'case',title:c.title,party:c.party,authority:c.authority,date:c.date,amount:c.amount,url:c.url,summary:c.summary,sector:c.sector},[{number:'1',heading:c.title,text:c.summary}],
+    c.violated.map(v=>({law:v.law,art:v.art,lid:v.lid||null,ref:v.law+' art. '+v.art+(v.lid?' lid '+v.lid:'')+(v.point?' onder '+v.point:''),stated:v.stated})));
+ }catch(e){console.error('sources',e);$('srcList').textContent='Sources could not be loaded: '+e.message;}
+ $('srcAdd').onclick=async()=>{const f=$('srcFile').files[0];if(!f){$('srcMsg').textContent='Choose a file first.';return;}
+  const kind=$('srcKind').value;$('srcMsg').textContent='Reading '+f.name+' …';
+  try{const r=await readFile(f,kind);const title=$('srcTitle').value.trim()||r.title||f.name;
+   const co=JSON.parse(reg.execute("MATCH (i:Institution {example:true}) RETURN i.id AS id LIMIT 1",null)).rows[0];
+   const res=addSource({kind,title,file:f.name,method:r.method,issuer:kind==='guidance'?$('srcIssuer').value:null,law:kind==='law'?$('srcLaw').value:null,company:kind==='procedure'&&co?co.id:null},r.sections);
+   vecSections();
+   $('srcMsg').innerHTML=`${esc(f.name)}: ${res.sections} sections read (${esc(r.method)}), ${res.citations} citations, ${res.linked} articles linked${res.refs.length?': '+esc(res.refs.join(', ')):''}.`;
+   if(CASE&&CASE.kind==='register'){drawGraph();focusNav();}if(VIEW==='admin')renderOverview();}
+  catch(e){$('srcMsg').textContent=f.name+': '+e.message;}};
+
+ // ---- Vector index on the sections of every source, so a duty finds its section by meaning as well as by words (hybrid with the full-text index).
+ const VEC_IDX="CREATE VECTOR INDEX section_vec IF NOT EXISTS FOR (n:SourceSection) ON (n.embedding) OPTIONS {indexConfig:{`vector.dimensions`:"+EMB_D+", `vector.similarity_function`:'cosine'}}";
+ function vecSections(){try{reg.execute(VEC_IDX,null);const rows=JSON.parse(reg.execute("MATCH (n:SourceSection) WHERE n.embedding IS NULL RETURN n.id AS id, coalesce(n.heading,'') + ' ' + coalesce(n.text,'') AS t",null)).rows;
+  if(rows.length){const r=JSON.parse(reg.execute("UNWIND $rows AS x MATCH (n:SourceSection {id:x.id}) SET n.embedding = vector(x.v, "+EMB_D+", FLOAT32)",JSON.stringify({rows:rows.map(x=>({id:x.id,v:emb(x.t)}))})));if(r.error)console.error(r.error);}}catch(e){console.error('vector',e);}}
+ const VEC_Q="MATCH (n:SourceSection) SEARCH n IN (VECTOR INDEX section_vec FOR $v LIMIT 40) SCORE AS sim\nMATCH (i:Institution {id:$c})-[:HAS_PROCEDURE]->(:Source)-[:HAS_SECTION]->(n) WHERE n.number <> '0'\nRETURN n.id AS id, n.number AS n, n.heading AS h, round(sim, 2) AS sim ORDER BY sim DESC LIMIT 1";
+ function vecSuggest(term,company){try{const r=JSON.parse(reg.execute(VEC_Q,JSON.stringify({v:emb(term),c:company})));return r.error?null:r.rows[0]||null;}catch(e){return null;}}
+ vecSections();
+ // ---- Relate inside: every Relate feature Casefold uses, as a live probe in this page.
+ let demo=null;const demoDb=async()=>{if(demo)return demo;const id='nl-kalmora';const C=await (await fetch('data/'+id+'.json')).json();demo=new relate.RelateDb();const o=demo.executeScript(C.script,JSON.stringify(C.params)).map(x=>JSON.parse(x));const e=o.find(x=>x.error);if(e)throw new Error(e.error);return demo;};
+ const exec=(d,c,p)=>{const t=performance.now();const r=JSON.parse(d.execute(c.trim(),p?JSON.stringify(p):null));r.ms=performance.now()-t;if(r.error)throw new Error(r.error);return r;};
+ const msLine=r=>`<div class="ms">${r.rows.length} row${r.rows.length===1?'':'s'} · <b>${r.ms.toFixed(1)} ms</b> in this page · parse ${(+r.parse_ms||0).toFixed(2)} · plan ${(+r.plan_ms||0).toFixed(2)} · execute ${(+r.execute_ms||0).toFixed(2)} ms (Relate's own timings)</div>`;
+ const planHtml=root=>{const L=[];const walk=(n,d)=>{const a=n.actual||{};L.push(`<div>${'&nbsp;&nbsp;'.repeat(d)}${d?'└ ':''}<em>${esc(n.operator)}</em> ${esc((n.details||'').replace(/\s+/g,' ').slice(0,70))} · rows ${a.rows??'?'} · db hits ${a.db_hits??'?'} · ${a.time_ms!=null?(+a.time_ms).toFixed(2)+' ms':''}</div>`);(n.children||[]).forEach(c=>walk(c,d+1));};walk(root,0);return `<div class="res plan">${L.join('')}</div>`;};
+ const kinds=idx.reduce((m,c)=>(m[c.kind]=(m[c.kind]||0)+1,m),{});
+ const CO_ID='EXAMPLE:voorbeeld-betaal';
+ const PROBES=[
+  {sec:'The file is the record'},
+  {t:'One graph file per record',on:'the open file',db:()=>db,use:`Every client, office, law version and the sector register is its own single-file Relate store (.rl). This demo ships ${idx.length} of them: ${kinds.case||0} client files, ${kinds.office||0} office files, ${kinds.law||0} law files and ${kinds.register||0} sector register. The open one is replayed into Relate in this page; it isolates one client, goes to an auditor as one unit and is deleted as one unit.`,
+   q:"MATCH (n) WITH count(n) AS nodes\nOPTIONAL MATCH ()-[r]->()\nRETURN nodes, count(r) AS relationships, $file AS file",p:()=>({file:CASE?CASE.file:''})},
+  {t:'A schema that Relate enforces',on:'sector register',db:()=>reg,use:'Neo4j 5 schema DDL per kind of file (schema/*.cypher): keys, required properties, property types, also on relationships. Relate validates them against the data already in the file. This caught a real bug: two agent sessions in the same second got the same id.',
+   q:"SHOW CONSTRAINTS YIELD name, type\nRETURN type, count(*) AS constraints, collect(name)[0..4] AS examples ORDER BY constraints DESC",
+   btn:['Try to break it',async el=>{let msg;try{exec(reg,"MATCH (s:Sector) WITH s LIMIT 1 CREATE (:Sector {id: s.id, name: 'a duplicate'})");msg='<div class="err">The duplicate was accepted.</div>';}catch(e){msg=`<div class="err">Relate refused: ${esc(e.message)}</div>`;}
+    const n=exec(reg,"MATCH (s:Sector) RETURN count(s) AS n").rows[0].n;return msg+`<pre>MATCH (s:Sector) WITH s LIMIT 1 CREATE (:Sector {id: s.id, name: 'a duplicate'})</pre><div class="ms">Sectors in the graph afterwards: <b>${n}</b>. The failed statement left nothing behind.</div>`;}]},
+  {sec:'Cypher on connected context'},
+  {t:'Quantified path patterns: the ownership chain',on:'client file Kalmora (fictitious)',db:demoDb,use:'Who is the beneficial owner? A quantified path pattern walks one to six OWNS hops from every top owner to the client and multiplies the percentages along the way.',
+   q:"MATCH p = (o:Party)((a)-[:OWNS]->(b)){1,6}(c:Client)\nWHERE NOT EXISTS { ()-[:OWNS]->(o) }\nRETURN o.name AS top_owner, length(p) AS hops, [r IN relationships(p) | r.pct] AS pct_per_hop,\n       reduce(x = 1.0, r IN relationships(p) | x * r.pct / 100.0) AS effective_share\nORDER BY effective_share DESC"},
+  {t:'SHORTEST path',on:'client file Kalmora (fictitious)',db:demoDb,use:'The shortest ownership route from the largest indirect owner to the client, as the evidence for one ground.',
+   q:"MATCH p = SHORTEST 1 (o:Party {name: $owner})-[:OWNS]-+(c:Client)\nRETURN [x IN nodes(p) | x.name] AS route, length(p) AS hops",p:()=>({owner:'Ines Valtor'})},
+  {t:'Law that changes on a date',on:'sector register',db:()=>reg,use:'A duty is not an article. Each duty rests on an article per legal regime with valid_from and valid_to; on 10 July 2027 each Wwft article is REPLACED_BY its AMLR successor, so the same query answers for any date.',
+   q:"MATCH (d:SectorDuty)-[:DEFINED_IN]->(a:Article)-[:REPLACED_BY]->(b:Article)\nRETURN DISTINCT a.ref AS until_9_july_2027, b.ref AS from_10_july_2027, count(DISTINCT d) AS duties\nORDER BY until_9_july_2027"},
+  {sec:'Search inside the graph'},
+  {t:'Full-text index',on:'sector register + sources read in',db:()=>reg,use:'A procedure that describes what it does without citing a law: the full-text index on every section proposes which section covers a duty, ranked by score. The officer confirms with one click.',
+   q:"CALL db.index.fulltext.queryNodes('section_text', $q) YIELD node, score\nMATCH (s:Source)-[:HAS_SECTION]->(node)\nRETURN s.kind AS source, node.number AS section, node.heading AS heading, round(score, 2) AS score LIMIT 4",p:()=>({q:'opleiding OR training OR medewerkers'})},
+  {t:'Vector index with SEARCH, then the graph',on:'sector register + sources read in',db:()=>reg,use:'The same question by meaning: every section has an embedding (computed in this page; no text leaves the browser), a VECTOR INDEX, and SEARCH returns the nearest sections, followed straight on by a graph match to keep only the company\'s own procedure. In the testing table this runs beside full-text: hybrid.',
+   q:VEC_Q.replace('LIMIT 1','LIMIT 3'),p:()=>({v:emb('opleiding van medewerkers, training'),c:CO_ID}),shown:{v:'emb("opleiding van medewerkers, training") · 256 floats',c:CO_ID}},
+  {sec:'Inside the engine'},
+  {t:'PROFILE the testing query',on:'sector register',db:()=>reg,use:'The one query behind the testing table, profiled by Relate: operators, rows and db hits per step. Every answer in Casefold can be inspected this way.',
+   q:'PROFILE '+TEST_Q,p:()=>({sector:'NL:payment-institutions',on:$('onSel').value||new Date().toISOString().slice(0,10)}),plan:true,shown:{sector:'NL:payment-institutions',on:'the date chosen'}},
+  {t:'Writes with parameters, in the page',on:'sector register',db:()=>reg,use:'Reading in a law, guidance, a procedure or a case is a parameterised Cypher script (executeScript) in the page: sections, and a CITES edge for every citation found. A confirmation by hand is a MERGE with stated = false.',
+   q:"MATCH (s:Source)-[:HAS_SECTION]->(:SourceSection)-[c:CITES]->(:Article)\nRETURN s.kind AS source_kind, CASE WHEN c.confirmed IS NOT NULL THEN 'confirmed by hand' WHEN c.stated = false THEN 'derived from the description' ELSE 'cited in the text' END AS how, count(*) AS citations\nORDER BY source_kind"},
+ ];
+ const CLI=[
+  ['relate query --database tests/cases/*.rl --read-only --json','casefold/run_tests.py: 28 client files and 14 office files, answered by Cypher and compared with an independent Python implementation, today and on 10 July 2029.'],
+  ['relate query … --fetch-params rows=rows.json','build_case.py, build_duties.py: each file is built with parameterised scripts; law texts go in verbatim.'],
+  ['schema/*.cypher (CREATE CONSTRAINT … REQUIRE … IS NODE KEY / IS NOT NULL / IS :: TYPE)','casefold/apply_schema.py: the schema per kind of file, validated against 49 files.'],
+  ['MCP server casefold/agent_mcp.py → relate query --read-only','The grounded AI agent on one client file: its only evidence is what read_cypher returns from the graph; every node read is logged, and a claim that cites something it never read is marked ungrounded.'],
+  ['relate serve --mcp stdio --database cases/nl-kalmora.rl --read-only','Relate\'s own MCP server: plain read-only Cypher for an agent, without memory or grounding checks.'],
+  ['relate clone --to-snapshot-format json  ·  relate info --json','casefold/handover.py: the auditor hand-over of one client file: a readable JSON snapshot that Relate still opens, the counts, every constraint and index, and the sha256.'],
+  ['CREATE VECTOR INDEX … SEARCH … (local model)','casefold/embed.py and semantic.py: questions in your own words against one client file, embedded by a local model.'],
+  ['relate pull','build_case.py --pulled: the rulebook slice from a central Neo4j database (same Cypher schema). Optional, not part of the demo run.'],
+ ];
+ const runProbe=async(i,el)=>{const P=PROBES[i];const out=el.querySelector('.out');try{const d=await P.db();const r=exec(d,P.q,P.p?P.p():null);
+   out.innerHTML=(P.plan?planHtml(r.plan.root)+`<div class="ms">${r.rows.length} duties · <b>${r.ms.toFixed(1)} ms</b> in this page, profiled</div>`:table(r)+msLine(r));}catch(e){out.innerHTML=`<div class="err">${esc(e.message)}</div>`;}};
+ const drawRelate=async()=>{let k=0;$('relBody').innerHTML=PROBES.map((P,i)=>P.sec?`<div class="rsec">${esc(P.sec)}</div>`:`<div class="rcard" data-i="${i}"><h4><span class="no">${String(++k).padStart(2,'0')}</span>${esc(P.t)}<span class="on">${esc(P.on)}</span></h4><p>${esc(P.use)}</p>
+   <details${P.plan?'':' open'}><summary class="note">Cypher</summary><pre>${esc(P.q)}${P.p?'\n// params: '+esc(JSON.stringify(P.shown||P.p())):''}</pre></details><div><button class="b" data-run type="button">Run again</button>${P.btn?`<button class="b p" data-btn type="button">${esc(P.btn[0])}</button>`:''}</div><div class="out"></div><div class="out2"></div></div>`).join('')
+   +`<div class="rsec">Outside the page: the Relate CLI and server</div><div class="rcard"><h4><span class="no">${String(++k).padStart(2,'0')}</span>The same files, on the command line and over MCP<span class="on">run.sh</span></h4><p>In the repo, bash run.sh builds every file and uses these:</p><div class="cli">${CLI.map(([c,u])=>`<div><code>${esc(c)}</code><br>${esc(u)}</div>`).join('')}</div></div>`;
+  for(const el of $('relBody').querySelectorAll('.rcard[data-i]')){const i=+el.dataset.i;el.querySelector('[data-run]').onclick=()=>runProbe(i,el);const b=el.querySelector('[data-btn]');if(b)b.onclick=async()=>{el.querySelector('.out2').innerHTML=await PROBES[i].btn[1](el);};await runProbe(i,el);}};
+ $('relBtn').onclick=()=>{$('relDrawer').hidden=false;drawRelate();$('relClose').focus();};
+ $('relClose').onclick=()=>{$('relDrawer').hidden=true;$('relBtn').focus();};
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('relDrawer').hidden)$('relClose').click();});
+ window.casefoldRelate={drawRelate,PROBES,emb};
+ const start=idx.find(c=>c.kind==='case'&&!c.test)||idx[0];
+ if(start.jurisdiction)$('jur').value=start.jurisdiction;fillAuth();fillSectors();fillOffices();
+ const so=offices.find(o=>o.office===start.office);if(so)$('office').value=so.case;fillClients();$('client').value=start.kind==='case'?start.case:'';
+ try{await openUser(start.case);}catch(err){$('engine').textContent='Loading the case failed: '+err.message;}
+})();
+</script>
+<script src="newclient.js"></script>
+</body>
+</html>

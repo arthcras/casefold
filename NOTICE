@@ -1,0 +1,14 @@
+Casefold — KYC case files on Relate
+Copyright 2026 the Casefold authors. Licensed under the GNU Affero General Public License, version 3 or (at your option)
+any later version (AGPL-3.0-or-later); see LICENSE. Commercial licences on request.
+
+Law excerpts in data/rulebook are taken from official public sources listed in each record (source_url) and remain subject to
+the terms of those sources. Client files in data/cases and cases/ are fictitious.
+Relate is an open-source project of Neo4j (Apache-2.0); the viewer loads its WebAssembly build (@relate/relate-wasm) and
+Cytoscape.js (MIT) from public CDNs. Casefold is not affiliated with or endorsed by Neo4j.
+
+web/vendor/tesseract/ contains, unmodified, tesseract.js 5.1.1 and tesseract.js-core 5.1.1 (Apache-2.0, see the LICENSE files there) and
+the "best_int" Dutch and English language data of Tesseract 4.0.0 (Apache-2.0, via @tesseract.js-data). The language data is
+stored as base64 text (*.gz.b64.txt) so that static hosts that serve only common web types can serve it; web/vendor/tesseract/ocr-worker.js
+decodes it. pdf.js (Apache-2.0) is loaded from cdnjs. The structure chart reader (web/chart.js, casefold/structure_chart.py) is
+part of Casefold; casefold/structure_chart.py uses pdfplumber (MIT) when installed.

@@ -1,0 +1,921 @@
+{
+ "country": {
+  "code": "NL",
+  "name": "Netherlands"
+ },
+ "note": "Public slice for the Casefold demo. Article texts are excerpts read from the official source (source_url). English text is an official translation where en_type is \"official\", otherwise an unofficial translation. \"verify\": true means the excerpt still has to be checked against the current consolidated text.",
+ "regulators": [
+  {
+   "id": "NL:dnb",
+   "short": "DNB",
+   "name": "Dutch Central Bank",
+   "url": "https://www.dnb.nl"
+  },
+  {
+   "id": "NL:afm",
+   "short": "AFM",
+   "name": "Dutch Authority for the Financial Markets",
+   "url": "https://www.afm.nl"
+  },
+  {
+   "id": "NL:bft",
+   "short": "BFT",
+   "name": "Financial Supervision Office",
+   "url": "https://www.bureauft.nl"
+  },
+  {
+   "id": "NL:deken",
+   "short": "NOvA / deken",
+   "name": "Local Dean of the Bar (Netherlands Bar)",
+   "url": "https://www.advocatenorde.nl"
+  },
+  {
+   "id": "NL:dfei",
+   "short": "DFEI",
+   "name": "Financial-Economic Integrity Service (Ministry of Finance)",
+   "url": "https://www.rijksoverheid.nl/ministeries/ministerie-van-financien/organisatie/organogram/dienst-financieel-economische-integriteit"
+  },
+  {
+   "id": "NL:ksa",
+   "short": "Ksa",
+   "name": "Netherlands Gambling Authority",
+   "url": "https://kansspelautoriteit.nl"
+  }
+ ],
+ "laws": [
+  {
+   "id": "NL:wtt2018",
+   "short": "Wtt 2018",
+   "title": "Act on the Supervision of Trust Offices 2018",
+   "title_local": "Wet toezicht trustkantoren 2018 (Wtt 2018)",
+   "url": "https://wetten.overheid.nl/BWBR0041259"
+  },
+  {
+   "id": "NL:wwft",
+   "short": "Wwft",
+   "title": "Money Laundering and Terrorist Financing (Prevention) Act",
+   "title_local": "Wet ter voorkoming van witwassen en financieren van terrorisme (Wwft)",
+   "url": "https://wetten.overheid.nl/BWBR0024282"
+  },
+  {
+   "id": "NL:uitvoeringsbesluit-wwft",
+   "short": "Uitvoeringsbesluit Wwft 2018",
+   "title": "Uitvoeringsbesluit Wwft 2018",
+   "title_local": "Uitvoeringsbesluit Wwft 2018",
+   "url": "https://wetten.overheid.nl/BWBR0041193/2026-04-30/"
+  },
+  {
+   "id": "NL:dnb-gp-wtt",
+   "short": "DNB Good Practices Wtt 2018",
+   "title": "DNB Good Practices Wtt 2018",
+   "title_local": "",
+   "url": "https://www.dnb.nl/media/tu5l3quf/dnb-good-practice-wtt-2018-nl.pdf",
+   "issuer": "NL:dnb",
+   "sector": "NL:trust-offices-wtt-2018"
+  }
+ ],
+ "articles": [
+  {
+   "id": "NL:T1:1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 3 lid 1 en lid 2 aanhef en onder a",
+   "topic": "Customer due diligence",
+   "lang": "nl",
+   "text_local": "1. Een instelling verricht ter voorkoming van witwassen en financieren van terrorisme cliëntenonderzoek. […] 2. Het cliëntenonderzoek stelt de instelling in staat om: a. de cliënt te identificeren en diens identiteit te verifiëren;",
+   "text_en": "1. An institution shall carry out customer due diligence in order to prevent money laundering and terrorist financing. […] 2. The customer due diligence enables the institution to: a. identify the client and verify his identity;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T1:2",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 4 lid 1; art. 11 lid 1",
+   "topic": "Customer due diligence",
+   "lang": "nl",
+   "text_local": "Art. 4 lid 1: Een instelling voldoet aan artikel 3, tweede lid, onderdelen a en b, en indien van toepassing het derde en vierde lid van dat artikel, voordat de zakelijke relatie wordt aangegaan of een incidentele transactie als bedoeld in artikel 3, vijfde lid, onderdelen b en g, zesde en zevende lid, wordt uitgevoerd. Art. 11 lid 1: Indien de cliënt, de insteller van een trust, de trustee van een trust, de vennoot van een personenvennootschap of de persoon bevoegd inzake het beheer van de personenvennootschap een natuurlijke persoon is, wordt diens identiteit geverifieerd aan de hand van documenten, gegevens of inlichtingen uit betrouwbare en onafhankelijke bron. […]",
+   "text_en": "Art. 4(1): An institution shall comply with article 3, second paragraph, parts a and b, and where applicable the third and fourth paragraph of that article, before the business relationship is entered into or an occasional transaction as referred to in article 3, fifth paragraph, parts b and g, sixth and seventh paragraph, is carried out. Art. 11(1): If the client, the settlor of a trust, the trustee of a trust, the partner of a partnership or the person authorised in the management of the partnership is a natural person, his identity shall be verified on the basis of documents, data or information from a reliable and independent source. […]",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://www.viajuridica.nl/informatiesoorten/wet-en-regelgeving/wet-ter-voorkoming-van-witwassen-en-financieren-van-terrorisme",
+   "verify": true
+  },
+  {
+   "id": "NL:T2:1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 3 lid 2 onder b",
+   "topic": "Beneficial owner",
+   "lang": "nl",
+   "text_local": "b. de uiteindelijk belanghebbende van de cliënt te identificeren en redelijke maatregelen te nemen om zijn identiteit te verifiëren, indien de cliënt een rechtspersoon is, redelijke maatregelen te nemen om inzicht te verwerven in de eigendoms- en zeggenschapsstructuur van de cliënt, en indien de uiteindelijk belanghebbende lid is van het hoger leidinggevend personeel, noodzakelijke redelijke maatregelen te nemen om de identiteit te verifiëren van de natuurlijke persoon die lid is van het hoger leidinggevend personeel, waarbij de genomen maatregelen en de ondervonden moeilijkheden tijdens het verificatieproces worden vastgelegd;",
+   "text_en": "b. identify the ultimate beneficial owner of the client and take reasonable measures to verify his identity, where the client is a legal person, take reasonable measures to gain insight into the ownership and control structure of the client, and where the ultimate beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natural person who is a member of the senior managing officials, whereby the measures taken and the difficulties encountered during the verification process are recorded;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T3:1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 3 lid 2 onder c",
+   "topic": "Purpose and nature of relationship",
+   "lang": "nl",
+   "text_local": "Het cliëntenonderzoek stelt de instelling in staat om: […] c. het doel en de beoogde aard van de zakelijke relatie vast te stellen;",
+   "text_en": "The customer due diligence enables the institution to: […] c. establish the purpose and intended nature of the business relationship;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T4:1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 3 lid 2 onder d en lid 10",
+   "topic": "Ongoing monitoring",
+   "lang": "nl",
+   "text_local": "d. een voortdurende controle op de zakelijke relatie en de tijdens de duur van deze relatie verrichte transacties uit te oefenen, teneinde te verzekeren dat deze overeenkomen met de kennis die de instelling heeft van de cliënt en diens risicoprofiel, met zo nodig een onderzoek naar de bron van de middelen die bij de zakelijke relatie of de transactie gebruikt worden; […] 10. Een instelling neemt redelijke maatregelen om ervoor te zorgen dat de gegevens die ingevolge het tweede tot en met vierde lid zijn verzameld over daar bedoelde personen, actueel gehouden worden.",
+   "text_en": "d. exercise ongoing monitoring of the business relationship and of the transactions carried out during the course of that relationship, in order to ensure that these correspond to the institution's knowledge of the client and his risk profile, with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction; […] 10. An institution shall take reasonable measures to ensure that the data collected pursuant to the second to fourth paragraphs about the persons referred to there are kept up to date.",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T5:1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 3 lid 2 onder d; art. 8 lid 6 onder b, 2°",
+   "topic": "Source of funds and wealth",
+   "lang": "nl",
+   "text_local": "Art. 3 lid 2 onder d: […] met zo nodig een onderzoek naar de bron van de middelen die bij de zakelijke relatie of de transactie gebruikt worden; Art. 8 lid 6 onder b, 2°: passende maatregelen worden getroffen om de bron van het vermogen en van de middelen die bij deze zakelijke relatie of deze transactie gebruikt worden, vast te stellen;",
+   "text_en": "Art. 3(2)(d): […] with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction; Art. 8(6)(b)(2°): appropriate measures are taken to establish the source of wealth and of the funds used in this business relationship or this transaction;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0024282/2026-07-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T5:2",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 9 lid 1 onder c",
+   "topic": "Source of funds and wealth",
+   "lang": "nl",
+   "text_local": "Onverminderd artikel 8, eerste lid, verricht een instelling met betrekking tot transacties, zakelijke relaties en correspondentbankrelaties gerelateerd aan staten die op grond van artikel 9 van de vierde anti-witwasrichtlijn in gedelegeerde handelingen van de Europese Commissie zijn aangewezen als staten met een hoger risico op witwassen of financieren van terrorisme de volgende verscherpte onderzoeksmaatregelen: […] c. verzamelen van informatie over de herkomst van de fondsen die bij die zakelijke relatie of transactie gebruikt worden en de bron van het vermogen van die cliënten en van die uiteindelijk belanghebbenden;",
+   "text_en": "Without prejudice to article 8, first paragraph, an institution shall, with respect to transactions, business relationships and correspondent banking relationships related to states designated in delegated acts of the European Commission pursuant to article 9 of the fourth anti-money laundering directive as states with a higher risk of money laundering or terrorist financing, carry out the following enhanced due diligence measures: […] c. collecting information on the origin of the funds used in that business relationship or transaction and the source of wealth of those clients and of those ultimate beneficial owners;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://www.viajuridica.nl/informatiesoorten/wet-en-regelgeving/wet-ter-voorkoming-van-witwassen-en-financieren-van-terrorisme",
+   "verify": true
+  },
+  {
+   "id": "NL:T6:1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 8 lid 6",
+   "topic": "PEPs",
+   "lang": "nl",
+   "text_local": "In aanvulling op de cliëntenonderzoeksmaatregelen, bedoeld in artikel 3: a. beschikt een instelling over passende risicobeheersystemen, waaronder op risico gebaseerde procedures, om te bepalen of de cliënt of de uiteindelijk belanghebbende een politiek prominente persoon is; b. past een instelling de volgende maatregelen toe bij het aangaan of voortzetten van een zakelijke relatie met of het verrichten van een transactie voor een politiek prominente persoon: 1°. voor het aangaan of voortzetten van deze zakelijke relatie of het verrichten van deze transactie, is de toestemming vereist van een persoon die deel uitmaakt van het hoger leidinggevend personeel; 2°. passende maatregelen worden getroffen om de bron van het vermogen en van de middelen die bij deze zakelijke relatie of deze transactie gebruikt worden, vast te stellen; 3°. de zakelijke relatie wordt doorlopend aan verscherpte controle onderworpen.",
+   "text_en": "In addition to the customer due diligence measures referred to in article 3: a. an institution shall have appropriate risk management systems, including risk-based procedures, to determine whether the client or the ultimate beneficial owner is a politically exposed person; b. an institution shall apply the following measures when entering into or continuing a business relationship with, or carrying out a transaction for, a politically exposed person: 1°. entering into or continuing this business relationship or carrying out this transaction requires the approval of a person who is part of the senior managing officials; 2°. appropriate measures are taken to establish the source of wealth and of the funds used in this business relationship or this transaction; 3°. the business relationship is subjected to ongoing enhanced monitoring.",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://www.viajuridica.nl/informatiesoorten/wetstoelichtingen/pep-onderzoek-art-8-lid-6-wwft",
+   "verify": true
+  },
+  {
+   "id": "NL:T13:1",
+   "law": null,
+   "ref": "Uitvoeringsregeling Wwft art. 4 lid 1",
+   "topic": "Identity documents",
+   "lang": "nl",
+   "text_local": "Als documenten op basis waarvan kan worden voldaan aan artikel 11, eerste lid, eerste volzin, van de wet worden aangewezen: a. een geldig paspoort; b. een geldige Nederlandse identiteitskaart; c. een geldige identiteitskaart die is afgegeven door het daartoe bevoegde gezag in een andere lidstaat en is voorzien van een pasfoto en de naam van de houder; d. een geldig Nederlands rijbewijs; e. een geldig rijbewijs dat is afgegeven door het daartoe bevoegde gezag in een andere lidstaat en is voorzien van een pasfoto en de naam van de houder; f. reisdocumenten voor vluchtelingen en vreemdelingen; g. vreemdelingendocumenten, afgegeven op grond van de Vreemdelingenwet 2000; h. een voldoende betrouwbaar identificatiemiddel.",
+   "text_en": "Designated as documents on the basis of which article 11, first paragraph, first sentence, of the act can be complied with are: a. a valid passport; b. a valid Dutch identity card; c. a valid identity card issued by the competent authority in another member state and bearing a passport photograph and the name of the holder; d. a valid Dutch driving licence; e. a valid driving licence issued by the competent authority in another member state and bearing a passport photograph and the name of the holder; f. travel documents for refugees and aliens; g. aliens' documents issued under the Aliens Act 2000; h. a sufficiently reliable means of identification.",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0024275/2026-01-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T15:1",
+   "law": "NL:wtt2018",
+   "ref": "Wtt 2018 art. 26 lid 1 en lid 3; art. 27 lid 1",
+   "topic": "Trust and company service providers",
+   "lang": "nl",
+   "text_local": "Art. 26 lid 1: Een trustkantoor heeft kennis van het doel van hetgeen de cliënt beoogt met de trustdienstverlening en onderzoekt, mede aan de hand van de uitkomst van het in dit hoofdstuk voorgeschreven cliëntenonderzoek, of aan die dienstverlening integriteitrisico’s zijn verbonden. […] Art. 26 lid 3: Een trustkantoor beschikt voor iedere cliënt over een acceptatiememorandum waarin de uitkomst van het cliëntenonderzoek, het onderzoek naar de verbonden integriteitsrisico’s en de mate waarin deze worden ondervangen in samenhang tot elkaar zijn beschreven, en waarin de aanvaarding van de cliënt tot uitdrukking is gebracht. Art. 27 lid 1: Een trustkantoor verricht voor het aangaan van een zakelijke relatie gericht op het verlenen van de trustdiensten, bedoeld in de onderdelen a en b van de begripsomschrijving van trustdienst, alsmede bij het verlenen van die trustdiensten, onderzoek naar de cliënt en de doelvennootschap.",
+   "text_en": "Art. 26(1): A trust office shall have knowledge of the purpose the client intends with the trust services and shall examine, partly on the basis of the outcome of the customer due diligence prescribed in this chapter, whether integrity risks are associated with those services. […] Art. 26(3): A trust office shall have, for each client, an acceptance memorandum in which the outcome of the customer due diligence, the examination of the associated integrity risks and the extent to which these are mitigated are described in relation to each other, and in which the acceptance of the client is expressed. Art. 27(1): A trust office shall, before entering into a business relationship aimed at providing the trust services referred to in parts a and b of the definition of trust service, as well as when providing those trust services, carry out an examination of the client and the target company.",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0041583/2025-03-01/0",
+   "verify": false
+  },
+  {
+   "id": "NL:T13:LD1",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 33 lid 1 en lid 2 onderdeel a, sub 1°",
+   "topic": "Identity documents",
+   "lang": "nl",
+   "text_local": "Een instelling die op grond van deze wet cliëntenonderzoek heeft verricht, […] legt op opvraagbare wijze de documenten en gegevens vast […]: de geslachtsnaam, de voornamen, de geboortedatum, het adres en de woonplaats, dan wel de plaats van vestiging van de cliënt alsmede van degene die namens die natuurlijke persoon optreedt, of een afschrift van het document dat een persoonidentificerend nummer bevat aan de hand waarvan de verificatie van de identiteit heeft plaatsgevonden;",
+   "text_en": "An institution that has carried out customer due diligence under this Act […] records in a retrievable manner the documents and data […]: the surname, forenames, date of birth, the address and place of residence, or the place of establishment, of the client and of the person acting on behalf of that natural person, or a copy of the document containing a personal identification number on the basis of which the identity was verified;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://www.viajuridica.nl/informatiesoorten/wetstoelichtingen/bewaarplicht-clientenonderzoek-art-33-wwft",
+   "verify": true
+  },
+  {
+   "id": "NL:T1:LD2",
+   "law": "NL:wwft",
+   "ref": "Wwft art. 3 lid 2 onderdeel e",
+   "topic": "Customer due diligence",
+   "lang": "nl",
+   "text_local": "[Het cliëntenonderzoek stelt de instelling in staat:] vast te stellen of de natuurlijke persoon die de cliënt vertegenwoordigt daartoe bevoegd is en in voorkomend geval de natuurlijke persoon te identificeren en diens identiteit te verifiëren;",
+   "text_en": "[Customer due diligence enables the institution:] to establish whether the natural person who represents the client is authorised to do so and, where applicable, to identify that natural person and verify his identity;",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://www.viajuridica.nl/informatiesoorten/wetstoelichtingen/identificatie-vertegenwoordiger-client-art-3-lid-2-onder-e-wwft",
+   "verify": true
+  },
+  {
+   "id": "NL:UBW:3",
+   "law": "NL:uitvoeringsbesluit-wwft",
+   "ref": "Uitvoeringsbesluit Wwft 2018 art. 3 lid 1 onder a",
+   "topic": "Ultimate beneficial owner (definition)",
+   "lang": "nl",
+   "text_local": "[…] meer dan 25 procent van de aandelen, van de stemrechten of van het eigendomsbelang […]",
+   "text_en": "Natural persons who directly or indirectly hold more than 25 percent of the shares, voting rights or ownership interest, or control by other means (including the consolidation rules of Book 2 of the Civil Code); as a last resort the senior managing officials. (Unofficial summary.)",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://wetten.overheid.nl/BWBR0041193/2026-04-30/#Paragraaf2_Artikel3",
+   "verify": false
+  },
+  {
+   "id": "NL:GP:3511",
+   "law": "NL:dnb-gp-wtt",
+   "ref": "DNB Good Practices Wtt 2018, s. 3.5.7 and 3.5.11 (art. 25 Wtt 2018)",
+   "topic": "UBO and structure (trust offices)",
+   "lang": "nl",
+   "text_local": "[…] zoveel mogelijk met zekerheid […] de aard en omvang van het uiteindelijk belang van de UBO’s verifieert […]",
+   "text_en": "The trust office identifies the UBOs as far as possible with certainty, verifies their identity and the nature and size of their interest, and establishes the formal and actual control structure; a dated, verified structure chart is good practice. (Unofficial summary.)",
+   "en_type": "unofficial translation (Casefold)",
+   "source_url": "https://www.dnb.nl/media/tu5l3quf/dnb-good-practice-wtt-2018-nl.pdf",
+   "verify": false
+  }
+ ],
+ "obligations": [
+  {
+   "key": "authority_to_act",
+   "text": "Verify that the person acting on behalf of the client is authorised"
+  },
+  {
+   "key": "directors",
+   "text": "Identify the directors / senior managing officials"
+  },
+  {
+   "key": "identify_ubo",
+   "text": "Identify the beneficial owner and verify the identity"
+  },
+  {
+   "key": "ownership_structure",
+   "text": "Understand the ownership and control structure"
+  },
+  {
+   "key": "pep_screening",
+   "text": "Determine whether the client or UBO is a politically exposed person"
+  },
+  {
+   "key": "purpose_nature",
+   "text": "Establish the purpose and intended nature of the relationship"
+  },
+  {
+   "key": "source_of_funds",
+   "text": "Establish the source of the funds used in the relationship or transaction"
+  },
+  {
+   "key": "source_of_wealth",
+   "text": "Establish the source / composition of the wealth"
+  },
+  {
+   "key": "trust_parties",
+   "text": "Identify settlor, trustees, protector and beneficiaries of a trust"
+  },
+  {
+   "key": "verify_address",
+   "text": "Establish and verify the address / residence"
+  },
+  {
+   "key": "verify_identity",
+   "text": "Establish and verify the identity of the client / representative"
+  },
+  {
+   "key": "verify_legal_entity",
+   "text": "Verify name, legal form and existence of the legal person / arrangement"
+  }
+ ],
+ "imposes": [
+  {
+   "article": "NL:T1:1",
+   "obligation": "verify_identity",
+   "condition": "always",
+   "strength": "implied",
+   "quote": "identify the client and verify his identity;"
+  },
+  {
+   "article": "NL:T1:2",
+   "obligation": "verify_identity",
+   "condition": "always",
+   "strength": "explicit",
+   "quote": "If the client, the settlor of a trust, the trustee of a trust, the partner of a partnership or the person authorised in the management of the partnership is a natural person, his identity shall be verified on the basis of documents, data or information from a reliable and independent source."
+  },
+  {
+   "article": "NL:T1:2",
+   "obligation": "trust_parties",
+   "condition": "always",
+   "strength": "explicit",
+   "quote": "If the client, the settlor of a trust, the trustee of a trust, the partner of a partnership or the person authorised in the management of the partnership is a natural person, his identity shall be verified on the basis of documents, data or information from a reliable and independent source."
+  },
+  {
+   "article": "NL:T2:1",
+   "obligation": "verify_identity",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "identify the ultimate beneficial owner of the client and take reasonable measures to verify his identity, where the client is a legal person, take reasonable measures to gain insight into the ownership and control structure of the client, and where the ultimate beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natura"
+  },
+  {
+   "article": "NL:T2:1",
+   "obligation": "identify_ubo",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "identify the ultimate beneficial owner of the client and take reasonable measures to verify his identity, where the client is a legal person, take reasonable measures to gain insight into the ownership and control structure of the client, and where the ultimate beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natura"
+  },
+  {
+   "article": "NL:T2:1",
+   "obligation": "ownership_structure",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "identify the ultimate beneficial owner of the client and take reasonable measures to verify his identity, where the client is a legal person, take reasonable measures to gain insight into the ownership and control structure of the client, and where the ultimate beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natura"
+  },
+  {
+   "article": "NL:T2:1",
+   "obligation": "directors",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "identify the ultimate beneficial owner of the client and take reasonable measures to verify his identity, where the client is a legal person, take reasonable measures to gain insight into the ownership and control structure of the client, and where the ultimate beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natura"
+  },
+  {
+   "article": "NL:T3:1",
+   "obligation": "purpose_nature",
+   "condition": "always",
+   "strength": "implied",
+   "quote": "establish the purpose and intended nature of the business relationship;"
+  },
+  {
+   "article": "NL:T4:1",
+   "obligation": "source_of_funds",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "exercise ongoing monitoring of the business relationship and of the transactions carried out during the course of that relationship, in order to ensure that these correspond to the institution's knowledge of the client and his risk profile, with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction;"
+  },
+  {
+   "article": "NL:T5:1",
+   "obligation": "source_of_funds",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "appropriate measures are taken to establish the source of wealth and of the funds used in this business relationship or this transaction;"
+  },
+  {
+   "article": "NL:T5:1",
+   "obligation": "source_of_wealth",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "appropriate measures are taken to establish the source of wealth and of the funds used in this business relationship or this transaction;"
+  },
+  {
+   "article": "NL:T5:2",
+   "obligation": "source_of_funds",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "collecting information on the origin of the funds used in that business relationship or transaction and the source of wealth of those clients and of those ultimate beneficial owners;"
+  },
+  {
+   "article": "NL:T5:2",
+   "obligation": "source_of_wealth",
+   "condition": "risk_based",
+   "strength": "implied",
+   "quote": "collecting information on the origin of the funds used in that business relationship or transaction and the source of wealth of those clients and of those ultimate beneficial owners;"
+  },
+  {
+   "article": "NL:T6:1",
+   "obligation": "identify_ubo",
+   "condition": "pep",
+   "strength": "implied",
+   "quote": "an institution shall have appropriate risk management systems, including risk-based procedures, to determine whether the client or the ultimate beneficial owner is a politically exposed person;"
+  },
+  {
+   "article": "NL:T6:1",
+   "obligation": "pep_screening",
+   "condition": "pep",
+   "strength": "implied",
+   "quote": "an institution shall have appropriate risk management systems, including risk-based procedures, to determine whether the client or the ultimate beneficial owner is a politically exposed person;"
+  },
+  {
+   "article": "NL:T6:1",
+   "obligation": "source_of_funds",
+   "condition": "pep",
+   "strength": "implied",
+   "quote": "appropriate measures are taken to establish the source of wealth and of the funds used in this business relationship or this transaction;"
+  },
+  {
+   "article": "NL:T6:1",
+   "obligation": "source_of_wealth",
+   "condition": "pep",
+   "strength": "implied",
+   "quote": "appropriate measures are taken to establish the source of wealth and of the funds used in this business relationship or this transaction;"
+  },
+  {
+   "article": "NL:T13:1",
+   "obligation": "verify_identity",
+   "condition": "always",
+   "strength": "explicit",
+   "quote": "a valid passport;"
+  },
+  {
+   "article": "NL:T15:1",
+   "obligation": "verify_legal_entity",
+   "condition": "always",
+   "strength": "explicit",
+   "quote": "A trust office shall have, for each client, an acceptance memorandum in which the outcome of the customer due diligence, the examination of the associated integrity risks and the extent to which these are mitigated are described in relation to each other, and in which the acceptance of the client is expressed."
+  },
+  {
+   "article": "NL:T13:LD1",
+   "obligation": "verify_address",
+   "condition": "always",
+   "strength": "explicit",
+   "quote": "the surname, forenames, date of birth, the address and place of residence, or the place of establishment, of the client and of the person acting on behalf of that natural person, or a copy of the document containing a personal identification number on the basis of which the identity was verified;"
+  },
+  {
+   "article": "NL:T1:LD2",
+   "obligation": "authority_to_act",
+   "condition": "always",
+   "strength": "implied",
+   "quote": "[Customer due diligence enables the institution:] to establish whether the natural person who represents the client is authorised to do so and, where applicable, to identify that natural person and verify his identity;"
+  },
+  {
+   "article": "NL:UBW:3",
+   "obligation": "identify_ubo",
+   "condition": "always",
+   "strength": "explicit",
+   "quote": "meer dan 25 procent"
+  },
+  {
+   "article": "NL:GP:3511",
+   "obligation": "identify_ubo",
+   "condition": "sector:trust",
+   "strength": "explicit",
+   "quote": "zoveel mogelijk met zekerheid"
+  },
+  {
+   "article": "NL:GP:3511",
+   "obligation": "ownership_structure",
+   "condition": "sector:trust",
+   "strength": "implied",
+   "quote": "de aard en omvang van het uiteindelijk belang"
+  }
+ ],
+ "proven_by": [
+  {
+   "obligation": "verify_identity",
+   "doctype": "person_id"
+  },
+  {
+   "obligation": "verify_address",
+   "doctype": "proof_of_address"
+  },
+  {
+   "obligation": "source_of_funds",
+   "doctype": "source_of_funds"
+  },
+  {
+   "obligation": "source_of_wealth",
+   "doctype": "source_of_wealth"
+  },
+  {
+   "obligation": "identify_ubo",
+   "doctype": "ubo_declaration"
+  },
+  {
+   "obligation": "identify_ubo",
+   "doctype": "person_id"
+  },
+  {
+   "obligation": "ownership_structure",
+   "doctype": "structure_chart"
+  },
+  {
+   "obligation": "ownership_structure",
+   "doctype": "shareholder_register"
+  },
+  {
+   "obligation": "verify_legal_entity",
+   "doctype": "register_extract"
+  },
+  {
+   "obligation": "verify_legal_entity",
+   "doctype": "constitutional"
+  },
+  {
+   "obligation": "directors",
+   "doctype": "directors_list"
+  },
+  {
+   "obligation": "authority_to_act",
+   "doctype": "authority_to_act"
+  },
+  {
+   "obligation": "authority_to_act",
+   "doctype": "person_id"
+  },
+  {
+   "obligation": "trust_parties",
+   "doctype": "trust_deed"
+  },
+  {
+   "obligation": "trust_parties",
+   "doctype": "person_id"
+  },
+  {
+   "obligation": "purpose_nature",
+   "doctype": "questionnaire"
+  },
+  {
+   "obligation": "purpose_nature",
+   "doctype": "business_plan"
+  },
+  {
+   "obligation": "pep_screening",
+   "doctype": "screening_record"
+  }
+ ],
+ "doctypes": [
+  {
+   "key": "authority_to_act",
+   "name": "Board resolution / power of attorney for signatories",
+   "scope": "entity",
+   "issuer": "entity or notary",
+   "tier": 2
+  },
+  {
+   "key": "business_plan",
+   "name": "Business plan / description of activities",
+   "scope": "entity",
+   "issuer": "client",
+   "tier": 4
+  },
+  {
+   "key": "constitutional",
+   "name": "Articles / statutes / constitution / by-laws",
+   "scope": "entity",
+   "issuer": "notary or registry",
+   "tier": 2
+  },
+  {
+   "key": "directors_list",
+   "name": "List / register of directors",
+   "scope": "entity",
+   "issuer": "entity or register",
+   "tier": 2
+  },
+  {
+   "key": "financial_statements",
+   "name": "Financial statements / annual accounts",
+   "scope": "entity",
+   "issuer": "entity / auditor",
+   "tier": 2
+  },
+  {
+   "key": "other",
+   "name": "Other document",
+   "scope": "both",
+   "issuer": "",
+   "tier": 4
+  },
+  {
+   "key": "person_id",
+   "name": "Identity document (passport / national ID)",
+   "scope": "person",
+   "issuer": "state authority",
+   "tier": 1
+  },
+  {
+   "key": "proof_of_address",
+   "name": "Proof of address",
+   "scope": "person",
+   "issuer": "utility / bank / authority",
+   "tier": 2
+  },
+  {
+   "key": "questionnaire",
+   "name": "Client questionnaire / application form",
+   "scope": "both",
+   "issuer": "client (signed)",
+   "tier": 3
+  },
+  {
+   "key": "register_extract",
+   "name": "Commercial register extract",
+   "scope": "entity",
+   "issuer": "official register",
+   "tier": 1
+  },
+  {
+   "key": "screening_record",
+   "name": "PEP and sanctions screening record",
+   "scope": "both",
+   "issuer": "obliged entity",
+   "tier": 2
+  },
+  {
+   "key": "shareholder_register",
+   "name": "Share register / register of members",
+   "scope": "entity",
+   "issuer": "entity",
+   "tier": 3
+  },
+  {
+   "key": "source_of_funds",
+   "name": "Source of funds evidence (origin of the money in this relationship / transaction)",
+   "scope": "both",
+   "issuer": "bank / third party / client",
+   "tier": 3
+  },
+  {
+   "key": "source_of_wealth",
+   "name": "Source of wealth evidence (how the total wealth was built up: composition of assets)",
+   "scope": "person",
+   "issuer": "bank / employer / notary / tax return / client",
+   "tier": 3
+  },
+  {
+   "key": "structure_chart",
+   "name": "Structure chart",
+   "scope": "entity",
+   "issuer": "entity (signed)",
+   "tier": 3
+  },
+  {
+   "key": "trust_deed",
+   "name": "Trust deed / foundation charter",
+   "scope": "entity",
+   "issuer": "settlor / notary",
+   "tier": 2
+  },
+  {
+   "key": "ubo_declaration",
+   "name": "Beneficial owner declaration / ownership chart",
+   "scope": "entity",
+   "issuer": "entity (signed)",
+   "tier": 3
+  },
+  {
+   "key": "ubo_register_extract",
+   "name": "Beneficial owner register extract",
+   "scope": "entity",
+   "issuer": "official register",
+   "tier": 1
+  }
+ ],
+ "legal_forms": [
+  {
+   "id": "NL:lf:bv",
+   "abbr": "B.V. / BV",
+   "name": "private limited liability company",
+   "local": "besloten vennootschap met beperkte aansprakelijkheid",
+   "ubo_rule": "Art. 3(1)(a) Uitvoeringsbesluit Wwft 2018: natural persons holding >25% of shares, voting rights or ownership interest (directly or indirectly), or exercising control by other means (incl. consolidation tests of Boek 2 BW); fallback, after exhausting all means and absent suspicion, the senior managing officials (hoger leidinggevend personeel = all statutory directors, art. 3(6)); where a legal entity is a director, look through to its directors/UBOs.",
+   "register": "Trade Register"
+  },
+  {
+   "id": "NL:lf:nv",
+   "abbr": "N.V. / NV",
+   "name": "public limited company",
+   "local": "naamloze vennootschap",
+   "ubo_rule": "Same as BV (art. 3(1)(a) Uitvoeringsbesluit Wwft 2018): >25% shares/voting rights/ownership interest, incl. former bearer shares, or control by other means; fallback senior managing officials (all statutory directors). Listed NVs on a regulated market are exempt from UBO identification under the Wwft (and only register listing details).",
+   "register": "Trade Register"
+  },
+  {
+   "id": "NL:lf:stichting",
+   "abbr": "Stichting / Stg.",
+   "name": "foundation",
+   "local": "stichting",
+   "ubo_rule": "Art. 3(1)(c) Uitvoeringsbesluit Wwft 2018 ('overige rechtspersoon'): natural persons with >25% ownership interest (e.g. a right to >25% of the assets/distributions), >25% of the votes on amendments of the articles, or actual control (e.g. a founder or third party with appointment/veto rights); in practice usually none, so fallback to senior managing officials = all statutory directors (bestuurders). For a STAK: also look at certificate holders as UBOs of the underlying company.",
+   "register": "Trade Register"
+  }
+ ],
+ "requires_doc": [
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "register_extract",
+   "when": "always",
+   "max_age_months": 3,
+   "local": "Uittreksel Handelsregister (KVK)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "constitutional",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Akte van oprichting; (laatst gewijzigde) statuten",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "shareholder_register",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Aandeelhoudersregister (art. 2:194 BW)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "ubo_register_extract",
+   "when": "always",
+   "max_age_months": 3,
+   "local": "Uittreksel UBO-register",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "ubo_declaration",
+   "when": "always",
+   "max_age_months": 6,
+   "local": "",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "person_id",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Identiteitsbewijs (paspoort, identiteitskaart)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "authority_to_act",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "Volmacht",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "constitutional",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "Aandeelhoudersovereenkomst; administratievoorwaarden STAK",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:bv",
+   "doctype": "financial_statements",
+   "when": "high risk",
+   "max_age_months": 18,
+   "local": "Jaarrekening (gedeponeerd bij KVK)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "register_extract",
+   "when": "always",
+   "max_age_months": 3,
+   "local": "Uittreksel Handelsregister (KVK)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "constitutional",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Akte van oprichting; statuten",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "shareholder_register",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Aandeelhoudersregister (art. 2:85 BW) / bewijs van notering",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "ubo_register_extract",
+   "when": "always",
+   "max_age_months": 3,
+   "local": "Uittreksel UBO-register",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "ubo_declaration",
+   "when": "always",
+   "max_age_months": 6,
+   "local": "",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "person_id",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Identiteitsbewijs (paspoort, identiteitskaart)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "authority_to_act",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "Volmacht",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "other",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "Meldingen zeggenschap en kapitaalbelang (AFM-register)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:nv",
+   "doctype": "financial_statements",
+   "when": "high risk",
+   "max_age_months": 18,
+   "local": "Jaarrekening (gedeponeerd bij KVK)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "register_extract",
+   "when": "always",
+   "max_age_months": 3,
+   "local": "Uittreksel Handelsregister (KVK)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "constitutional",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Akte van oprichting; statuten",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "authority_to_act",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Overzicht bestuurders; bestuursbesluit",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "ubo_register_extract",
+   "when": "always",
+   "max_age_months": 3,
+   "local": "Uittreksel UBO-register",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "ubo_declaration",
+   "when": "always",
+   "max_age_months": 6,
+   "local": "",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "person_id",
+   "when": "always",
+   "max_age_months": null,
+   "local": "Identiteitsbewijs (paspoort, identiteitskaart)",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "authority_to_act",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "Volmacht",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "other",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "Administratievoorwaarden; register van certificaathouders",
+   "certified": true
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "other",
+   "when": "if applicable",
+   "max_age_months": null,
+   "local": "ANBI-beschikking Belastingdienst",
+   "certified": false
+  },
+  {
+   "legal_form": "NL:lf:stichting",
+   "doctype": "financial_statements",
+   "when": "high risk",
+   "max_age_months": 18,
+   "local": "Jaarrekening / ANBI-publicatie",
+   "certified": false
+  }
+ ]
+}

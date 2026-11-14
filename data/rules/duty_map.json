@@ -1,0 +1,235 @@
+{
+ "note": "Dynamic duties: each duty rests on an article per legal regime. The Wwft regime ends on 9 July 2027; from 10 July 2027 the AMLR (Regulation (EU) 2024/1624) applies directly, and the Iwt (bill) implements AMLD6 and replaces the Wwft for the rest. The old article is REPLACED_BY the new one. Where a parameter changes (a threshold), the regime creates a successor duty that REPLACES the old one. 'expect': words that must occur in the article heading or text once the law is read in (casefold/law_ingest.py); until then the article number is marked to verify.",
+ "regimes": [
+  {
+   "id": "wwft",
+   "law": "NL:wwft",
+   "short": "Wwft",
+   "valid_to": "2027-07-09"
+  },
+  {
+   "id": "amlr",
+   "law": "EU:amlr",
+   "short": "AMLR",
+   "valid_from": "2027-07-10",
+   "title": "Verordening (EU) 2024/1624 (AMLR)",
+   "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj"
+  },
+  {
+   "id": "iwt",
+   "law": "NL:iwt",
+   "short": "Iwt",
+   "valid_from": "2027-07-10",
+   "title": "Implementatiewet ter voorkoming van witwassen en terrorismefinanciering (wetsvoorstel)",
+   "url": "https://internetconsultatie.nl/implementatiewettervoorkomingvanwitwassenenterrorismefinanciering"
+  }
+ ],
+ "duties": {
+  "NL:duty:risk-assessment": [
+   {
+    "regime": "wwft",
+    "article": "2b",
+    "paragraph": "1"
+   },
+   {
+    "regime": "amlr",
+    "article": "10",
+    "paragraph": "1",
+    "expect": [
+     "risk assessment",
+     "risicobeoordeling"
+    ]
+   }
+  ],
+  "NL:duty:training": [
+   {
+    "regime": "wwft",
+    "article": "35",
+    "en": "An institution ensures that its employees, and its day-to-day policymakers in so far as relevant to the performance of their tasks and taking into account the risks, nature and size of the institution, are screened, are familiar with the provisions of this Act and periodically receive training that enables them to recognise an unusual transaction and to carry out customer due diligence properly and completely."
+   },
+   {
+    "regime": "amlr",
+    "article": "12",
+    "expect": [
+     "awareness",
+     "training",
+     "bewust",
+     "opleiding"
+    ]
+   }
+  ],
+  "NL:duty:report-unusual": [
+   {
+    "regime": "wwft",
+    "article": "16",
+    "paragraph": "1"
+   },
+   {
+    "regime": "amlr",
+    "article": "69",
+    "paragraph": "1",
+    "expect": [
+     "suspicion",
+     "verdenking",
+     "melding"
+    ]
+   }
+  ],
+  "NL:duty:record-keeping": [
+   {
+    "regime": "wwft",
+    "article": "33",
+    "paragraph": [
+     "1",
+     "3"
+    ]
+   },
+   {
+    "regime": "amlr",
+    "article": "77",
+    "paragraph": "1",
+    "expect": [
+     "retention",
+     "bewaring",
+     "bewaren"
+    ]
+   }
+  ],
+  "NL:duty:ubo-discrepancy": [
+   {
+    "regime": "wwft",
+    "article": "10c",
+    "paragraph": "1"
+   },
+   {
+    "regime": "iwt",
+    "note": "discrepancy reporting to the register moves to the Iwt (AMLD6); article not yet known"
+   }
+  ],
+  "NL:duty:tipping-off": [
+   {
+    "regime": "wwft",
+    "article": "23",
+    "paragraph": "1",
+    "en": "An institution and the persons working for an institution are, except in so far as the need for disclosure follows from this Act, obliged to keep secret from everyone: a. a report made by that institution under Article 16; b. further information provided by that institution under Article 17; c. the fact that a report or the provision of information has given rise to an investigation into money laundering or terrorist financing, or that such an investigation is intended; d. consultation on compliance with Article 16 with regard to a transaction."
+   },
+   {
+    "regime": "amlr",
+    "article": "73",
+    "paragraph": "1",
+    "expect": [
+     "disclos",
+     "openbaarmaking",
+     "bekendmaking"
+    ]
+   }
+  ],
+  "NL:duty:fiu-suspension": [
+   {
+    "regime": "wwft",
+    "article": "17a",
+    "paragraph": "1",
+    "en": "For the performance of the task referred to in Article 13, opening words and points a and b, the Financial Intelligence Unit may request an institution to hold the execution of a transaction or several transactions for a period of at most five working days where the Financial Intelligence Unit has indications that this transaction or these transactions may be related to money laundering or terrorist financing, or where a financial intelligence unit of another state so requests."
+   },
+   {
+    "regime": "iwt",
+    "note": "the FIU's power to suspend a transaction follows from AMLD6 and is implemented in the Iwt; article not yet known"
+   }
+  ],
+  "NL:duty:edd": [
+   {
+    "regime": "wwft",
+    "article": "8",
+    "paragraph": "1",
+    "en": "In addition to Article 3(2) to (4), an institution carries out enhanced customer due diligence in at least the following cases: a. where the business relationship or transaction by its nature entails a higher risk of money laundering or terrorist financing; b. where the state in which the client resides or is established or has its seat has been designated by the European Commission, under Article 9 of the fourth anti-money laundering directive, as a state with a higher risk of money laundering or terrorist financing."
+   },
+   {
+    "regime": "amlr",
+    "article": "34",
+    "paragraph": "1",
+    "expect": [
+     "enhanced",
+     "verscherpt"
+    ]
+   }
+  ],
+  "NL:duty:occasional-15000": [
+   {
+    "regime": "wwft",
+    "article": "3",
+    "paragraph": "5",
+    "point": "b",
+    "en": "An institution carries out customer due diligence in the following cases: b. if, in or from the Netherlands, it carries out for the client an occasional transaction of at least EUR 15,000, or two or more transactions between which there is a link with a combined value of at least EUR 15,000;"
+   },
+   {
+    "regime": "amlr",
+    "article": "19",
+    "paragraph": "1",
+    "expect": [
+     "10 000",
+     "10.000"
+    ],
+    "successor": {
+     "id": "NL:duty:occasional-10000",
+     "title": "Customer due diligence for an occasional transaction of EUR 10,000 or more",
+     "amount": 10000
+    },
+    "point": "b"
+   }
+  ],
+  "NL:duty:cdd": [
+   {
+    "regime": "wwft",
+    "article": "3",
+    "paragraph": "2",
+    "en": "Customer due diligence enables the institution to: a. identify the client and verify its identity; b. identify the beneficial owner of the client and take reasonable measures to verify his identity; where the client is a legal person, take reasonable measures to understand the ownership and control structure of the client; and where the beneficial owner is a member of the senior managing officials, take the necessary reasonable measures to verify the identity of the natural person who is a member of the senior managing officials, recording the measures taken and the difficulties encountered during the verification process; c. establish the purpose and intended nature of the business relationship; d. exercise ongoing monitoring of the business relationship and of the transactions carried out during that relationship, to ensure that these correspond to the institution's knowledge of the client and its risk profile, with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction; e. establish whether the natural person representing the client is authorised to do so and, where applicable, identify that natural person and verify his identity; f. take reasonable measures to verify whether the client is acting on its own behalf or on behalf of a third party."
+   },
+   {
+    "regime": "amlr",
+    "article": "20",
+    "paragraph": "1",
+    "expect": [
+     "customer due diligence",
+     "cliëntenonderzoek"
+    ]
+   }
+  ],
+  "NL:duty:ongoing-monitoring": [
+   {
+    "regime": "wwft",
+    "article": "3",
+    "paragraph": "2",
+    "point": "d",
+    "en": "Customer due diligence enables the institution to: d. exercise ongoing monitoring of the business relationship and of the transactions carried out during that relationship, to ensure that these correspond to the institution's knowledge of the client and its risk profile, with, where necessary, an inquiry into the source of the funds used in the business relationship or the transaction;"
+   },
+   {
+    "regime": "amlr",
+    "article": "26",
+    "paragraph": "1",
+    "expect": [
+     "monitoring",
+     "controle"
+    ]
+   }
+  ]
+ },
+ "search": {
+  "NL:duty:risk-assessment": "risicoanalyse risicobeoordeling risico vaststellen",
+  "NL:duty:training": "opleiding training medewerkers bewustzijn",
+  "NL:duty:cdd": "cliëntenonderzoek identificatie verificatie uiteindelijk belanghebbende UBO doel aard relatie",
+  "NL:duty:ongoing-monitoring": "monitoring controle transacties risicoprofiel alerts",
+  "NL:duty:report-unusual": "melden ongebruikelijke transactie FIU melding",
+  "NL:duty:record-keeping": "bewaren vastleggen dossier vijf jaar",
+  "NL:duty:ubo-discrepancy": "discrepantie UBO-register Kamer van Koophandel afwijking",
+  "NL:duty:tipping-off": "geheimhouding tipping-off niet bekendmaken melding",
+  "NL:duty:fiu-suspension": "aanhouden opschorten transactie verzoek FIU",
+  "NL:duty:edd": "verscherpt cliëntenonderzoek hoog risico",
+  "NL:duty:occasional-15000": "incidentele transactie drempel",
+  "NL:duty:sanctions-ao": "sanctie administratieve organisatie interne controle sanctieregelgeving",
+  "NL:duty:sanctions-hit": "sanctiehit sanctielijst screening melden toezichthouder",
+  "NL:duty:sanctions-freeze": "bevriezen tegoeden sanctielijst",
+  "NL:duty:tfr": "overboeking overmaking betaler begunstigde gegevens",
+  "NL:duty:wtt-purpose": "doel trustdienstverlening integriteitsrisico",
+  "NL:duty:wtt-memo": "acceptatiememorandum"
+ }
+}

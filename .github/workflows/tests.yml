@@ -1,0 +1,58 @@
+# Rebuild every Relate file from the repo and run all tests, the way a judge would after cloning:
+# 28 test clients and 14 test offices (today and on 10 July 2029), the schema of every file, the structure chart read
+# from the client's own PDF, the review, and the auditor hand-over. No secrets are used.
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Relate (signed release binary, official installer)
+        run: |
+          curl -sSfL https://relatedb.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Relate version
+        run: relate --version
+
+      - name: OCR tools and the structure-chart reader
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-nld poppler-utils
+          pip install --quiet pdfplumber
+
+      - name: Build every Relate file and run all tests (run.sh)
+        run: bash run.sh
+
+      - name: The Relate stores are on disk (persistent, single-file mode)
+        run: |
+          ls -la register/sectors.rl offices/INST-NL.rl cases/nl-kalmora.rl cases/nl-kalmora-docs.rl memory/longterm.rl laws/*.rl
+          relate info --database cases/nl-kalmora-docs.rl --json | head -c 600
+
+      - name: Keep the built stores and the hand-over for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: relate-stores
+          path: |
+            register/*.rl
+            offices/*.rl
+            cases/*.rl
+            memory/*.rl
+            laws/*.rl
+            handover/
+          retention-days: 14

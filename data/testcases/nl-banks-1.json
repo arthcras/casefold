@@ -1,0 +1,444 @@
+{
+ "id": "nl-banks-1",
+ "fictitious": true,
+ "institution": "OFF-banks",
+ "institution_data": {
+  "id": "OFF-banks",
+  "name": "Test office: banken",
+  "jurisdiction": "NL",
+  "fictitious": true,
+  "sector": {
+   "id": "NL:banks",
+   "name": "banks",
+   "local": "banken",
+   "group": "all",
+   "status": "supervised",
+   "obliged_from": null
+  },
+  "regulator": {
+   "id": "NL:dnb",
+   "short": "DNB",
+   "name": "De Nederlandsche Bank",
+   "role": "prudential_and_aml"
+  },
+  "guidance": {
+   "id": "GUIDE:NL:dnb:g1",
+   "title": "DNB Wwft Q&As and Good Practices",
+   "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/"
+  },
+  "guidance_all": [
+   {
+    "id": "NL:dnb:g1",
+    "title": "DNB Wwft Q&As and Good Practices",
+    "title_local": "DNB Q&As en Good Practices Wwft",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/nieuws-voor-de-sector/toezicht-2024/resultaten-consultatie-qas-en-good-practices-wwft/",
+    "verify": false
+   },
+   {
+    "id": "NL:dnb:g2",
+    "title": "Sanctions chapter of the former DNB Guideline on the Wwft and Sw",
+    "title_local": "Hoofdstuk Sanctieregelgeving uit de DNB Leidraad Wwft en Sw",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/media/n2qohfbx/hoofdstuk-sanctieregelgeving-uit-de-leidraad-wwft-en-sw.pdf",
+    "verify": false
+   },
+   {
+    "id": "NL:dnb:g3",
+    "title": "Sanctions Act 1977 Supervision Regulation",
+    "title_local": "Regeling toezicht Sanctiewet 1977",
+    "kind": "regulation",
+    "binding": true,
+    "url": "https://wetten.overheid.nl/BWBR0018806",
+    "verify": true
+   },
+   {
+    "id": "NL:dnb:g4",
+    "title": "DNB Good Practices on systematic integrity risk analysis",
+    "title_local": "DNB Good Practices SIRA",
+    "kind": "guideline",
+    "binding": false,
+    "url": "https://www.dnb.nl/media/fjag2ojs/dnb-sira-gp-2025-nl.pdf",
+    "verify": true
+   }
+  ],
+  "records": [
+   {
+    "id": "R-risk-assessment",
+    "duty": "NL:duty:risk-assessment",
+    "date": "2026-02-01",
+    "title": "evidence: risk assessment"
+   },
+   {
+    "id": "R-training",
+    "duty": "NL:duty:training",
+    "date": "2025-06-01",
+    "title": "evidence: training"
+   },
+   {
+    "id": "R-sanctions-ao",
+    "duty": "NL:duty:sanctions-ao",
+    "date": "2026-02-01",
+    "title": "evidence: sanctions ao"
+   }
+  ]
+ },
+ "legal_forms_extra": [
+  {
+   "id": "NL:lf:foreign-trust",
+   "country": "NL",
+   "local": "buitenlandse trust (beheerd in Nederland)",
+   "abbr": "trust",
+   "en": "foreign express trust",
+   "category": "trust",
+   "law": "Hague Trust Convention; Uitvoeringsbesluit Wwft 2018 art. 3(1)(e)",
+   "law_url": "",
+   "registered_in": "UBO-register (trusts)",
+   "ubo_rule": "Art. 3(1)(e): founder, trustee, protector, beneficiaries, other controllers",
+   "verify": false,
+   "legal_personality": false,
+   "entity_type": "trust"
+  }
+ ],
+ "scenario": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+ "client": {
+  "name": "Test client 1 of banken",
+  "jurisdiction": "NL",
+  "legal_form": "NL:lf:bv",
+  "activity": "B.V. with a trust foundation (STAK), a majority-held holding and a veto",
+  "service_profile": {
+   "name": "business payment account",
+   "expected_monthly": 50000,
+   "cash_allowed": false
+  },
+  "business_type": {
+   "code": "holding_spv",
+   "sbi": "64.20",
+   "name": "Holding / special purpose vehicle without staff",
+   "name_nl": "Financiële holding zonder personeel",
+   "factors": [
+    {
+     "id": "A3-1d",
+     "annex": "III",
+     "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder d",
+     "text": "companies that have nominee shareholders or shares in bearer form"
+    },
+    {
+     "id": "A3-1f",
+     "annex": "III",
+     "ref": "Richtlijn (EU) 2015/849 bijlage III, punt 1 onder f",
+     "text": "the ownership structure of the company appears unusual or excessively complex given the nature of the business"
+    }
+   ]
+  },
+  "risk": {
+   "band": "high",
+   "triggers": [
+    "high_risk"
+   ]
+  }
+ },
+ "entities": [
+  {
+   "id": "A",
+   "kind": "Person",
+   "name": "TBAN1 A (25% direct)",
+   "country": "NL"
+  },
+  {
+   "id": "Cm",
+   "kind": "Person",
+   "name": "TBAN1 C (96% of the holding)",
+   "country": "NL"
+  },
+  {
+   "id": "D",
+   "kind": "Person",
+   "name": "TBAN1 D (2% and a veto)",
+   "country": "NL"
+  },
+  {
+   "id": "E",
+   "kind": "Person",
+   "name": "TBAN1 E (board of the STAK)",
+   "country": "NL"
+  },
+  {
+   "id": "F",
+   "kind": "Person",
+   "name": "TBAN1 F (depositary receipts)",
+   "country": "NL"
+  },
+  {
+   "id": "M",
+   "kind": "Person",
+   "name": "TBAN1 M (director)",
+   "country": "NL"
+  },
+  {
+   "id": "STAK",
+   "kind": "Foundation",
+   "name": "Stichting Administratiekantoor TBAN1",
+   "country": "NL",
+   "legal_form": "NL:lf:stichting"
+  },
+  {
+   "id": "H",
+   "kind": "Company",
+   "name": "TBAN1 Holding B.V.",
+   "country": "NL",
+   "legal_form": "NL:lf:bv"
+  },
+  {
+   "id": "W",
+   "kind": "Company",
+   "name": "TBAN1 Widely Held Fund",
+   "country": "NL"
+  }
+ ],
+ "relations": [
+  {
+   "from": "A",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 25,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "STAK",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 26,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "F",
+   "to": "STAK",
+   "type": "OWNS",
+   "pct": 100,
+   "votes": 0,
+   "source": "D1",
+   "where": "register",
+   "kind": "certificates"
+  },
+  {
+   "from": "E",
+   "to": "STAK",
+   "type": "BOARD_OF",
+   "votes": 100,
+   "source": "D2",
+   "where": "statutes"
+  },
+  {
+   "from": "H",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 26,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "Cm",
+   "to": "H",
+   "type": "OWNS",
+   "pct": 96,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "D",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 2,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "D",
+   "to": "client",
+   "type": "CONTROLS",
+   "basis": "veto on budget and directors",
+   "means": "veto rights",
+   "source": "D3",
+   "where": "art. 4"
+  },
+  {
+   "from": "W",
+   "to": "client",
+   "type": "OWNS",
+   "pct": 21,
+   "source": "D1",
+   "where": "register"
+  },
+  {
+   "from": "M",
+   "to": "client",
+   "type": "DIRECTOR_OF",
+   "source": "D1",
+   "where": "register"
+  }
+ ],
+ "documents": [
+  {
+   "id": "D1",
+   "title": "Register extract (test)",
+   "doctype": "register_extract",
+   "date": "2026-11-01",
+   "text": "B.V. with a trust foundation (STAK), a majority-held holding and a veto"
+  },
+  {
+   "id": "D2",
+   "title": "Statutes (test)",
+   "doctype": "constitutional",
+   "date": "2026-11-01",
+   "text": "test"
+  },
+  {
+   "id": "D3",
+   "title": "Agreement (test)",
+   "doctype": "other",
+   "date": "2026-11-01",
+   "text": "test"
+  }
+ ],
+ "questions": [],
+ "signals": [],
+ "counterparties": [
+  {
+   "id": "S1",
+   "name": "TBAN Noordlicht Handel B.V.",
+   "type": "organisation",
+   "role": "customer",
+   "country": "NL",
+   "parent": null,
+   "key": "74b482dd0727",
+   "incoming": 58500,
+   "outgoing": 0,
+   "transactions": 3,
+   "kycc_level": "light",
+   "checks_done": 4,
+   "checks_total": 4
+  },
+  {
+   "id": "S2",
+   "name": "TBAN1 Pars Trading Co.",
+   "type": "organisation",
+   "role": "supplier",
+   "country": "IR",
+   "parent": null,
+   "key": "be3fd92b8983",
+   "incoming": 400000,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "full",
+   "checks_done": 1,
+   "checks_total": 4,
+   "high_risk": true
+  },
+  {
+   "id": "S3",
+   "name": "TBAN1 Harbour Logistics FZE",
+   "type": "organisation",
+   "role": "intermediary (agent)",
+   "country": "AE",
+   "parent": null,
+   "key": "c62db0b28157",
+   "incoming": 4000,
+   "outgoing": 0,
+   "transactions": 1,
+   "kycc_level": "full",
+   "checks_done": 2,
+   "checks_total": 4,
+   "screening_hit": {
+    "list": "EU consolidated list (test)",
+    "matched": "Harbour Logistic FZE (test)",
+    "score": 88
+   }
+  },
+  {
+   "id": "S1A",
+   "name": "TBAN1 Volga Metals LLC",
+   "type": "organisation",
+   "role": "supplier of S1",
+   "country": "RU",
+   "parent": "S1",
+   "key": "64a285d1d1d2",
+   "incoming": 0,
+   "outgoing": 0,
+   "transactions": 0,
+   "kycc_level": "full",
+   "checks_done": 0,
+   "checks_total": 2,
+   "high_risk": true
+  }
+ ],
+ "transactions": [
+  {
+   "id": "T1",
+   "date": "2026-10-15",
+   "kind": "transfer",
+   "amount": 5000,
+   "payment": "transfer",
+   "description": "outgoing SEPA transfer"
+  },
+  {
+   "id": "M1",
+   "date": "2026-07-05",
+   "day": 20639,
+   "kind": "payment",
+   "amount": 40000,
+   "payment": "transfer",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "bank transfer with S1"
+  },
+  {
+   "id": "M2",
+   "date": "2026-08-03",
+   "day": 20668,
+   "kind": "payment",
+   "amount": 400000,
+   "payment": "transfer",
+   "with": "S2",
+   "series": "monitoring",
+   "description": "bank transfer with S2"
+  },
+  {
+   "id": "M3",
+   "date": "2026-09-10",
+   "day": 20706,
+   "kind": "payment",
+   "amount": 9000,
+   "payment": "cash",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "cash with S1"
+  },
+  {
+   "id": "M4",
+   "date": "2026-09-13",
+   "day": 20709,
+   "kind": "payment",
+   "amount": 9500,
+   "payment": "cash",
+   "with": "S1",
+   "series": "monitoring",
+   "description": "cash with S1"
+  },
+  {
+   "id": "M5",
+   "date": "2026-10-02",
+   "day": 20728,
+   "kind": "payment",
+   "amount": 4000,
+   "payment": "transfer",
+   "with": "S3",
+   "series": "monitoring",
+   "description": "bank transfer with S3"
+  }
+ ]
+}
