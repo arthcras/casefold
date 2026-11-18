@@ -17,8 +17,9 @@ WITH c, u, et, grounds, exempt, o, em, ec,
      sum(reduce(x = 1.0, r IN relationships(q)[0..-1] | x * CASE WHEN r.votes > 50 THEN 1.0 ELSE r.votes / 100.0 END) * last(relationships(q)).votes / 100.0) AS vc
 OPTIONAL MATCH (o)-[ri:ROLE_IN]->(c)
 WITH c, u, et, grounds, exempt, o, collect(ri.role) AS roles,
-     round(100 * CASE WHEN u.method = 'both' AND ec > em THEN ec ELSE em END, 1) AS ownership,
-     round(100 * CASE WHEN u.method = 'both' AND vc > vm THEN vc ELSE vm END, 1) AS votes,
+     // compared at 6 decimals (only floating-point noise removed), shown at 1: 25.04% is more than 25%
+     round(100 * CASE WHEN u.method = 'both' AND ec > em THEN ec ELSE em END, 6) AS ownership,
+     round(100 * CASE WHEN u.method = 'both' AND vc > vm THEN vc ELSE vm END, 6) AS votes,
      EXISTS { (o)-[:CONTROLS]->(x) WHERE x = c OR EXISTS { (x)-[:OWNS]->{1,4}(c) } } AS control
 WITH c, u, et, exempt, o, roles, ownership, votes, control,
      [g IN grounds WHERE NOT exempt AND (
@@ -27,8 +28,14 @@ WITH c, u, et, exempt, o, roles, ownership, votes, control,
        OR (g.ground = 'control_other_means' AND control)
        OR (g.ground IN roles AND (g.ground <> 'fgr_group' OR (coalesce(c.participants, 0) >= 150 AND c.licensed_manager)))) | g.name] AS grounds_met
 OPTIONAL MATCH (d:Document)-[:OF_TYPE]->(t:DocumentType) WHERE t.key IN ['ubo_declaration', 'ubo_register_extract']
-WITH u, et, exempt, o, roles, ownership, votes, control, grounds_met, collect(d) AS decls
-RETURN u.name AS rule, et AS tested_as, o.name AS person, ownership, votes, control AS control_other_means, roles, grounds_met, size(grounds_met) > 0 AS ubo,
-       CASE WHEN exempt THEN 'listed issuer or 100% subsidiary: excepted' ELSE '' END AS exception, coalesce(o.pep, false) AS pep,
-       CASE WHEN size(decls) = 0 THEN 'no declaration in file' WHEN any(d IN decls WHERE d.text CONTAINS split(o.name, ' ')[1]) THEN 'declared' ELSE 'not declared' END AS declaration
+WITH u, et, exempt, o, roles, ownership, votes, control, grounds_met, collect(d) AS decls, split(o.name, ' ') AS parts
+// how a declaration may name the person: the full name, or the initial and the rest ('R. Okkema', 'J. van der Berg');
+// never one part of the name, so a common word such as 'van' does not make someone declared
+WITH u, et, exempt, o, roles, ownership, votes, control, grounds_met, decls,
+     [toLower(o.name)] + CASE WHEN size(parts) > 1 THEN [toLower(left(o.name, 1) + '. ' + substring(o.name, size(parts[0]) + 1))] ELSE [] END AS names
+RETURN o.name AS person, size(grounds_met) > 0 AS ubo, grounds_met, round(ownership, 1) AS ownership, round(votes, 1) AS votes, control AS control_other_means, roles,
+       CASE WHEN size(decls) = 0 THEN 'no declaration in file'
+            WHEN any(d IN decls WHERE any(n IN names WHERE toLower(replace(replace(replace(replace(d.text, '\r', ' '), '\n', ' '), '  ', ' '), '  ', ' ')) CONTAINS n)) THEN 'declared'
+            ELSE 'not declared' END AS declaration,
+       coalesce(o.pep, false) AS pep, CASE WHEN exempt THEN 'listed issuer or 100% subsidiary: excepted' ELSE '' END AS exception, u.name AS rule, et AS tested_as
 ORDER BY ubo DESC, ownership DESC, votes DESC, person;
