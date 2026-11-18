@@ -11,13 +11,13 @@
 5. **Your own data, in the browser**: click **+ New client from documents** under the client list. You start with a fresh test client: no documents, no structure. Then:
    - add the client's files, or press *Use the example documents* (a structure chart PDF and a scanned UBO register extract);
    - press *Read into the graph*. The chart is read box by box and line by line from its vector paths, and the scan with OCR (Tesseract compiled to WebAssembly, in the page). Every fact becomes a proposal that points to its place in the chart;
-   - *Confirm all*, or confirm per row.
+   - *Select all* and *Confirm selected*, or tick rows one by one (nothing is pre-ticked; *Confirm all* asks for a second click).
 
    The review follows straight away: 2 of 16 required documents present, each missing one with its article; 3 beneficial owners; Lina Brouwer (veto, 16%) is not in the UBO register; and a request to the client, ready to copy. All of this happens in the tab, and nothing is sent anywhere. The same steps exist on the command line, `python3 casefold/new_client.py examples/kalmora-from-documents` (see [Your own client](#your-own-client-from-the-documents-it-delivers)). The client *Kalmora Europe B.V. · built from its own documents* is the result of that route.
 
 ![Testing the example company: per duty the article, the procedure section, and enforcement cases](docs/testing.png)
 
-Demo video (1:59, with voice-over; 0:17 exploring the graph, 0:34 New client from documents in the browser, 1:28 the Relate inside panel): `casefold-demo.mp4`, script in `docs/video-script.md`.
+Demo video (2:07, with voice-over; 0:17 exploring the graph, 0:36 New client from documents in the browser, 1:36 the Relate inside panel): `casefold-demo.mp4`, script in `docs/video-script.md`.
 
 **Relate inside.** Click **Relate inside** in the viewer's top bar: nine cards, each running one Relate feature live in the page with Relate's own timings. One file per record; a schema Relate enforces (try to break it); quantified path patterns and `SHORTEST` for the ownership chain; dates and `REPLACED_BY` for the law that changes; a full-text index and a vector index with `SEARCH` (hybrid, in the testing table); `PROFILE` of the testing query; parameterised writes. Outside the page: `relate query` for the tests, an MCP server on `relate query --read-only` for a grounded AI agent (`relate serve --mcp` for plain read-only access), `relate clone` + `relate info` for the auditor hand-over (`casefold/handover.py`). The full inventory, including what we did not use and why: [docs/relate-features.md](docs/relate-features.md).
 

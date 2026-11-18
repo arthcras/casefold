@@ -3,9 +3,9 @@
 **Tagline:** The law, a company's procedure and the cases where it went wrong, in one Relate graph, so an office sees per duty what it must do, what it does, and what changes when the law changes.
 
 ## Try it out
-- **Prototype in the browser (GitHub Pages):** <https://OWNER.github.io/casefold/>. Press *+ New client from documents*, then *Use the example documents* → *Read into the graph* → *Confirm all*. The *Relate inside* button shows each Relate feature live.
+- **Prototype in the browser (GitHub Pages):** <https://OWNER.github.io/casefold/>. Press *+ New client from documents*, then *Use the example documents* → *Read into the graph* → *Select all* → *Confirm selected*. The *Relate inside* button shows each Relate feature live.
 - **Code:** <GitHub link>. `bash run.sh` rebuilds every Relate file and runs all tests in about 30 seconds. The same viewer runs locally: `cd web && python3 -m http.server 8000`.
-- **Video:** <YouTube/Vimeo link> (1:59).
+- **Video:** <YouTube/Vimeo link> (2:07).
 
 ## Inspiration
 Compliance officers at banks, payment institutions and trust offices answer the same questions every day. Which rule applies to this client? Who is the beneficial owner? Does our procedure cover every duty? What changes when the EU's new AML regulation (AMLR) replaces the Dutch Wwft on 10 July 2027? The answers sit in PDFs of laws, the supervisor's guidance, an internal procedure and a list of fines. Those are four documents that never point at each other. The fines tell the story: in 2026 DNB fined a payment institution €2.66m because its transaction monitoring missed transactions for two years. The duty was in the law and in the procedure, but nobody could see the gap.
