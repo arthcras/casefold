@@ -101,7 +101,7 @@ function drawProps(){const rows=q(`MATCH (p:Proposal)-[:STATED_IN]->(k:Chunk)<-[
   r.kind==='OWNS'?`<b>${esc(r.frm)}</b> owns <b>${esc(r.to)}</b>: ${r.pct??'?'}% of the shares, ${r.votes??'?'}% of the votes${r.unclear?' <span class="warn">(label unclear: check)</span>':''}`:
   r.kind==='CONTROLS'?`<b>${esc(r.frm)}</b> controls <b>${esc(r.to)}</b>: ${esc(r.basis)}`:`<b>${esc(r.frm)}</b> is on the board of <b>${esc(r.to)}</b>: exercises ${r.votes}% of the votes`;
  $('ncProps').innerHTML=`<table><thead><tr><th></th><th>Id</th><th>The chart says</th><th>Where in the chart</th><th>Status</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.status==='confirmed'?'ok':r.status==='rejected'?'rej':''}">
-  <td>${r.status==='proposed'?`<input type="checkbox" data-id="${esc(r.id)}" checked aria-label="select ${esc(r.id)}">`:''}</td><td class="mono">${esc(r.id)}</td><td>${what(r)}</td>
+  <td>${r.status==='proposed'?`<input type="checkbox" data-id="${esc(r.id)}" aria-label="select ${esc(r.id)}">`:''}</td><td class="mono">${esc(r.id)}</td><td>${what(r)}</td>
   <td class="mono">${esc(r.doc)} p.${r.page} (${Math.round(r.bbox[0])}, ${Math.round(r.bbox[1])})</td><td>${esc(r.status)}</td></tr>`).join('')}</tbody></table>`;
  $('ncPropBtns').hidden=!rows.some(r=>r.status==='proposed');}
 function confirmProps(ids){const rows=q(`MATCH (p:Proposal)-[:STATED_IN]->(k:Chunk)<-[:HAS_CHUNK]-(d:Document) RETURN p.id AS id, p.status AS status, p.kind AS kind, p.from_name AS frm, p.to_name AS to,
@@ -150,7 +150,12 @@ function init(){
    const b=await (await fetch('data/examples/'+n)).blob();files.push({file:b,name:n,type:guessType(n),title:n==='structure_chart.pdf'?'Structuurschema groep (aangeleverd door de client)':'Uittreksel UBO-register'});}drawFiles();};
  $('ncRead').onclick=readAll;
  $('ncConfirmSel').onclick=()=>{const ids=[...$('ncProps').querySelectorAll('input[type=checkbox]:checked')].map(x=>x.dataset.id);const n=confirmProps(ids);log(`${n} proposals confirmed.`);refresh();};
- $('ncConfirmAll').onclick=()=>{const ids=q("MATCH (p:Proposal {status:'proposed'}) RETURN p.id AS id").map(r=>r.id);const n=confirmProps(ids);log(`${n} proposals confirmed.`);refresh();};
+ // nothing is pre-ticked and 'Confirm all' asks for a second click: confirming is the compliance officer's check, not a formality
+ $('ncSelAll').onclick=()=>$('ncProps').querySelectorAll('input[type=checkbox]').forEach(x=>x.checked=true);
+ let allArmed=null;
+ $('ncConfirmAll').onclick=()=>{const b=$('ncConfirmAll'),ids=q("MATCH (p:Proposal {status:'proposed'}) RETURN p.id AS id").map(r=>r.id);
+  if(!allArmed){b.textContent=`Click again to confirm all ${ids.length}`;allArmed=setTimeout(()=>{allArmed=null;b.textContent='Confirm all';},4000);return;}
+  clearTimeout(allArmed);allArmed=null;b.textContent='Confirm all';const n=confirmProps(ids);log(`${n} proposals confirmed.`);refresh();};
  $('ncReject').onclick=()=>{const ids=[...$('ncProps').querySelectorAll('input[type=checkbox]:checked')].map(x=>x.dataset.id);
    exec("UNWIND $ids AS i MATCH (p:Proposal {id:i}) WHERE p.status = 'proposed' SET p.status='rejected', p.rejected_by='compliance officer (in this page)', p.rejected_at=$now",{ids,now:now()});refresh();};
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('ncDrawer').hidden)$('ncClose').click();});}
