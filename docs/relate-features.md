@@ -1,13 +1,13 @@
 # Relate features in Casefold
 
-An inventory of Relate v1.0.1 (from its README, `relate --help` and `relate agent-context`), and what Casefold does with each feature.
+An inventory of Relate v1.1.0 (from its README, `relate --help` and `relate agent-context`), and what Casefold does with each feature.
 "Live" means you can run it yourself in the viewer: click **Relate inside** in the top bar. Every card there runs its Cypher in the page, on Relate compiled to WebAssembly, and shows the result with Relate's own timings.
 
 ## Used
 
 | Relate feature | What Casefold uses it for | Where | Live |
 |---|---|---|---|
-| **Single-file store (`.rl`)** | One file per client, per office, per law version and language, for the sector register and for long-term memory: 49 files. The file is the record: it isolates a client, goes to an auditor as one unit and is deleted as one unit. | `cases/`, `offices/`, `register/`, `laws/`, `memory/` | 01 |
+| **Single-file store (`.rl`)** | One file per client, per office, per law version and language, for the sector register and for long-term memory: 52 files after `run.sh` (the viewer loads 51 of them; long-term memory stays out of the page). The file is the record: it isolates a client, goes to an auditor as one unit and is deleted as one unit. | `cases/`, `offices/`, `register/`, `laws/`, `memory/` | 01 |
 | **WebAssembly build** (`RelateDb.execute`, `executeScript`) | The viewer: each file is replayed into Relate in the browser and every answer is a Cypher query in the page. No server. | `web/index.html` | all |
 | **Schema DDL, enforced** (UNIQUE, NODE KEY, NOT NULL incl. on relationships, `IS :: TYPE`) | One schema per kind of file. Relate checks every constraint against the data already in the file; a violating write is refused and leaves nothing behind. It caught a real bug (two agent sessions with the same id). | `schema/*.cypher`, `casefold/apply_schema.py` | 02, *Try to break it* |
 | **Range and text indexes** | Keys of every node kind; party and counterparty names. | `schema/` | 02 |
@@ -17,8 +17,8 @@ An inventory of Relate v1.0.1 (from its README, `relate --help` and `relate agen
 | **Full-text indexes** (`db.index.fulltext.queryNodes`) | Proposes the section of a procedure that covers a duty when the text cites no article; also law articles and documents. | viewer, `queries/` | 06 |
 | **Vector indexes with `SEARCH`, then graph matching** | In the browser: every source section is embedded in the page (no text leaves it) and the nearest sections are found by meaning, then filtered by a graph match. On disk: `embed.py` and `semantic.py` with a local sentence model. | viewer, `casefold/embed.py`, `semantic.py` | 07 |
 | **Hybrid full-text + vector** | In the testing table, every proposal from the full-text index is checked by the vector index ("vector index agrees"). | viewer | testing |
-| **`EXISTS { }` and `CALL { }` subqueries** | Required documents that are missing; per-duty collections. | `queries/` | — |
-| **`PROFILE` / `EXPLAIN`** | The testing query profiled: operators, rows, db hits. | viewer | 08 |
+| **`EXISTS { }` subqueries** | Required documents that are missing; per-duty collections. | `queries/` | — |
+| **`PROFILE` / `EXPLAIN`** | The testing query profiled: operators, rows, db hits. The AI agent's read tool runs every generated query through `EXPLAIN` first: a syntax error comes back to the model, and Relate's warnings (an unknown label, type or property) are returned with the rows, so an empty result is not taken as "not in the file". | viewer | 08 |
 | **Per-phase timings** (parse, plan, execute) | Shown under every live answer. | viewer | all |
 | **Parameterised write scripts** | Reading in a law, guidance, a procedure or a case, and confirming a citation by hand, are Cypher scripts with parameters, in the page. | viewer | 09 |
 | **CLI `query`** with `--read-only`, `--json`/`--csv`, `--fetch-params` | Building every file and testing 28 clients and 14 offices against an independent Python implementation. | `run.sh`, `casefold/*.py` | — |

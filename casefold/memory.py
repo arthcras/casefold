@@ -11,13 +11,13 @@ usage:  python3 casefold/memory.py approve cases/nl-kalmora.rl P-high-risk-count
         python3 casefold/memory.py expire cases/nl-kalmora.rl           # drop expired sessions (episodes and patterns stay)
 """
 import hashlib, os, sys
-from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, HERE
+import clock
 from embed import relate_rows, relate_write
 
 STORE = os.path.join(HERE, 'memory', 'longterm.rl')
-NOW = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+NOW = clock.stamp()
 
 
 def main():

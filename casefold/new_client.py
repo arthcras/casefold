@@ -20,11 +20,11 @@ usage:  python3 casefold/new_client.py examples/kalmora-from-documents          
         python3 casefold/new_client.py examples/kalmora-from-documents --review        # review again, nothing rebuilt
         python3 casefold/new_client.py examples/kalmora-from-documents --confirm all   # build and confirm in one go
 """
-import argparse, json, os, re, shutil, subprocess, sys, tempfile
-from datetime import date
+import argparse, json, os, re, subprocess, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, build, EXTRA_DOCTYPES, HERE
 from structure_chart import relate_q, propose, confirm, listing
+import clock
 
 REQUIRED = """
 MATCH (c:Client)-[q:REQUIRES]->(t:DocumentType)
@@ -83,7 +83,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('folder', nargs='?'); ap.add_argument('--confirm', nargs='+', metavar='ID')
     ap.add_argument('--review', action='store_true', help='review the existing file again; rebuild nothing')
-    ap.add_argument('--on', default=date.today().isoformat()); ap.add_argument('--types', action='store_true')
+    ap.add_argument('--on', default=clock.today().isoformat()); ap.add_argument('--types', action='store_true')
     ap.add_argument('--out', default=os.path.join(HERE, 'cases')); ap.add_argument('--relate')
     ap.add_argument('--template', metavar='ID', help='build only the client, without documents and structure, under this id: the starting point of '
                     '"New client from documents" in the viewer')

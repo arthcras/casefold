@@ -10,9 +10,10 @@ Writes, next to a copy of the .rl file itself:
   manifest.json  sha256 of the .rl file, the counts, and the commands that made this hand-over
 The source file is opened read-only; nothing in it changes.
 """
-import argparse, datetime, hashlib, json, os, shutil, subprocess, sys
+import argparse, hashlib, json, os, shutil, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate
+import clock
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -34,7 +35,7 @@ def main():
     info = json.loads(subprocess.run(cmds[1], check=True, capture_output=True, text=True).stdout)
     json.dump(info, open(os.path.join(out, 'info.json'), 'w'), indent=1)
     sha = hashlib.sha256(open(a.file, 'rb').read()).hexdigest()
-    man = {'file': os.path.basename(a.file), 'sha256': sha, 'made': datetime.datetime.now().isoformat(timespec='seconds'),
+    man = {'file': os.path.basename(a.file), 'sha256': sha, 'made': clock.now().isoformat(timespec='seconds'),
            'nodes': info.get('node_count'), 'relationships': info.get('rel_count'),
            'constraints': len(info.get('constraints', [])), 'indexes': len(info.get('indexes', [])),
            'commands': [' '.join(['relate'] + c[1:]) for c in cmds]}

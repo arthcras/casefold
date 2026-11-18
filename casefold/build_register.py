@@ -13,7 +13,7 @@ usage:  python3 casefold/build_register.py          # -> register/sectors.rl
 """
 import glob, json, os, shutil, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from build_case import find_relate, run, sector_duties, sector_class, CLASS_SCRIPT, HERE
+from build_case import find_relate, run, sector_duties, sector_class, HERE
 
 SCRIPT = """
 UNWIND $scopes AS f MERGE (x:FatfScope {id:f.id}) SET x.name=f.name, x.name_nl=f.name_nl;
@@ -83,7 +83,7 @@ def main():
         shutil.rmtree(db) if os.path.isdir(db) else os.remove(db)
     run(rel, db, {'scopes': tax['scopes'], 'cats': cats, 'sectors': sectors, 'laws': list(laws.values()), 'duties': list(duties.values()), 'has': has, 'offices': offices, 'sups': sups, 'lics': lics, 'slaws': slaws, 'btypes': btypes, 'auth': json.load(open(os.path.join(HERE, 'data', 'rules', 'authorities.json'), encoding='utf-8'))['authorities']}, script=SCRIPT)
     counts = run(rel, db, {}, command='MATCH (n) RETURN labels(n)[0] AS label, count(*) AS n ORDER BY label', read=True)
-    print(f"register/sectors.rl: " + ', '.join(f"{r['label']} {r['n']}" for r in counts))
+    print("register/sectors.rl: " + ', '.join(f"{r['label']} {r['n']}" for r in counts))
 
 
 if __name__ == '__main__':

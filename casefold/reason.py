@@ -20,14 +20,15 @@ read-only Cypher test.
 usage:  python3 casefold/reason.py cases/nl-kalmora.rl
         python3 casefold/reason.py tests/cases/nl-payment-institutions-1.rl --memory memory/longterm.rl
 """
-import argparse, hashlib, json, os, sys
-from datetime import datetime, timedelta, timezone
+import argparse, json, os, sys
+from datetime import timedelta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, HERE
+import clock
 from embed import relate_rows, relate_write
 
-TODAY = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-NOW = datetime.now(timezone.utc)
+TODAY = clock.today().isoformat()
+NOW = clock.now()
 ISO = lambda d: d.strftime('%Y-%m-%dT%H:%M:%SZ')
 OFFSHORE = ['PA', 'VG', 'KY', 'SC', 'BZ', 'AE']
 HIGH_RISK = ['IR', 'KP', 'MM', 'RU', 'SY', 'BY']
@@ -170,7 +171,7 @@ ORDER BY name""" % (TODAY, TODAY))
         return None
     steps = [('observation', f"{len(rows)} required document types have no document in the file", 0.95, [('DocumentType', r['key']) for r in rows])]
     for r in rows:
-        basis = ([f"legal form"] if r['lf'] else []) + ([f"law ({'checked' if False in r['verify'] else 'to verify'})"] if r['arts'] else []) + ([f"risk: {', '.join(r['trig'])}"] if r['trig'] else [])
+        basis = (["legal form"] if r['lf'] else []) + ([f"law ({'checked' if False in r['verify'] else 'to verify'})"] if r['arts'] else []) + ([f"risk: {', '.join(r['trig'])}"] if r['trig'] else [])
         steps.append(('rule', f"{r['name'].split(' (')[0]} is required by: {'; '.join(basis)}", 0.9 if False in r['verify'] else 0.75,
                       [('DocumentType', r['key'])] + [('Article', a) for a in r['arts']] + ([('LegalForm', r['lf'])] if r['lf'] else [])))
     steps.append(('decision', 'Proposed: send the client a document request for the missing items; onboarding stays pending until they are in', 0.85, []))

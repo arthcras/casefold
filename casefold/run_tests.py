@@ -8,7 +8,6 @@ usage:  python3 casefold/run_tests.py                 # all 56 test clients of t
         python3 casefold/run_tests.py banks lawyers   # only offices whose sector starts with these words
 """
 import contextlib, glob, io, json, os, sys
-from datetime import date
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, build, run, HERE
 
@@ -55,7 +54,7 @@ for f in sorted(glob.glob(os.path.join(HERE, 'data', 'testcases', '*.json'))):
     flags = [v for v in duty.values() if v.split(':')[0] in ('VIOLATION', 'REPORT to FIU-NL', 'CDD required', 'in scope', 'FREEZE', 'EDD required', 'ASK for the customs declaration') or v.startswith('REPORT hit')]
     behind = []
     dsum = (f"{len(duty)} duties" + (' | ' + '; '.join(flags) if flags else '') + f"\n      monitoring ({e['service']['name']}): " + (', '.join(sorted(m.split(':')[0] for m in mon)) or 'ok')
-            + (f"\n      office: " + ', '.join(behind) if behind else ''))
+            + ("\n      office: " + ', '.join(behind) if behind else ''))
     res = f'no CDD in this sector on {ON}: no UBO question' if e.get('no_cdd') else \
           'no UBO rule modelled for this date (AMLR from 10 July 2027)' if e.get('no_rule') and not natural else \
           'natural person: no UBO test' if natural else (short(got) if got else 'nobody qualifies -> fallback: ' + ', '.join(x.split(' ', 1)[1] for x in fb))

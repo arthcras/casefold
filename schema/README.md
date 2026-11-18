@@ -1,6 +1,6 @@
 # Schema: one per kind of Relate file
 
-The same Cypher works in Relate 1.0.1 and in Neo4j 5. `casefold/apply_schema.py` applies it to every built file and the viewer applies it in the browser.
+The same Cypher works in Relate 1.1.0 and in Neo4j 5. `casefold/apply_schema.py` applies it to every built file and the viewer applies it in the browser.
 
 | File | Schema | Kind of file |
 |---|---|---|

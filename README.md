@@ -11,13 +11,13 @@
 5. **Your own data, in the browser**: click **+ New client from documents** under the client list. You start with a fresh test client: no documents, no structure. Then:
    - add the client's files, or press *Use the example documents* (a structure chart PDF and a scanned UBO register extract);
    - press *Read into the graph*. The chart is read box by box and line by line from its vector paths, and the scan with OCR (Tesseract compiled to WebAssembly, in the page). Every fact becomes a proposal that points to its place in the chart;
-   - *Confirm all*, or confirm per row.
+   - *Select all* and *Confirm selected*, or tick rows one by one (nothing is pre-ticked; *Confirm all* asks for a second click).
 
    The review follows straight away: 2 of 16 required documents present, each missing one with its article; 3 beneficial owners; Lina Brouwer (veto, 16%) is not in the UBO register; and a request to the client, ready to copy. All of this happens in the tab, and nothing is sent anywhere. The same steps exist on the command line, `python3 casefold/new_client.py examples/kalmora-from-documents` (see [Your own client](#your-own-client-from-the-documents-it-delivers)). The client *Kalmora Europe B.V. · built from its own documents* is the result of that route.
 
 ![Testing the example company: per duty the article, the procedure section, and enforcement cases](docs/testing.png)
 
-Demo video (1:59, with voice-over; 0:17 exploring the graph, 0:34 New client from documents in the browser, 1:28 the Relate inside panel): `casefold-demo.mp4`, script in `docs/video-script.md`.
+Demo video (1:57, with voice-over; 0:16 exploring the graph, 0:33 New client from documents in the browser, 1:27 the Relate inside panel): `casefold-demo.mp4`, script in `docs/video-script.md`.
 
 **Relate inside.** Click **Relate inside** in the viewer's top bar: nine cards, each running one Relate feature live in the page with Relate's own timings. One file per record; a schema Relate enforces (try to break it); quantified path patterns and `SHORTEST` for the ownership chain; dates and `REPLACED_BY` for the law that changes; a full-text index and a vector index with `SEARCH` (hybrid, in the testing table); `PROFILE` of the testing query; parameterised writes. Outside the page: `relate query` for the tests, an MCP server on `relate query --read-only` for a grounded AI agent (`relate serve --mcp` for plain read-only access), `relate clone` + `relate info` for the auditor hand-over (`casefold/handover.py`). The full inventory, including what we did not use and why: [docs/relate-features.md](docs/relate-features.md).
 
@@ -58,7 +58,7 @@ Client ─OWNS/CONTROLS…→ Party, ─MADE→ Transaction ─WITH→ Counterpa
 Answer ─HAS_STEP→ Step ─CITES→ (document, article, party, ...)                     AI answers stored with the nodes they rest on
 ```
 
-**Reproduce everything:** `./run.sh` rebuilds the law graphs, the dynamic duties, 28 test clients and 14 test offices, checks them against an independent Python implementation (today and on 10 July 2029: all pass), applies the schema (all constraints hold) and exports the viewer. Details follow below. It also builds the demo client from its own documents (structure chart and scan) and checks that it gives the same structure and beneficial owners as the hand-built file.
+**Reproduce everything:** `./run.sh` rebuilds the law graphs, the dynamic duties, 28 test clients and 14 test offices, checks them against an independent Python implementation (on the reference date and on 10 July 2029: all pass), checks the UBO edge cases (25.04% is a UBO, exactly 25% is not), applies the schema (all constraints hold) and exports the viewer. Details follow below. It also builds the demo client from its own documents (structure chart and scan) and checks that it gives the same structure and beneficial owners as the hand-built file.
 
 ---
 
@@ -221,7 +221,9 @@ Relate features used: see [docs/relate-features.md](docs/relate-features.md) for
 
 ## Run it
 
-Requirements: Python 3.9+ (standard library only) and Relate. Optional: Tesseract and poppler (OCR), pdfplumber (structure charts; reportlab only to redraw the sample chart), sentence-transformers (embeddings), Docker (Neo4j, Tika). Tested with Relate v1.0.1 (CLI and MCP) on Linux.
+Requirements: Python 3.9+ (standard library only) and Relate. Optional: Tesseract and poppler (OCR), pdfplumber (structure charts; reportlab only to redraw the sample chart), sentence-transformers (embeddings), Docker (Neo4j, Tika). Tested with Relate v1.1.0 (CLI, MCP and WebAssembly) on Linux.
+
+`run.sh` builds for one fixed reference date (`CASEFOLD_ON`, default 2026-11-14; see `casefold/clock.py`), so a rebuild changes no committed export unless the data or the code changed; CI checks that. The `.rl` bundles themselves are not byte-for-byte reproducible. Set `CASEFOLD_ON=YYYY-MM-DD ./run.sh` to build for another day; the viewer always asks for the real today.
 
 ```bash
 curl -sSfL https://relatedb.ai/install.sh | bash          # installs relate (verifies signatures and checksums)
@@ -361,6 +363,8 @@ Session {by:'ai'} -[:ASKED]-> Ask -[:RECALLED]-> earlier Answer / Episode / Patt
 ```
 
 Three tools: `recall` (start a question; get earlier answers, the latest decision and the approved patterns), `read_cypher` (read-only; every node in the result is recorded as read), and `answer` (the answer split into claims, each citing node ids). A claim counts as **grounded** only if every node it cites was actually read or recalled for this question. Otherwise it is stored as *ungrounded* and the agent is told to read the evidence and answer again. The next session starts with `recall`, so the agent builds on what it concluded before, and a reviewer can follow every answer back to the query and the node.
+
+What *grounded* does and does not prove: every node a claim cites was really read for this question. It does not check that the claim says what those nodes say (a claim "Ruben holds 60%" citing Ruben's node is grounded); that is the compliance officer's review, helped by the evidence listed with each claim (question 12). Every generated query is first checked with `EXPLAIN`: a syntax error goes back to the model, and Relate's warnings about unknown labels or properties come with the rows.
 
 ```json
 { "mcpServers": { "casefold-kalmora": { "command": "python3", "args": ["casefold/agent_mcp.py", "cases/nl-kalmora.rl"] } } }
