@@ -32,10 +32,10 @@ Scope: the Netherlands, the 14 sectors under the Wwft that DNB or the AFM superv
 **No AI at run time.** Every answer in the viewer is a Cypher query over Relate files built from the law texts and the client's documents. An AI agent is optional: it reads only one client file over MCP, and every claim must cite the nodes it read.
 
 ## How we built it
-- **Relate v1.0.1 in single-file mode**: one `.rl` file per client, per office, for the sector register, per law version and language, and for long-term memory. Each file is the record. It isolates a client, moves to an auditor as one unit, is deleted as one unit, and needs no server. The files are committed, so the judges can open them with the CLI.
+- **Relate v1.1.0 in single-file mode**: one `.rl` file per client, per office, for the sector register, per law version and language, and for long-term memory. Each file is the record. It isolates a client, moves to an auditor as one unit, is deleted as one unit, and needs no server. The files are committed, so the judges can open them with the CLI.
 - **The same files in three places:** the Relate CLI for the build and the tests; **Relate in WebAssembly** in the viewer, which replays the files into an in-memory graph and runs every answer as Cypher in the page; and an MCP server (`casefold/agent_mcp.py`, on `relate query --read-only`) for an AI agent on one client file.
 - **Relate features, each one live in the viewer.** The **Relate inside** button opens nine cards that run in the page with Relate's own timings:
-  - one graph file per record (51 `.rl` files);
+  - one graph file per record (52 `.rl` files);
   - Neo4j 5 schema DDL that Relate enforces: keys, required properties, types, also on relationships. Press *Try to break it* and Relate refuses a duplicate sector, leaving nothing behind. The schema also found a real bug: two agent sessions in the same second got the same id;
   - quantified path patterns `((a)-[:OWNS]->(b)){1,6}` and `SHORTEST 1` for the ownership chain and the effective share;
   - dated articles with `REPLACED_BY` for the law that changes;

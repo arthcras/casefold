@@ -4,14 +4,18 @@
 # asked from the office that serves the client, under the rule of its supervisor (Uitvoeringsbesluit Wwft 2018 art. 3).
 set -euo pipefail
 cd "$(dirname "$0")"
+# one fixed reference date for the whole build (casefold/clock.py): a rebuild then changes no committed file unless the data or
+# the code changed. The viewer still asks its questions for the real today; set CASEFOLD_ON=YYYY-MM-DD to build for another day.
+export CASEFOLD_ON="${CASEFOLD_ON:-2026-11-14}"
 bash laws/ingest.sh | grep -v '^(skipping' || true                       # the law texts in laws/sources/ -> one Relate file per law, version and language
 python3 casefold/build_duties.py | tail -1                           # dynamic duties: the article per legal regime (Wwft until 9 July 2027, then AMLR/Iwt), from the laws read in under laws/
 python3 casefold/make_test_cases.py                                    # 14 test offices: the Wwft sectors under DNB or the AFM, 28 test clients + expected answers
 python3 casefold/build_case.py data/cases/*.json
 python3 casefold/run_tests.py                                          # every office: who is the UBO, ground by ground, and the sector duties
+python3 tests/test_ubo_boundaries.py                                   # edge cases: 25.04% is a UBO, exactly 25% is not; the declaration must name the person
 # the same offices on a later date: the AMLR sectors are obliged from 10 July 2027 (football 2029), the EUR 15,000 threshold becomes EUR 10,000
 CASEFOLD_ON=2029-07-10 python3 casefold/make_test_cases.py && python3 casefold/run_tests.py | tail -1
-python3 casefold/make_test_cases.py && python3 casefold/build_case.py data/testcases/*.json --out tests/cases > /dev/null && python3 casefold/build_office.py --tests > /dev/null   # back to today
+python3 casefold/make_test_cases.py && python3 casefold/build_case.py data/testcases/*.json --out tests/cases > /dev/null && python3 casefold/build_office.py --tests > /dev/null   # back to the reference date
 echo; python3 casefold/ask.py cases/nl-kalmora.rl 13                   # which rule applies: office, supervisor, article
 echo; python3 casefold/ask.py cases/nl-kalmora.rl 14                   # every entity: legal form, how it is tested, grounds
 echo; python3 casefold/ask.py cases/nl-kalmora.rl 03                   # the beneficial owners, compared with the declaration

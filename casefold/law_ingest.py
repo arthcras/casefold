@@ -46,7 +46,7 @@ def ocr(path, lang):
         pages, confs = [], []
         for img in sorted(f for f in os.listdir(d) if f.endswith('.png')):
             r = subprocess.run(['tesseract', os.path.join(d, img), '-', '-l', tl, '--psm', '4', 'tsv'], capture_output=True, text=True, check=True)
-            lines, cur = [], {}
+            cur = {}
             for row in r.stdout.splitlines()[1:]:
                 c = row.split('\t')
                 if len(c) < 12 or not c[11].strip():

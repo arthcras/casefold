@@ -22,9 +22,9 @@ Needs pdfplumber (pip install pdfplumber). A scanned chart (an image without vec
 agent propose the facts with the review prompt, or enter them by hand; they go through the same confirmation.
 """
 import argparse, hashlib, json, math, os, re, subprocess, sys, tempfile
-from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate
+import clock
 
 COUNTRIES = {'netherlands': 'NL', 'the netherlands': 'NL', 'nederland': 'NL', 'curaçao': 'CW', 'curacao': 'CW', 'cyprus': 'CY',
              'panama': 'PA', 'british virgin islands': 'VG', 'bvi': 'VG', 'malta': 'MT', 'luxembourg': 'LU', 'belgium': 'BE',
@@ -256,7 +256,7 @@ def propose(relate, db, chart, doc_id, title, date):
 
 
 def now():
-    return datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    return clock.stamp()
 
 
 def listing(relate, db):

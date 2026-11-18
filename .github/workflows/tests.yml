@@ -28,7 +28,11 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Relate version
-        run: relate --version
+        # the installer always takes the latest release; Casefold was last tested on the version below
+        run: |
+          relate --version
+          tested=1.1.0
+          relate --version | head -1 | grep -q "v$tested\b" || echo "::warning::Casefold was tested on Relate $tested; this run uses $(relate --version | head -1)"
 
       - name: OCR tools and the structure-chart reader
         run: |
@@ -38,6 +42,14 @@ jobs:
 
       - name: Build every Relate file and run all tests (run.sh)
         run: bash run.sh
+
+      - name: The committed exports match the code (run.sh builds for the fixed reference date in casefold/clock.py)
+        # the .rl stores are binary bundles and are not byte-for-byte reproducible; the Kalmora exports carry
+        # embeddings (sentence-transformers) and OCR text that this runner does not produce; everything else must match
+        run: |
+          git diff --stat -- web/data tests/expected.json ':!web/data/nl-kalmora*.json'
+          git diff --exit-code --quiet -- web/data tests/expected.json ':!web/data/nl-kalmora*.json' \
+            || { echo "::error::run.sh changed committed exports: run it locally and commit the result"; exit 1; }
 
       - name: The Relate stores are on disk (persistent, single-file mode)
         run: |

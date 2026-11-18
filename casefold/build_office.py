@@ -14,9 +14,9 @@ usage:  python3 casefold/build_office.py                      # the demo office 
         python3 casefold/build_office.py --tests              # the 37 test offices (data/testcases, tests/cases) -> tests/offices/
 """
 import argparse, glob, json, os, shutil, sys
-from datetime import date
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, run, sector_duties, sector_class, CLASS_SCRIPT, HERE
+import clock
 
 SCRIPT = """
 MERGE (i:Institution {id:$i.id}) SET i.name=$i.name, i.fictitious=$i.fictitious, i.kind='office file'
@@ -89,7 +89,7 @@ def build_office(rel, inst, clients, out_dir, on):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--tests', action='store_true', help='build the test offices from data/testcases and tests/cases')
-    ap.add_argument('--on', default=os.environ.get('CASEFOLD_ON') or date.today().isoformat())
+    ap.add_argument('--on', default=clock.today().isoformat())
     a = ap.parse_args()
     rel = find_relate(os.environ.get('RELATE_BIN'))
     src, cases_dir, out = (('testcases', 'tests/cases', 'tests/offices') if a.tests else ('cases', 'cases', 'offices'))

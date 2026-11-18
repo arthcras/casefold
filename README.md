@@ -58,7 +58,7 @@ Client ─OWNS/CONTROLS…→ Party, ─MADE→ Transaction ─WITH→ Counterpa
 Answer ─HAS_STEP→ Step ─CITES→ (document, article, party, ...)                     AI answers stored with the nodes they rest on
 ```
 
-**Reproduce everything:** `./run.sh` rebuilds the law graphs, the dynamic duties, 28 test clients and 14 test offices, checks them against an independent Python implementation (today and on 10 July 2029: all pass), applies the schema (all constraints hold) and exports the viewer. Details follow below. It also builds the demo client from its own documents (structure chart and scan) and checks that it gives the same structure and beneficial owners as the hand-built file.
+**Reproduce everything:** `./run.sh` rebuilds the law graphs, the dynamic duties, 28 test clients and 14 test offices, checks them against an independent Python implementation (on the reference date and on 10 July 2029: all pass), checks the UBO edge cases (25.04% is a UBO, exactly 25% is not), applies the schema (all constraints hold) and exports the viewer. Details follow below. It also builds the demo client from its own documents (structure chart and scan) and checks that it gives the same structure and beneficial owners as the hand-built file.
 
 ---
 
@@ -221,7 +221,9 @@ Relate features used: see [docs/relate-features.md](docs/relate-features.md) for
 
 ## Run it
 
-Requirements: Python 3.9+ (standard library only) and Relate. Optional: Tesseract and poppler (OCR), pdfplumber (structure charts; reportlab only to redraw the sample chart), sentence-transformers (embeddings), Docker (Neo4j, Tika). Tested with Relate v1.0.1 (CLI and MCP) on Linux.
+Requirements: Python 3.9+ (standard library only) and Relate. Optional: Tesseract and poppler (OCR), pdfplumber (structure charts; reportlab only to redraw the sample chart), sentence-transformers (embeddings), Docker (Neo4j, Tika). Tested with Relate v1.1.0 (CLI, MCP and WebAssembly) on Linux.
+
+`run.sh` builds for one fixed reference date (`CASEFOLD_ON`, default 2026-11-14; see `casefold/clock.py`), so a rebuild changes no committed export unless the data or the code changed; CI checks that. The `.rl` bundles themselves are not byte-for-byte reproducible. Set `CASEFOLD_ON=YYYY-MM-DD ./run.sh` to build for another day; the viewer always asks for the real today.
 
 ```bash
 curl -sSfL https://relatedb.ai/install.sh | bash          # installs relate (verifies signatures and checksums)
@@ -361,6 +363,8 @@ Session {by:'ai'} -[:ASKED]-> Ask -[:RECALLED]-> earlier Answer / Episode / Patt
 ```
 
 Three tools: `recall` (start a question; get earlier answers, the latest decision and the approved patterns), `read_cypher` (read-only; every node in the result is recorded as read), and `answer` (the answer split into claims, each citing node ids). A claim counts as **grounded** only if every node it cites was actually read or recalled for this question. Otherwise it is stored as *ungrounded* and the agent is told to read the evidence and answer again. The next session starts with `recall`, so the agent builds on what it concluded before, and a reviewer can follow every answer back to the query and the node.
+
+What *grounded* does and does not prove: every node a claim cites was really read for this question. It does not check that the claim says what those nodes say (a claim "Ruben holds 60%" citing Ruben's node is grounded); that is the compliance officer's review, helped by the evidence listed with each claim (question 12). Every generated query is first checked with `EXPLAIN`: a syntax error goes back to the model, and Relate's warnings about unknown labels or properties come with the rows.
 
 ```json
 { "mcpServers": { "casefold-kalmora": { "command": "python3", "args": ["casefold/agent_mcp.py", "cases/nl-kalmora.rl"] } } }

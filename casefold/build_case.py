@@ -287,9 +287,9 @@ def build(case_path, relate, out_dir, rulebook_dir, pulled=False):
     db = os.path.join(out_dir, case['id'] + '.rl')
     if not pulled and os.path.exists(db):
         shutil.rmtree(db) if os.path.isdir(db) else os.remove(db)
-    from datetime import datetime, timezone
+    import clock
     run(relate, db, {'c': case, 'r': rule, 'i': inst, 'ubo': ubo, 'rule_articles': RULE_ARTICLES, 'lfs': lfs, 'gt': json.load(open(os.path.join(HERE, 'data', 'rules', 'ubo_rules.json'), encoding='utf-8'))['ground_types'], 'triggers': triggers, 'duties': duties, 'dlaws': dlaws, 'scope': scope, 'mon': json.load(open(os.path.join(HERE, 'data', 'rules', 'monitoring_rules.json'), encoding='utf-8'))['rules'], 'extra': extra, 'conditions': conditions,
-                     'built': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}, script=SCRIPT)
+                     'built': clock.stamp()}, script=SCRIPT)
     run(relate, db, {'cls': sector_class(inst['sector']['id'])}, script=CLASS_SCRIPT)
     counts = run(relate, db, {}, command='MATCH (n) RETURN labels(n)[0] AS label, count(*) AS n ORDER BY label', read=True)
     miss = run(relate, db, {}, read=True, command="MATCH (c:Client)-[:REQUIRES]->(t:DocumentType) WHERE NOT EXISTS { (:Document)-[:OF_TYPE]->(t) } RETURN count(t) AS n")

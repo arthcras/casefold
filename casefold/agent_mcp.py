@@ -30,9 +30,10 @@ Configure (Cursor .cursor/mcp.json, Claude Desktop, ...):
 Standard library only. Read queries run with `relate query --read-only`; only this server writes the memory nodes.
 """
 import json, os, re, subprocess, sys, tempfile, uuid
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, HERE
+import clock
 
 STORE = os.path.join(HERE, 'memory', 'longterm.rl')
 ISO = lambda d: d.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -51,6 +52,20 @@ class Relate:
             raise RuntimeError((r.stderr or r.stdout).strip()[-600:])
         i = r.stdout.find('{"data"')
         return json.loads(r.stdout[i:])['data'] if i >= 0 else []
+
+    def explain(self, cypher):
+        """Plan the statement without running it (EXPLAIN): a syntax error is raised, and Relate's warnings
+        (an unknown label, relationship type or property key) are returned, so an empty result is not read as 'not in the file'."""
+        r = subprocess.run([self.bin, 'query', '--database', self.db, '--read-only', '--mode', 'json', '-c', 'EXPLAIN ' + cypher],
+                           capture_output=True, text=True)
+        if r.returncode:
+            raise RuntimeError((r.stderr or r.stdout).strip()[-600:])
+        i = r.stdout.find('{')
+        try:
+            notes = json.loads(r.stdout[i:]).get('notifications', []) if i >= 0 else []
+        except ValueError:
+            notes = []
+        return [f"{n.get('title')}: {n.get('description')}" for n in notes if n.get('severity') == 'WARNING']
 
     def write(self, script, params):
         args, tmp = [self.bin, 'query', '--database', self.db], []
@@ -89,8 +104,15 @@ def name_of(props):
 class Agent:
     def __init__(self, db, agent='agent'):
         self.r, self.agent = Relate(db), agent
-        now = datetime.now(timezone.utc)
-        self.sid = 'S-ai-' + now.strftime('%Y%m%d%H%M%S') + '-' + uuid.uuid4().hex[:6]   # two agents can start in the same second
+        now, self.offset = clock.now(), timedelta(0)
+        if os.environ.get('CASEFOLD_ON'):
+            # a fixed clock (run.sh): every session in this file starts one second after the previous one, with a reproducible id
+            n = self.r.read("MATCH (s:Session) RETURN count(s) AS n")[0]['n']
+            self.offset = timedelta(seconds=n); now += self.offset
+            tail = uuid.uuid5(uuid.NAMESPACE_URL, f'{os.path.basename(db)}#{agent}#{n}').hex[:6]
+        else:
+            tail = uuid.uuid4().hex[:6]     # two agents can start in the same second
+        self.sid = 'S-ai-' + now.strftime('%Y%m%d%H%M%S') + '-' + tail
         self.q = 0          # question number in this session
         self.calls = 0      # tool call number for the current question
         self.seen = {}      # node id -> labels, read or recalled for the current question
@@ -106,7 +128,7 @@ MERGE (k)-[:HAS_SESSION]->(s)""", {'sid': self.sid, 'now': ISO(now), 'exp': ISO(
     def recall(self, question):
         self.q += 1; self.calls = 0; self.seen = {}; self.last_answer = None
         self.r.write("MATCH (s:Session {id:$sid}) CREATE (q:Ask {id:$qid, text:$text, at:$now, by:'ai'}) CREATE (s)-[:ASKED]->(q)",
-                     {'sid': self.sid, 'qid': self.qid, 'text': question, 'now': ISO(datetime.now(timezone.utc))})
+                     {'sid': self.sid, 'qid': self.qid, 'text': question, 'now': ISO(clock.now() + self.offset)})
         earlier = self.r.read("""
 MATCH (s:Session)-[:ASKED]->(q:Ask)-[:ANSWERED_BY]->(a:Answer) WHERE NOT EXISTS { (:Answer)-[:REVISES]->(a) }
 OPTIONAL MATCH (a)-[:HAS_CLAIM]->(c:Claim)
@@ -140,6 +162,7 @@ ORDER BY at DESC LIMIT 12""")
             self.recall('(question not stated)')
         if WRITE_WORDS.search(re.sub(r"'[^']*'|\"[^\"]*\"", '', statement)):
             raise RuntimeError('read_cypher is read-only: CREATE, MERGE, SET, DELETE, REMOVE, DROP, LOAD and CALL are not allowed')
+        warnings = self.r.explain(statement)      # checked before it runs, as the Relate docs advise for generated Cypher
         rows = self.r.read(statement)
         found = nodes_in(rows, {})
         found = {k: v for k, v in found.items() if not (set(v) & set(MEMORY_LABELS))}
@@ -148,8 +171,12 @@ ORDER BY at DESC LIMIT 12""")
         self.r.write("""MATCH (q:Ask {id:$qid}) CREATE (t:ToolCall {id:$tid, ord:$ord, tool:'read_cypher', cypher:$cy, why:$why, rows:$rows, at:$now})
 CREATE (q)-[:USED]->(t) WITH t MATCH (n) WHERE id(n) IN $ids CREATE (t)-[:READ]->(n)""",
                      {'qid': self.qid, 'tid': f'{self.qid}-T{self.calls}', 'ord': self.calls, 'cy': statement, 'why': why, 'rows': len(rows),
-                      'now': ISO(datetime.now(timezone.utc)), 'ids': list(found)})
-        return {'rows': rows, 'nodes_recorded_as_read': len(found)}
+                      'now': ISO(clock.now() + self.offset), 'ids': list(found)})
+        res = {'rows': rows, 'nodes_recorded_as_read': len(found)}
+        if warnings:
+            res['warnings'] = warnings + ['These names do not exist in this file, so an empty or short result says nothing about the client: '
+                                          'check the labels and relationship types (CALL db.labels() is not available here: MATCH (n) RETURN DISTINCT labels(n)) and query again.']
+        return res
 
     # ---- answer: store the answer and its claims, check that every claim rests on nodes that were read ----
     def answer(self, answer, claims, confidence=None):
@@ -179,7 +206,7 @@ CREATE (a:Answer {id:$aid, by:'ai', agent:$agent, text:$text, confidence:$conf, 
 WITH a UNWIND $claims AS c CREATE (x:Claim {id:c.id, ord:c.ord, text:c.text, status:c.status, reason:c.reason, evidence:c.evidence}) CREATE (a)-[:HAS_CLAIM]->(x)
 WITH x, c UNWIND c.ids AS i MATCH (n) WHERE id(n) = i CREATE (x)-[:SUPPORTED_BY]->(n)""",
                      {'qid': self.qid, 'aid': aid, 'agent': self.agent, 'text': answer, 'conf': confidence, 'grounded': grounded, 'claims': out,
-                      'now': ISO(datetime.now(timezone.utc))})
+                      'now': ISO(clock.now() + self.offset)})
         if self.last_answer:
             self.r.write("MATCH (a:Answer {id:$a}), (b:Answer {id:$b}) CREATE (a)-[:REVISES]->(b)", {'a': aid, 'b': self.last_answer})
         self.last_answer = aid
@@ -217,7 +244,7 @@ def get_prompt(name, args):
     if name not in {p['name'] for p in PROMPTS}:
         raise ValueError(f'unknown prompt {name}')
     text = open(os.path.join(PROMPT_DIR, name + '.md'), encoding='utf-8').read()
-    text = text.replace('{on}', (args or {}).get('on') or datetime.now().date().isoformat()).replace('{language}', (args or {}).get('language') or 'English')
+    text = text.replace('{on}', (args or {}).get('on') or clock.today().isoformat()).replace('{language}', (args or {}).get('language') or 'English')
     return {'description': PROMPTS[0]['description'], 'messages': [{'role': 'user', 'content': {'type': 'text', 'text': text}}]}
 
 

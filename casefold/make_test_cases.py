@@ -14,9 +14,10 @@ The expected answer (tests/expected.json) is computed here by an independent imp
 usage:  python3 casefold/make_test_cases.py
 """
 from datetime import date
-import hashlib, json, os, re, sys
+import hashlib, json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import HERE
+import clock
 
 SECTORS = json.load(open(os.path.join(HERE, 'data', 'sectors.json'), encoding='utf-8'))['sectors']
 RULE = json.load(open(os.path.join(HERE, 'data', 'rules', 'ubo_rules.json'), encoding='utf-8'))['rules'][0]
@@ -198,7 +199,7 @@ def expected(lf, entities, rels, extra):
                 for i, r in enumerate(p):
                     v = r.get('votes', r.get('pct', 0)); m *= v / 100; c *= 1.0 if (i < len(p) - 1 and v > 50) else v / 100
                 v_m += m; v_c += c
-            own_, vot = round(100 * max(o_m, o_c), 1), round(100 * max(v_m, v_c), 1)
+            own_, vot = round(100 * max(o_m, o_c), 6), round(100 * max(v_m, v_c), 6)   # floating-point noise only: 25.04% is more than 25%
             met = set()
             if own_ > 25: met.add('ownership_interest')
             if vot > 25: met.add(vote_key)
@@ -245,7 +246,7 @@ TX = {
 }
 SERVICE = {'tax-advisers': 'tax advice on setting up a holding company', 'civil-law-notaries': 'deed of transfer of registered property',
            'other-independent-legal': 'assistance with setting up a company', 'lawyers': 'assistance with buying registered property'}
-ON = os.environ.get('CASEFOLD_ON') or date.today().isoformat()   # the date the expected answers are computed for
+ON = clock.today().isoformat()   # the date the expected answers are computed for
 UBO_RULE_UNTIL = json.load(open(os.path.join(HERE, 'data', 'rules', 'ubo_rules.json'), encoding='utf-8'))['rules'][0]['valid_to'] or '9999-12-31'
 BTYPES = json.load(open(os.path.join(HERE, 'data', 'business_types.json'), encoding='utf-8'))
 SCEN_BT = {'S_BV_STAK': 'holding_spv', 'S_NV_LISTED': 'listed_group', 'S_BV_SUB_OF_LISTED': 'listed_group', 'S_PERSON': 'private_individual', 'S_BV_KYCC': 'trading',
