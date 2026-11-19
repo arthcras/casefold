@@ -1,0 +1,260 @@
+{
+ "note": "Public crypto enforcement cases. Amounts as published by the authority; amount null = not yet confirmed from the decision. verify: true = the decision itself is still to be linked.",
+ "as_of": "2026-11-19",
+ "queue": [
+  "DNB and AFM: every crypto enforcement decision since 2020 (registration, Wwft, MiCA)",
+  "AFM warnings on unlicensed crypto providers",
+  "OM / FIOD crypto cases",
+  "EU national supervisors (BaFin, AMF, CONSOB, CNMV ...)",
+  "US, UK and Asia"
+ ],
+ "cases": [
+  {
+   "id": "CASE:dnb-coinbase-2023",
+   "ref": "data/sources/index.json",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "administrative fine",
+   "amount": 3325000,
+   "currency": "EUR",
+   "party": "Coinbase Europe Limited",
+   "date": "2023-01-26",
+   "title": "DNB: fine Coinbase Europe Limited, crypto services without registration",
+   "summary": "Crypto services in the Netherlands from November 2020 without the DNB registration the Wwft then required; registered 22 September 2022.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": null
+    }
+   ],
+   "chain": null,
+   "url": "https://www.dnb.nl/nieuws-voor-de-sector/handhavingsmaatregel-2023/boete-voor-coinbase-europe-limited-vanwege-het-tot-22-september-2022-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland",
+   "verify": false
+  },
+  {
+   "id": "CASE:dnb-binance-2022",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "administrative fine",
+   "amount": null,
+   "currency": "EUR",
+   "party": "Binance",
+   "date": "2022-07",
+   "title": "DNB: fine Binance, crypto services without registration",
+   "summary": "Fine for offering crypto services in the Netherlands without DNB registration; amount and decision still to be linked.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": null
+    }
+   ],
+   "chain": null,
+   "url": "https://www.investing.com/news/stock-market-news/dutch-central-bank-fines-cryptocurrency-exchange-coinbase-33-million-euros-2988529",
+   "verify": true
+  },
+  {
+   "id": "CASE:us-binance-2023",
+   "jurisdiction": "US",
+   "authorities": [
+    "DOJ",
+    "FinCEN",
+    "OFAC",
+    "CFTC"
+   ],
+   "measure": "guilty plea and coordinated resolutions",
+   "amount": 4000000000,
+   "currency": "USD",
+   "amount_note": "over USD 4 billion",
+   "party": "Binance Holdings Limited",
+   "date": "2023-11-21",
+   "title": "DOJ: Binance and CEO plead guilty, over USD 4 billion",
+   "summary": "Failure to maintain an effective AML program, unlicensed money transmitting and sanctions violations.",
+   "violated": [
+    {
+     "law": "US:bsa",
+     "art": null
+    },
+    {
+     "law": "US:1960",
+     "art": null
+    },
+    {
+     "law": "US:ieepa",
+     "art": null
+    }
+   ],
+   "chain": "transactions between US users and users in sanctioned jurisdictions; illicit proceeds (ransomware, darknet, scams) through the exchange",
+   "url": "https://www.justice.gov/opa/pr/binance-and-ceo-plead-guilty-federal-charges-4b-resolution",
+   "verify": false
+  },
+  {
+   "id": "CASE:us-okx-2025",
+   "jurisdiction": "US",
+   "authorities": [
+    "DOJ"
+   ],
+   "measure": "guilty plea",
+   "amount": 504000000,
+   "currency": "USD",
+   "amount_note": "more than USD 504 million",
+   "party": "Aux Cayes FinTech Co. Ltd. (OKX)",
+   "date": "2025-02-24",
+   "title": "DOJ SDNY: OKX pleads guilty to unlicensed money transmitting",
+   "summary": "Operated an unlicensed money transmitting business serving US customers without FinCEN registration and AML compliance.",
+   "violated": [
+    {
+     "law": "US:1960",
+     "art": null
+    },
+    {
+     "law": "US:bsa",
+     "art": null
+    }
+   ],
+   "chain": "over USD 5 billion of suspicious transactions and criminal proceeds (per DOJ)",
+   "url": "https://www.justice.gov/usao-sdny/pr/okx-pleads-guilty-violating-us-anti-money-laundering-laws-and-agrees-pay-penalties",
+   "verify": false
+  },
+  {
+   "id": "CASE:us-kucoin-2025",
+   "jurisdiction": "US",
+   "authorities": [
+    "DOJ"
+   ],
+   "measure": "guilty plea",
+   "amount": 297000000,
+   "currency": "USD",
+   "amount_note": "more than USD 297 million",
+   "party": "Peken Global Limited (KuCoin)",
+   "date": "2025-01-27",
+   "title": "DOJ SDNY: KuCoin pleads guilty to unlicensed money transmitting",
+   "summary": "Unlicensed money transmitting; no effective KYC/AML program, no suspicious activity reports.",
+   "violated": [
+    {
+     "law": "US:1960",
+     "art": null
+    },
+    {
+     "law": "US:bsa",
+     "art": null
+    }
+   ],
+   "chain": "suspicious and criminal funds (darknet, malware, ransomware, fraud) through the exchange",
+   "url": "https://www.justice.gov/usao-sdny/pr/kucoin-pleads-guilty-unlicensed-money-transmission-charge-and-agrees-pay-penalties",
+   "verify": false
+  },
+  {
+   "id": "CASE:us-bittrex-2022",
+   "jurisdiction": "US",
+   "authorities": [
+    "OFAC",
+    "FinCEN"
+   ],
+   "measure": "civil settlements",
+   "amount": 24280829.2,
+   "currency": "USD",
+   "amount_note": "OFAC USD 24,280,829.20; FinCEN USD 29,280,829.20 with the OFAC amount credited",
+   "party": "Bittrex, Inc.",
+   "date": "2022-10-11",
+   "title": "OFAC: settlement with Bittrex for apparent sanctions violations",
+   "summary": "116,421 apparent violations of sanctions programs (Crimea region of Ukraine, Cuba, Iran, Sudan, Syria); willful BSA AML and SAR violations (FinCEN).",
+   "violated": [
+    {
+     "law": "US:ieepa",
+     "art": null
+    },
+    {
+     "law": "US:bsa",
+     "art": null
+    }
+   ],
+   "chain": "users with an IP or physical address in sanctioned jurisdictions",
+   "url": "https://ofac.treasury.gov/recent-actions/20221011",
+   "verify": false
+  },
+  {
+   "id": "CASE:us-terraform-2024",
+   "jurisdiction": "US",
+   "authorities": [
+    "SEC"
+   ],
+   "measure": "final judgment after jury verdict",
+   "amount": 4500000000,
+   "currency": "USD",
+   "amount_note": "more than USD 4.5 billion",
+   "party": "Terraform Labs PTE Ltd. and Do Kwon",
+   "date": "2024-06-12",
+   "title": "SEC: Terraform and Kwon to pay over USD 4.5 billion",
+   "summary": "Fraud involving crypto asset securities; registration violations.",
+   "violated": [
+    {
+     "law": "US:sa1933",
+     "art": null
+    }
+   ],
+   "chain": "TerraUSD / LUNA collapse",
+   "url": "https://www.sec.gov/news/press-release/2024-73",
+   "verify": false
+  },
+  {
+   "id": "CASE:us-bitzlato-2023",
+   "jurisdiction": "US",
+   "authorities": [
+    "FinCEN",
+    "DOJ"
+   ],
+   "measure": "order: primary money laundering concern",
+   "amount": null,
+   "currency": null,
+   "party": "Bitzlato Limited",
+   "date": "2023-01-18",
+   "title": "FinCEN: Bitzlato a primary money laundering concern (section 9714)",
+   "summary": "Transmittals of funds involving Bitzlato prohibited for covered financial institutions from 1 February 2023.",
+   "violated": [
+    {
+     "law": "US:9714",
+     "art": null
+    }
+   ],
+   "chain": "funds from Russian ransomware groups and darknet markets",
+   "url": "https://www.fincen.gov/news/news-releases/fincen-identifies-virtual-currency-exchange-bitzlato-primary-money-laundering",
+   "verify": false
+  },
+  {
+   "id": "CASE:us-garantex-2025",
+   "jurisdiction": "US",
+   "authorities": [
+    "DOJ"
+   ],
+   "measure": "takedown and indictment",
+   "amount": null,
+   "currency": "USD",
+   "amount_note": "funds frozen; amount to confirm from the DOJ release",
+   "party": "Garantex",
+   "date": "2025-03-07",
+   "title": "DOJ: Garantex disrupted in an international operation",
+   "summary": "Domains seized, servers taken down with Germany and Finland; administrators charged.",
+   "violated": [
+    {
+     "law": "US:1956",
+     "art": null
+    },
+    {
+     "law": "US:ieepa",
+     "art": null
+    },
+    {
+     "law": "US:1960",
+     "art": null
+    }
+   ],
+   "chain": "exchange allegedly used to launder proceeds of crime",
+   "url": "https://www.justice.gov/usao-edva/pr/garantex-cryptocurrency-exchange-disrupted-international-operation",
+   "verify": false
+  }
+ ]
+}

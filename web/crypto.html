@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casefold Crypto Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Casefold Crypto Intelligence: the crypto register (supervisors and laws per jurisdiction), public enforcement cases, sources read in
+   as proposals, and screening. Same identity as the Casefold viewer: a case file in ink, a Dutch-orange signal for what needs attention. */
+:root{--bg:#eef0f3;--panel:#fff;--sunk:#f6f7f9;--line:#dfe3e8;--line2:#c9d0d8;--fg:#121a26;--muted:#5b6676;--ink:#1d3f73;--signal:#e2660f;--ok:#1f8a56;--bad:#c2334d;--warn:#b77712;
+ --f:"Inter",system-ui,sans-serif;--h:"Space Grotesk","Inter",sans-serif;--m:"JetBrains Mono",ui-monospace,monospace;--r:10px}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0f15;--panel:#121821;--sunk:#0f141c;--line:#232c38;--line2:#2f3a48;--fg:#e7ecf3;--muted:#93a0b2;--ink:#8fb3f0;--signal:#ff8a3d;--ok:#4cc58a;--bad:#ef6a83;--warn:#e9ad4c;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--f);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+a{color:var(--ink)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{margin-right:auto;min-width:0}.brand b{display:block;font:700 19px/1 var(--h)}.brand span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.engine{font:11px/1.4 var(--m);color:var(--muted);padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--sunk);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.engine b{color:var(--ok);font-weight:500}
+nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+nav button{border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:7px 14px;cursor:pointer;min-height:36px}
+nav button[aria-selected=true]{border-color:var(--ink);color:var(--ink);font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+h1{font:600 26px/1.2 var(--h);margin:0 0 6px}h2{font:600 16px/1.3 var(--h);margin:0 0 10px}
+.lead{color:var(--muted);max-width:760px;margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px;min-width:0}
+.cols{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:14px;align-items:start}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:760px){.cols,.two{grid-template-columns:minmax(0,1fr)}}
+.jur{display:flex;justify-content:space-between;width:100%;border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:8px 10px;margin:4px 0;cursor:pointer;text-align:left;min-height:38px}
+.jur[aria-current=true]{border-color:var(--ink);color:var(--ink);font-weight:600}
+.wave{font-size:12px;color:var(--muted);margin:10px 2px 2px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.sub{color:var(--muted);font-size:13px}
+.mono{font-family:var(--m);font-size:12.5px}
+.tag{display:inline-block;font:11px/1.6 var(--m);padding:0 8px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.tag.warn{border-color:var(--warn);color:var(--warn)}.tag.ok{border-color:var(--ok);color:var(--ok)}.tag.bad{border-color:var(--bad);color:var(--bad)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:500;white-space:nowrap}
+td.n{font-family:var(--m);white-space:nowrap}
+.btn{border:0;background:var(--ink);color:var(--panel);border-radius:8px;padding:0 14px;min-height:40px;cursor:pointer;font-weight:600}
+.btn.g{background:transparent;border:1px solid var(--line2);color:var(--fg)}
+input[type=text],textarea,select{width:100%;background:var(--sunk);border:1px solid var(--line2);border-radius:8px;padding:9px 10px}
+textarea{font:13px/1.45 var(--m)}
+input[type=file]{max-width:100%}
+.row>div{min-width:0;overflow-wrap:anywhere}
+.row>div+div{flex:none;max-width:55%;text-align:right}
+.row>div+div .tag{white-space:normal}
+td.amt{font-family:var(--m);min-width:140px;max-width:240px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+details.q{margin-top:10px}details.q summary{cursor:pointer;color:var(--muted);font-size:12px}
+pre{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;font:12px/1.5 var(--m);margin:6px 0 0}
+.note{font-size:12px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px}.kpi b{display:block;font:600 24px/1.1 var(--h)}.kpi span{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="brand"><b>Casefold Crypto Intelligence</b><span>Crypto supervision, laws and enforcement cases as connected context, on Relate</span></div>
+ <a href="index.html" class="note">Casefold KYC viewer</a>
+ <div class="engine" id="engine">loading Relate…</div>
+</header>
+<nav role="tablist" id="tabs"></nav>
+<main id="main"><p class="note">Loading the crypto register into Relate in this page…</p></main>
+<script type="module">
+const RELATE='https://cdn.jsdelivr.net/npm/@relate/relate-wasm@1.1.0/relate.js';
+const VIEWS=[['register','Register'],['cases','Cases and fines'],['sources','Add a source'],['screen','Screen'],['ask','Ask the graph (Cypher)']];
+const S={view:'register',jur:'NL',props:[],kind:'case',msg:''};
+let db,D;
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function q(cypher,params){const t=performance.now();const r=JSON.parse(db.execute(cypher,params?JSON.stringify(params):null));
+ if(r.error)throw new Error(r.error);r.ms=(performance.now()-t).toFixed(1);r.cypher=cypher;return r;}
+const showQ=r=>`<details class="q"><summary>Cypher · ${r.rows.length} rows · ${r.ms} ms in Relate</summary><pre>${esc(r.cypher)}</pre></details>`;
+const money=(a,c,n)=>n?esc(n):a==null?'—':(c||'')+' '+Number(a).toLocaleString('en-US',{maximumFractionDigits:2});
+
+const V={
+register(){
+ const reg=q(D.queries['01_register']);const j=reg.rows.find(r=>r.code===S.jur)||reg.rows[0];
+ const det=q(`MATCH (x:Jurisdiction {code:$c})<-[:IN_JURISDICTION]-(s:Sector)<-[v:SUPERVISES]-(g:Regulator)
+RETURN g.short AS short, g.name AS name, v.role AS role, v.aml AS aml, g.url AS url ORDER BY v.aml DESC, short`,{c:j.code});
+ const laws=q(`MATCH (x:Jurisdiction {code:$c})<-[:IN_JURISDICTION]-(:Sector)-[:SUBJECT_TO]->(w:Law) RETURN w.short AS short, w.title AS title, w.url AS url ORDER BY short`,{c:j.code});
+ const cs=q(`MATCH (k:Source {kind:'case'})-[:IN_JURISDICTION]->(:Jurisdiction {code:$c}) RETURN k.party AS party, k.date AS date, k.title AS title, k.amount AS amount, k.currency AS currency, k.amount_note AS note, k.url AS url ORDER BY date DESC`,{c:j.code});
+ const waves={1:'Wave 1 · start',2:'Wave 2 · EU',3:'Wave 3 · worldwide'};
+ return `<h1>Who supervises crypto, under which law</h1><p class="lead">Jurisdiction, then the crypto sector, then each supervisor with its role, then the laws. The Netherlands first, with the same ids as the Casefold sector register; then the EU, then the rest of the world.</p>
+ <div class="cols"><div class="card">${[1,2,3].map(w=>`<div class="wave">${waves[w]}</div>`+reg.rows.filter(r=>r.wave===w).map(r=>`<button class="jur" data-jur="${r.code}" aria-current="${r.code===j.code}"><span>${esc(r.jurisdiction)}</span><span class="mono">${r.code}</span></button>`).join('')).join('')}${showQ(reg)}</div>
+ <div><div class="card"><div class="row" style="border:0;padding-top:0"><h2 style="margin:0">${esc(j.jurisdiction)}</h2>${j.verify?'<span class="tag warn">to verify</span>':'<span class="tag ok">checked</span>'}</div><p class="sub" style="margin:0 0 8px">${esc(j.regime)}</p>
+ ${det.rows.map(r=>`<div class="row"><div><b>${esc(r.short)}</b> <span class="sub">${esc(r.name)}</span><div class="sub">${esc(r.role)}</div></div><div>${r.aml?'<span class="tag">AML</span> ':''}<a href="${esc(r.url)}" target="_blank" rel="noopener" class="mono">site</a></div></div>`).join('')}${showQ(det)}</div>
+ <div class="card"><h2>Laws</h2>${laws.rows.map(r=>`<div class="row"><div><b>${esc(r.short)}</b> <span class="sub">${esc(r.title)}</span></div>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener" class="mono">text</a>`:''}</div>`).join('')||'<p class="note">To inventory.</p>'}${showQ(laws)}</div>
+ <div class="card"><h2>Where it went wrong here</h2>${cs.rows.map(r=>`<div class="row"><div><b>${esc(r.party)}</b> <span class="mono sub">${esc(r.date)}</span><div class="sub">${esc(r.title)}</div></div><div class="mono">${money(r.amount,r.currency,r.note)} · <a href="${esc(r.url)}" target="_blank" rel="noopener">source</a></div></div>`).join('')||'<p class="note">No cases collected yet.</p>'}${showQ(cs)}</div></div></div>`;},
+cases(){
+ const r=q(D.queries['02_cases']);const by=q(D.queries['03_cases_by_law']);
+ const nl=r.rows.filter(x=>x.country==='NL').length;
+ return `<h1>Cases and fines: where it went wrong</h1><p class="lead">Public enforcement cases on crypto: the party, the authority, the measure, the amount as published, the law that was broken, and the decision itself. The Netherlands first.</p>
+ <div class="kpis"><div class="kpi"><b>${r.rows.length}</b><span>cases</span></div><div class="kpi"><b>${nl}</b><span>in the Netherlands</span></div><div class="kpi"><b>${r.rows.filter(x=>x.verify).length}</b><span>source still to link</span></div><div class="kpi"><b>${D.queue.length}</b><span>collection steps queued</span></div></div>
+ <div class="card scroll"><table><thead><tr><th>Country</th><th>Date</th><th>Party</th><th>Authority</th><th>Measure</th><th>Amount</th><th>Law</th><th>Source</th></tr></thead><tbody>${r.rows.map(x=>`<tr><td>${x.country}</td><td class="n">${esc(x.date)}</td><td><b>${esc(x.party)}</b>${x.verify?' <span class="tag warn">verify</span>':''}</td><td>${esc(x.authorities.join(', '))}</td><td>${esc(x.measure)}</td><td class="amt">${money(x.amount,x.currency,x.amount_note)}</td><td>${esc(x.laws.join(', '))}</td><td><a href="${esc(x.source)}" target="_blank" rel="noopener">open</a></td></tr>`).join('')}</tbody></table>${showQ(r)}</div>
+ <div class="two"><div class="card"><h2>Per law</h2>${by.rows.map(x=>`<div class="row"><div><b>${esc(x.law)}</b><div class="sub">${esc(x.parties.join(', '))}</div></div><div class="mono">${x.cases}</div></div>`).join('')}${showQ(by)}</div>
+ <div class="card"><h2>Still to collect</h2>${D.queue.map((x,i)=>`<div class="row"><div><span class="mono">${i+1}</span> ${esc(x)}</div></div>`).join('')}</div></div>`;},
+sources(){
+ return `<h1>Add a source</h1><p class="lead">A law, the supervisor's guidance, an enforcement decision, a sanctions notice or a crypto screening report. It is read into proposals: citations become links to laws, amounts and dates become case facts, wallet addresses become subjects to screen. Nothing enters the graph until you confirm it.</p>
+ <div class="two"><div class="card"><label class="sub" for="kind">Kind of source</label><select id="kind">${[['case','Enforcement case'],['law','Law or regulation'],['guidance','Supervisor guidance'],['sanctions','Sanctions notice'],['screening','Crypto screening report'],['procedure','Own procedure']].map(k=>`<option value="${k[0]}" ${k[0]===S.kind?'selected':''}>${k[1]}</option>`).join('')}</select>
+ <p class="sub" style="margin:12px 0 4px">Title and link of the source</p><input type="text" id="stitle" placeholder="e.g. DNB: boete ... (title)" value="${esc(S.title||'')}"><input type="text" id="surl" placeholder="https://..." style="margin-top:6px" value="${esc(S.url||'')}">
+ <p class="sub" style="margin:12px 0 4px">File (text, Markdown, HTML, XML) or paste</p><input type="file" id="sfile" accept=".txt,.md,.html,.xml,.json,.csv">
+ <textarea id="stext" rows="8" style="margin-top:6px">${esc(S.text||'')}</textarea>
+ <div class="chips" style="margin-top:10px"><button class="btn" id="sread">Read into proposals</button><button class="btn g" id="sexample">Example text</button></div>
+ <p class="note">PDFs and scans: read them with <span class="mono">casefold/law_ingest.py --ocr</span> first, as for the laws.</p></div>
+ <div class="card" id="props">${props()}</div></div>`;},
+screen(){
+ const lists=q(D.queries['04_sanctions_lists']);const imported=lists.rows.filter(r=>r.imported).length;
+ return `<h1>Screen an address or a party</h1><p class="lead">Checks the graph: sanctions lists, addresses named in confirmed sources, and parties in enforcement cases. Information for your own decision, not a verdict.</p>
+ <div class="card"><div class="chips"><input type="text" id="subject" placeholder="wallet address or name, e.g. Garantex" style="flex:1;min-width:220px" value="${esc(S.subject||'')}"><button class="btn" id="go">Screen</button></div><div id="hits" style="margin-top:12px">${S.hits||''}</div></div>
+ <div class="card"><h2>Sanctions lists · ${imported} of ${lists.rows.length} imported</h2>${lists.rows.map(r=>`<div class="row"><div><b>${esc(r.list)}</b><div class="sub">${esc(r.publisher||'')} · ${esc(r.refresh)}</div></div><div>${r.imported?'<span class="tag ok">imported</span>':'<span class="tag warn">not yet imported</span>'} <a href="${esc(r.source)}" target="_blank" rel="noopener" class="mono">source</a></div></div>`).join('')}${showQ(lists)}
+ <p class="note">Until the lists are imported, a clean result here does not mean an address is clear.</p></div>`;},
+ask(){
+ return `<h1>Ask the graph</h1><p class="lead">Every answer in this page is a Cypher query in Relate. Run the questions in <span class="mono">queries/crypto/</span> or your own, read-only.</p>
+ <div class="card"><div class="chips" style="margin-bottom:10px">${Object.keys(D.queries).map(k=>`<button class="btn g" data-preset="${k}">${k.replace(/_/g,' ')}</button>`).join('')}</div>
+ <textarea id="cy" rows="8">${esc(S.cy||D.queries['03_cases_by_law'])}</textarea><input type="text" id="cyq" placeholder="parameter q (for 05)" value="${esc(S.cyq||'sanctions')}" style="margin-top:6px">
+ <div class="chips" style="margin-top:10px"><button class="btn" id="run">Run</button></div><div id="out" class="scroll" style="margin-top:12px">${S.out||''}</div></div>`;}
+};
+
+function props(){if(!S.props.length)return `<h2>Proposals</h2><p class="note">${esc(S.msg||'Read a source to see what would enter the graph.')}</p>`;
+ return `<h2>Proposals · ${S.props.length}</h2>${S.props.map((p,i)=>`<label class="row" style="cursor:pointer;justify-content:flex-start"><input type="checkbox" data-pi="${i}" ${p.ok?'checked':''}><div><span class="tag">${p.k}</span> ${esc(p.v)}<div class="sub mono">${esc(p.edge)}</div></div></label>`).join('')}
+ <div class="chips" style="margin-top:10px"><button class="btn" id="confirm">Confirm selected</button><button class="btn g" id="all">Select all</button></div><p class="note">${esc(S.msg||'Nothing is pre-ticked.')}</p>`;}
+
+const LAWS={wwft:'Wwft',mica:'MiCAR',micar:'MiCAR',amlr:'AMLR',tfr:'TFR',sanctiewet:'Sw',sw:'Sw',dac8:'DAC8'};
+function read(t){const P=[],add=(k,v,edge,x)=>{if(!P.some(p=>p.k===k&&p.v===v))P.push({k,v,edge,ok:false,...x})};
+ for(const m of t.matchAll(/(?:artikel|art\.?)\s*(\d+[a-z]?)(?:,?\s*(?:lid|paragraph)\s*\d+)?\s*(Wwft|MiCAR?|AMLR|TFR|Sanctiewet|DAC8)\b/gi))add('law',`${LAWS[m[2].toLowerCase()]} art. ${m[1]}`,'(:Source)-[:CITES {art}]->(:Law)',{law:LAWS[m[2].toLowerCase()],art:m[1]});
+ for(const m of t.matchAll(/\b(Wwft|MiCAR?|AMLR|TFR|DAC8)\s*,?\s*art(?:ikel|\.)?\s*(\d+[a-z]?)/gi))add('law',`${LAWS[m[1].toLowerCase()]} art. ${m[2]}`,'(:Source)-[:CITES {art}]->(:Law)',{law:LAWS[m[1].toLowerCase()],art:m[2]});
+ for(const m of t.matchAll(/(?:EUR|USD|€|\$)\s?\d[\d.,]*(?:\s?(?:million|miljoen|billion|miljard))?/gi))add('amount',m[0].trim(),'(:Source {amount})',{});
+ for(const m of t.matchAll(/\b\d{1,2}\s(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december|january|february|march|may|june|july|august|october)\s\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/gi))add('date',m[0],'(:Source {date})',{});
+ for(const m of t.matchAll(/\b(DNB|AFM|FIU-Nederland|OM|FIOD|ESMA|SEC|CFTC|FinCEN|OFAC|DOJ|FCA|BaFin|MAS)\b/g))add('authority',m[1],'(:Source)-[:BY]->(:Regulator)',{short:m[1]});
+ for(const m of t.matchAll(/\b(bc1[a-z0-9]{20,}|[13][a-km-zA-HJ-NP-Z1-9]{25,34}|0x[a-fA-F0-9]{40}|T[1-9A-HJ-NP-Za-km-z]{33})\b/g)){const a=m[1],chain=a.startsWith('0x')?'ethereum':a.startsWith('T')?'tron':'bitcoin';add('address',`${chain}:${a}`,'(:Source)-[:NAMES]->(:Address) · screen it',{chain,address:a})}
+ return P;}
+function parseAmount(s){const m=s.replace(/\s/g,'').match(/(EUR|USD|€|\$)?([\d.,]+)(million|miljoen|billion|miljard)?/i);if(!m)return null;let n=m[2];
+ n=/,\d{2}$/.test(n)?n.replace(/\./g,'').replace(',','.'):/\.\d{3}(\.|$)/.test(n)&&!/\.\d{1,2}$/.test(n)?n.replace(/\./g,''):n.replace(/,/g,'');
+ let v=parseFloat(n);if(/million|miljoen/i.test(m[3]||''))v*=1e6;if(/billion|miljard/i.test(m[3]||''))v*=1e9;return {v,c:/USD|\$/i.test(m[1]||'')?'USD':'EUR'};}
+function confirm(){const sel=S.props.filter(p=>p.ok);if(!sel.length){S.msg='Tick at least one proposal.';return}
+ const id='SRC:'+(S.kind)+':'+Date.now().toString(36);const amt=sel.find(p=>p.k==='amount'),dt=sel.find(p=>p.k==='date');const a=amt?parseAmount(amt.v):null;
+ q(`MERGE (k:Source {id:$id}) SET k.kind=$kind, k.title=$title, k.url=$url, k.date=$date, k.amount=CASE WHEN $amount IS NULL THEN null ELSE toFloat($amount) END, k.currency=$cur, k.verify=true, k.party=$title, k.summary=$text, k.confirmed_by='compliance officer (this page)'`,
+  {id,kind:S.kind,title:S.title||'(untitled source)',url:S.url||'local:pasted',date:dt?dt.v:'unknown',amount:a?a.v:null,cur:a?a.c:null,text:(S.text||'').slice(0,2000)});
+ for(const p of sel){if(p.k==='law')q(`MATCH (k:Source {id:$id}) MATCH (w:Law {short:$law}) WITH k, w LIMIT 1 MERGE (k)-[r:CITES]->(w) SET r.art=$art`,{id,law:p.law,art:p.art});
+  if(p.k==='authority')q(`MATCH (k:Source {id:$id}) MATCH (g:Regulator {short:$s}) WITH k, g LIMIT 1 MERGE (k)-[:BY]->(g)`,{id,s:p.short});
+  if(p.k==='address')q(`MATCH (k:Source {id:$id}) MERGE (a:Address {key:$key}) SET a.chain=$chain, a.address=$addr MERGE (k)-[:NAMES]->(a)`,{id,key:p.chain+':'+p.address,chain:p.chain,addr:p.address});}
+ if(S.kind==='case')q(`MATCH (k:Source {id:$id}) MATCH (x:Jurisdiction {code:'NL'}) MERGE (k)-[:IN_JURISDICTION]->(x)`,{id});
+ S.msg=`${sel.length} confirmed: written to the graph as ${id}${S.kind==='case'?' (Cases and fines shows it)':''}. In this page only; the build keeps the committed data.`;S.props=[];}
+function screen(s){s=s.trim();if(!s)return '';
+ const a=q(`MATCH (a:Address) WHERE a.address = $s OR a.key = $s OPTIONAL MATCH (k:Source)-[:NAMES]->(a) OPTIONAL MATCH (l:SanctionsList)-[:LISTS]->(a) RETURN a.key AS address, collect(DISTINCT k.title) AS sources, collect(DISTINCT l.name) AS lists`,{s});
+ const p=q(`MATCH (k:Source {kind:'case'})-[:AGAINST]->(e:Entity) WHERE toLower(e.name) CONTAINS toLower($s) RETURN e.name AS party, k.title AS title, k.date AS date, k.url AS url ORDER BY date DESC`,{s});
+ const hit=a.rows.some(r=>r.lists.length)?'<span class="tag bad">on a sanctions list</span>':a.rows.length||p.rows.length?'<span class="tag warn">found in sources: review</span>':'<span class="tag">nothing found in the graph</span>';
+ return `<p>${hit}</p>${a.rows.map(r=>`<div class="row"><div class="mono">${esc(r.address)}</div><div class="sub">${esc(r.sources.join('; '))}${r.lists.length?' · lists: '+esc(r.lists.join(', ')):''}</div></div>`).join('')}${p.rows.map(r=>`<div class="row"><div><b>${esc(r.party)}</b><div class="sub">${esc(r.title)}</div></div><div class="mono">${esc(r.date)} · <a href="${esc(r.url)}" target="_blank" rel="noopener">source</a></div></div>`).join('')}${showQ(a)}${showQ(p)}`;}
+
+const EX='DNB legt een bestuurlijke boete op van EUR 3.325.000 aan een cryptodienstverlener op 26 januari 2023. De onderneming bood cryptodiensten aan zonder de registratie die artikel 23b Wwft toen vereiste. Onder MiCAR art. 59 is sinds 30 december 2024 een vergunning van de AFM nodig. Genoemd ontvangstadres: 0x7a3f00000000000000000000000000000000e91c (voorbeeld).';
+function render(){document.getElementById('tabs').innerHTML=VIEWS.map(v=>`<button role="tab" data-v="${v[0]}" aria-selected="${v[0]===S.view}">${v[1]}</button>`).join('');
+ try{document.getElementById('main').innerHTML=V[S.view]()}catch(e){document.getElementById('main').innerHTML=`<div class="card"><b>Query failed</b><pre>${esc(e.message)}</pre></div>`}}
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.v){S.view=t.dataset.v;history.replaceState(null,'','#'+S.view);render();return}
+ if(t.dataset.jur){S.jur=t.dataset.jur;render();return}
+ if(t.dataset.preset){S.cy=D.queries[t.dataset.preset];S.out='';render();return}
+ const keep=()=>{S.kind=document.getElementById('kind').value;S.title=document.getElementById('stitle').value;S.url=document.getElementById('surl').value;S.text=document.getElementById('stext').value};
+ if(t.id==='sexample'){keep();S.text=EX;S.title=S.title||'Example: DNB fine for crypto services without registration';render();return}
+ if(t.id==='sread'){keep();S.props=read(S.text);S.msg=S.props.length?'':'Nothing found to propose in this text.';render();return}
+ if(t.id==='all'){S.props.forEach(p=>p.ok=true);document.getElementById('props').innerHTML=props();return}
+ if(t.id==='confirm'){try{confirm()}catch(err){S.msg='Not written: '+err.message}document.getElementById('props').innerHTML=props();return}
+ if(t.id==='go'){S.subject=document.getElementById('subject').value;S.hits=screen(S.subject);render();return}
+ if(t.id==='run'){S.cy=document.getElementById('cy').value;S.cyq=document.getElementById('cyq').value;
+  try{if(/\b(CREATE|MERGE|DELETE|SET|REMOVE|DROP)\b/i.test(S.cy.replace(/\/\/.*$/gm,'')))throw new Error('Read-only here: no CREATE, MERGE, SET, DELETE, REMOVE or DROP.');
+   const r=q(S.cy,{q:S.cyq});S.out=`<table><thead><tr>${r.columns.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${r.rows.map(x=>`<tr>${r.columns.map(c=>`<td>${esc(typeof x[c]==='object'?JSON.stringify(x[c]):x[c])}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="note">${r.rows.length} rows · ${r.ms} ms in Relate</p>`}
+  catch(err){S.out=`<pre>${esc(err.message)}</pre>`}render();}});
+document.addEventListener('change',e=>{if(e.target.dataset.pi!==undefined)S.props[+e.target.dataset.pi].ok=e.target.checked;
+ if(e.target.id==='sfile'&&e.target.files[0])e.target.files[0].text().then(t=>{document.getElementById('stext').value=t.replace(/<[^>]+>/g,' ').slice(0,200000)});});
+
+(async()=>{try{D=await (await fetch('data/crypto.json')).json();const relate=await import(RELATE);await relate.default();db=new relate.RelateDb();
+ const t=performance.now();for(const s of D.schema)db.execute(s);for(const s of D.load){const r=JSON.parse(db.execute(s,JSON.stringify(D.params)));if(r.error)throw new Error(r.error)}
+ const n=q('MATCH (n) RETURN count(n) AS n').rows[0].n;
+ document.getElementById('engine').innerHTML=`<b>Relate 1.1.0</b> · WebAssembly · ${n} nodes · built in ${(performance.now()-t).toFixed(0)} ms · data as of ${esc(D.as_of)}`;
+ const h=location.hash.slice(1);if(VIEWS.some(v=>v[0]===h))S.view=h;render();}
+ catch(e){document.getElementById('main').innerHTML=`<div class="card"><b>Could not start Relate</b><pre>${esc(e.message)}</pre><p class="note">Serve the folder over http (python3 -m http.server in web/).</p></div>`}})();
+</script>
+</body>
+</html>

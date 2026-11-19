@@ -1,0 +1,124 @@
+"""Casefold Crypto Intelligence: build the crypto register (register/crypto.rl) and the viewer data (web/data/crypto.json).
+
+Wave 1 is the Netherlands, with the same ids as the Casefold sector register (NL:afm, NL:dnb, NL:mica, NL:wwft, ...);
+wave 2 the EU, wave 3 the rest of the world. Every case links to the decision or press release it comes from.
+
+  (:Regulator)-[:SUPERVISES {role, aml}]->(:Sector)-[:IN_JURISDICTION]->(:Jurisdiction)
+  (:Sector)-[:SUBJECT_TO]->(:Law)
+  (:Source {kind:'case'})-[:BY]->(:Regulator), -[:AGAINST]->(:Entity), -[:VIOLATED {art}]->(:Law), -[:IN_JURISDICTION]->(:Jurisdiction)
+  (:SanctionsList)-[:PUBLISHED_BY]->(:Regulator)    later: (:SanctionsList)-[:LISTS]->(:Entity|:Address)
+
+The same statements build the graph here with the Relate CLI and in the browser with Relate in WebAssembly (web/crypto.html),
+so the page and the file cannot drift apart.
+
+  python3 casefold/build_crypto.py            build register/crypto.rl (needs relate) and web/data/crypto.json
+  python3 casefold/build_crypto.py --export   only web/data/crypto.json (no relate needed)
+"""
+import json, os, re, sys
+
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(HERE, 'casefold'))
+
+LOAD = [
+    # jurisdictions and the crypto sector in each
+    """UNWIND $j AS j
+MERGE (x:Jurisdiction {code: j.code}) SET x.name = j.name, x.wave = j.wave, x.regime = j.regime, x.travel_rule = j.travel_rule, x.verify = j.verify
+MERGE (s:Sector {id: j.sector}) SET s.name = 'crypto-asset service providers', s.group = 'crypto'
+MERGE (s)-[:IN_JURISDICTION]->(x)""",
+    # supervisors and their role
+    """UNWIND $j AS j UNWIND j.regulators AS r
+MATCH (s:Sector {id: j.sector})
+MERGE (g:Regulator {id: r.id}) SET g.short = r.short, g.name = r.name, g.url = r.url
+MERGE (g)-[v:SUPERVISES]->(s) SET v.role = r.role, v.aml = r.aml""",
+    # laws the sector is subject to
+    """UNWIND $j AS j UNWIND j.laws AS l
+MATCH (s:Sector {id: j.sector})
+MERGE (w:Law {id: l.id}) SET w.short = l.short, w.title = l.title, w.url = l.url
+MERGE (s)-[:SUBJECT_TO]->(w)""",
+    # public enforcement cases
+    """UNWIND $c AS c
+MERGE (k:Source {id: c.id}) SET k.kind = 'case', k.title = c.title, k.party = c.party, k.date = c.date, k.measure = c.measure,
+  k.amount = CASE WHEN c.amount IS NULL THEN null ELSE toFloat(c.amount) END, k.currency = c.currency, k.amount_note = c.amount_note,
+  k.summary = c.summary, k.chain = c.chain, k.url = c.url, k.verify = c.verify
+MERGE (e:Entity {id: 'ENTITY:' + toLower(c.party)}) SET e.name = c.party
+MERGE (k)-[:AGAINST]->(e)
+WITH k, c MATCH (x:Jurisdiction {code: c.jurisdiction}) MERGE (k)-[:IN_JURISDICTION]->(x)""",
+    """UNWIND $c AS c UNWIND c.authorities AS a
+MATCH (k:Source {id: c.id})
+MATCH (x:Jurisdiction {code: c.jurisdiction})<-[:IN_JURISDICTION]-(:Sector)<-[:SUPERVISES]-(g:Regulator {short: a})
+MERGE (k)-[:BY]->(g)""",
+    """UNWIND $c AS c UNWIND c.violated AS v
+MATCH (k:Source {id: c.id}) MATCH (w:Law {id: v.law})
+MERGE (k)-[r:VIOLATED]->(w) SET r.art = v.art""",
+    # sanctions lists (the entries come with the daily import)
+    """UNWIND $l AS l
+MERGE (x:SanctionsList {id: l.id}) SET x.name = l.name, x.url = l.url, x.refresh = l.refresh, x.imported = l.imported
+WITH x, l OPTIONAL MATCH (g:Regulator {id: l.owner}) FOREACH (_ IN CASE WHEN g IS NULL THEN [] ELSE [1] END | MERGE (x)-[:PUBLISHED_BY]->(g))""",
+]
+
+
+def data():
+    d = os.path.join(HERE, 'data', 'crypto')
+    j = json.load(open(os.path.join(d, 'jurisdictions.json'), encoding='utf-8'))['jurisdictions']
+    c = json.load(open(os.path.join(d, 'cases.json'), encoding='utf-8'))
+    l = json.load(open(os.path.join(d, 'sanctions_lists.json'), encoding='utf-8'))['lists']
+    return j, c, l
+
+
+def check(j, c, l):
+    """Every case has a date, a source URL and a known jurisdiction; every violated law exists; ids are unique."""
+    errors, laws, codes = [], {w['id'] for x in j for w in x['laws']}, {x['code'] for x in j}
+    shorts = {x['code']: {r['short'] for r in x['regulators']} for x in j}
+    for k in c['cases']:
+        if not re.match(r'^https://', k.get('url') or ''): errors.append(f"{k['id']}: no https source")
+        if not re.match(r'^\d{4}(-\d{2})?(-\d{2})?$', k.get('date') or ''): errors.append(f"{k['id']}: bad date {k.get('date')}")
+        if k['jurisdiction'] not in codes: errors.append(f"{k['id']}: unknown jurisdiction {k['jurisdiction']}")
+        for v in k['violated']:
+            if v['law'] not in laws: errors.append(f"{k['id']}: unknown law {v['law']}")
+        for a in k['authorities']:
+            if a not in shorts.get(k['jurisdiction'], set()) and a not in ('USSS',): errors.append(f"{k['id']}: authority {a} not a supervisor in {k['jurisdiction']}")
+    for name, ids in (('case', [k['id'] for k in c['cases']]), ('jurisdiction', [x['code'] for x in j]), ('list', [x['id'] for x in l])):
+        dup = {i for i in ids if ids.count(i) > 1}
+        if dup: errors.append(f'duplicate {name} ids: {sorted(dup)}')
+    regs = {}
+    for x in j:
+        for r in x['regulators']:
+            if regs.setdefault(r['id'], r['short']) != r['short']: errors.append(f"regulator {r['id']}: two shorts")
+    return errors
+
+
+def queries():
+    qd = os.path.join(HERE, 'queries', 'crypto')
+    return {f[:-7]: open(os.path.join(qd, f), encoding='utf-8').read() for f in sorted(os.listdir(qd)) if f.endswith('.cypher')}
+
+
+def export(j, c, l):
+    out = os.path.join(HERE, 'web', 'data', 'crypto.json')
+    schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
+    schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l},
+               'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    return out
+
+
+def main():
+    j, c, l = data()
+    errors = check(j, c, l)
+    if errors:
+        sys.exit('crypto data:\n  ' + '\n  '.join(errors))
+    out = export(j, c, l)
+    print(f'crypto: {len(j)} jurisdictions, {len(c["cases"])} cases, {len(l)} sanctions lists -> {os.path.relpath(out, HERE)}')
+    if '--export' in sys.argv:
+        return
+    from build_case import find_relate, run
+    rel = find_relate(os.environ.get('RELATE_BIN'))
+    db = os.path.join(HERE, 'register', 'crypto.rl')
+    if os.path.exists(db):
+        os.remove(db)
+    run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': l}, script=';\n'.join(LOAD) + ';')
+    print(f'crypto: {os.path.relpath(db, HERE)}')
+
+
+if __name__ == '__main__':
+    main()
