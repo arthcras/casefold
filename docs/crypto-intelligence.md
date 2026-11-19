@@ -23,7 +23,7 @@ query in Relate, and a score or a match is information for the customer's own de
 | `data/crypto/sanctions_lists.json` | the lists to import daily (OFAC SDN with digital currency addresses, EU, UN, UK, NL) |
 | `schema/crypto.cypher` | keys, required fields and indexes, including a full-text index on the cases |
 | `casefold/build_crypto.py` | checks the data, builds `register/crypto.rl` with the Relate CLI and exports `web/data/crypto.json` |
-| `queries/crypto/` | 01 register, 02 cases, 03 cases per law, 04 sanctions lists, 05 full-text search (`python3 casefold/ask.py register/crypto.rl crypto/03`) |
+| `queries/crypto/` | 01 register, 02 cases, 03 cases per law, 04 sanctions lists, 05 full-text search, 06 the same company in more than one country (`python3 casefold/ask.py register/crypto.rl crypto/03`) |
 | `tests/test_crypto.py` | data checks, then the register and every query (run by `run.sh` and in CI) |
 | `web/crypto.html` | the viewer: Register, Cases and fines, Add a source (proposals, confirm), Screen, Ask the graph; Relate in WebAssembly, the same statements as the build |
 
@@ -40,7 +40,8 @@ query in Relate, and a score or a match is information for the customer's own de
 
 ## Next steps
 
-- [ ] NL: every crypto decision of DNB and AFM since 2020, read in from the decision itself (replace the `verify` record for Binance 2022).
+- [x] NL: the crypto enforcement measures of DNB, AFM and OM since 2020 from their own sites: Binance 2022, Coinbase 2023, Kraken 2023 (last onder dwangsom), an unnamed provider 2023 (reduced by the court), KuCoin 2024 (last onder dwangsom), Bybit 2024, OKX 2025, MEXC 2025 (AFM warning, MiCAR art. 59), Knaken 2026 (OM bankruptcy petition).
+- [ ] NL: read the DNB decision PDFs for the exact Wwft articles of every case, and link the court rulings (ECLI).
 - [ ] NL: MiCA, TFR and DAC8 read in article by article with `law_fetch.py` / `law_ingest.py`; crypto duties with `valid_from` / `valid_to`.
 - [ ] NL: AFM warnings on unlicensed crypto providers as `Entity` with source.
 - [ ] Sanctions: daily import of OFAC SDN (incl. digital currency addresses), EU, UN, UK into `SanctionsList`-`LISTS`->`Entity|Address`.

@@ -39,8 +39,9 @@ MERGE (s)-[:SUBJECT_TO]->(w)""",
     """UNWIND $c AS c
 MERGE (k:Source {id: c.id}) SET k.kind = 'case', k.title = c.title, k.party = c.party, k.date = c.date, k.measure = c.measure,
   k.amount = CASE WHEN c.amount IS NULL THEN null ELSE toFloat(c.amount) END, k.currency = c.currency, k.amount_note = c.amount_note,
-  k.summary = c.summary, k.chain = c.chain, k.url = c.url, k.verify = c.verify
-MERGE (e:Entity {id: 'ENTITY:' + toLower(c.party)}) SET e.name = c.party
+  k.summary = c.summary, k.chain = c.chain, k.url = c.url, k.verify = c.verify,
+  k.published = c.published, k.status = c.status, k.period = c.period, k.decision = c.decision
+MERGE (e:Entity {id: 'ENTITY:' + coalesce(c.group, toLower(c.party))}) SET e.name = coalesce(e.name, c.party), e.group = c.group
 MERGE (k)-[:AGAINST]->(e)
 WITH k, c MATCH (x:Jurisdiction {code: c.jurisdiction}) MERGE (k)-[:IN_JURISDICTION]->(x)""",
     """UNWIND $c AS c UNWIND c.authorities AS a

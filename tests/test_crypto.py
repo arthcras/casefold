@@ -29,7 +29,10 @@ src = {x['id']: x for x in json.load(open(os.path.join(HERE, 'data', 'sources', 
 for k in c['cases']:
     if k['id'] in src:
         ok(k['url'] == src[k['id']]['url'] and k['date'] == src[k['id']]['date'], f"{k['id']}: same source and date as data/sources/index.json")
-ok(all(k['verify'] or k['amount'] is not None or k['measure'].startswith(('order', 'takedown')) for k in c['cases']), 'a fine without an amount is marked verify')
+ok(all(k['verify'] or k['amount'] is not None or not k['measure'].endswith('fine') for k in c['cases']), 'a fine without an amount is marked verify')
+nl_cases = [k for k in c['cases'] if k['jurisdiction'] == 'NL']
+ok(len(nl_cases) >= 9 and all(k['url'].startswith(('https://www.dnb.nl', 'https://www.afm.nl', 'https://www.om.nl')) for k in nl_cases), f'{len(nl_cases)} Dutch cases, each from the DNB, AFM or OM site itself')
+wwft_n = sum(1 for k in c['cases'] if any(v['law'] == 'NL:wwft' for v in k['violated']))
 
 rel = os.environ.get('RELATE_BIN') or shutil.which('relate') or os.path.expanduser('~/.local/bin/relate')
 if not os.path.exists(rel or ''):
@@ -50,11 +53,14 @@ else:
     ok(all(r['source'] for r in cases), '02 cases: every case has its source')
     by = {r['law']: r for r in run(rel, db, {}, command=q['03_cases_by_law'], read=True)}
     ok(by.get('18 USC 1960', {}).get('cases') == 4, '03 by law: four cases on unlicensed money transmitting (18 USC 1960)')
-    ok(by.get('Wwft', {}).get('cases') == 2, '03 by law: two Dutch registration cases on the Wwft')
+    ok(by.get('Wwft', {}).get('cases') == wwft_n, f'03 by law: {wwft_n} Dutch registration cases on the Wwft')
     lists = run(rel, db, {}, command=q['04_sanctions_lists'], read=True)
     ok(len(lists) == len(l), f'04 sanctions lists: {len(lists)}')
     hits = run(rel, db, {'q': 'sanctions'}, command=q['05_search_cases'], read=True)
     ok(any('Bittrex' in h['party'] for h in hits), '05 full text: "sanctions" finds Bittrex')
+
+    same = {r['group']: r for r in run(rel, db, {}, command=q['06_same_party_elsewhere'], read=True)}
+    ok({'binance', 'okx', 'kucoin'} <= set(same) and all(same[g]['countries'] == 2 for g in ('binance', 'okx', 'kucoin')), '06 same party: Binance, OKX and KuCoin went wrong in the Netherlands and in the US')
 
 print(f'crypto: {"all pass" if not failed else str(failed) + " failed"}')
 sys.exit(1 if failed else 0)

@@ -2,13 +2,45 @@
  "note": "Public crypto enforcement cases. Amounts as published by the authority; amount null = not yet confirmed from the decision. verify: true = the decision itself is still to be linked.",
  "as_of": "2026-11-19",
  "queue": [
-  "DNB and AFM: every crypto enforcement decision since 2020 (registration, Wwft, MiCA)",
-  "AFM warnings on unlicensed crypto providers",
-  "OM / FIOD crypto cases",
+  "NL: read the DNB decision PDFs for the exact Wwft articles of each case (Binance and Kraken: art. 23b(1)(2) and 23c(3), from the decision)",
+  "NL: the Rotterdam court rulings on these decisions (ECLI) and the Knaken bankruptcy ruling",
+  "AFM: MiCAR enforcement after 30 June 2025 (warnings, orders, fines) and ESMA's register of non-compliant entities",
   "EU national supervisors (BaFin, AMF, CONSOB, CNMV ...)",
   "US, UK and Asia"
  ],
  "cases": [
+  {
+   "id": "CASE:dnb-binance-2022",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "administrative fine",
+   "amount": 3325000,
+   "currency": "EUR",
+   "party": "Binance Holdings Ltd.",
+   "date": "2022-04-25",
+   "published": "2022-07-18",
+   "title": "DNB: fine Binance Holdings Ltd., crypto services without registration",
+   "summary": "Crypto services in the Netherlands without the DNB registration the Wwft required, from 21 May 2020 to at least 1 December 2021. Objection filed 2 June 2022 and withdrawn 27 July 2022; the fine is final.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": "23b"
+    },
+    {
+     "law": "NL:wwft",
+     "art": "23c"
+    }
+   ],
+   "period": "2020-05-21 to 2021-12-01",
+   "status": "final",
+   "chain": null,
+   "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2022/boete-voor-binance-holdings-ltd-vanwege-het-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten/",
+   "decision": "https://www.dnb.nl/media/0jxfaxck/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-binance-gelakte-versie-pdf.pdf",
+   "verify": false,
+   "group": "binance"
+  },
   {
    "id": "CASE:dnb-coinbase-2023",
    "ref": "data/sources/index.json",
@@ -31,30 +63,201 @@
    ],
    "chain": null,
    "url": "https://www.dnb.nl/nieuws-voor-de-sector/handhavingsmaatregel-2023/boete-voor-coinbase-europe-limited-vanwege-het-tot-22-september-2022-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland",
-   "verify": false
+   "verify": false,
+   "published": "2023-01-26",
+   "status": "final",
+   "period": "2020-11-15 to 2022-09-22",
+   "group": "coinbase"
   },
   {
-   "id": "CASE:dnb-binance-2022",
+   "id": "CASE:dnb-kraken-2023",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "order subject to penalty (last onder dwangsom)",
+   "amount": 4000000,
+   "currency": "EUR",
+   "amount_note": "EUR 500,000 per week, maximum EUR 4 million; DNB states the full eight weeks passed",
+   "party": "Payward International Markets Limited (Kraken)",
+   "date": "2023-07-14",
+   "published": "2024-04-05",
+   "title": "DNB: last onder dwangsom Payward International Markets Limited (Kraken), crypto services without registration",
+   "summary": "Ordered to stop offering crypto services in or from the Netherlands without DNB registration. Objection filed 4 August 2023, declared unfounded 21 December 2023.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": "23b"
+    },
+    {
+     "law": "NL:wwft",
+     "art": "23c"
+    }
+   ],
+   "status": "objection unfounded",
+   "chain": null,
+   "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2024/last-onder-dwangsom-voor-payward-international-markets-limited-vanwege-het-zonder-registratie-aanbieden-van-cryptodiensten-in-nederland/",
+   "decision": "https://www.dnb.nl/media/1hbfnaou/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-payward-international-markets-limited.pdf",
+   "verify": false,
+   "group": "kraken"
+  },
+  {
+   "id": "CASE:dnb-unnamed-casp-2023",
    "jurisdiction": "NL",
    "authorities": [
     "DNB"
    ],
    "measure": "administrative fine",
-   "amount": null,
+   "amount": 2277500,
    "currency": "EUR",
-   "party": "Binance",
-   "date": "2022-07",
-   "title": "DNB: fine Binance, crypto services without registration",
-   "summary": "Fine for offering crypto services in the Netherlands without DNB registration; amount and decision still to be linked.",
+   "amount_note": "EUR 2,850,000 imposed; reduced to EUR 2,277,500 by the Rotterdam district court on 19 December 2025",
+   "party": "Unnamed crypto service provider",
+   "date": "2023-10-02",
+   "published": "2024-03-13",
+   "title": "DNB: fine for an unnamed crypto service provider, crypto services without registration",
+   "summary": "Crypto services in the Netherlands without DNB registration; the party is not named by DNB. The court reduced the fine.",
    "violated": [
     {
      "law": "NL:wwft",
      "art": null
     }
    ],
+   "status": "reduced by the court",
    "chain": null,
-   "url": "https://www.investing.com/news/stock-market-news/dutch-central-bank-fines-cryptocurrency-exchange-coinbase-33-million-euros-2988529",
-   "verify": true
+   "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2026/boete-voor-cryptodienstaanbieder-vanwege-het-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
+   "verify": false
+  },
+  {
+   "id": "CASE:dnb-kucoin-2024",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "order subject to penalty (last onder dwangsom)",
+   "amount": 4000000,
+   "currency": "EUR",
+   "amount_note": "EUR 500,000 per week after 30 September 2024, maximum EUR 4 million; DNB states the full eight weeks passed",
+   "party": "Peken Global Limited (KuCoin)",
+   "date": "2024-08-05",
+   "published": "2025-07-01",
+   "title": "DNB: last onder dwangsom Peken Global Limited (KuCoin), crypto services without registration",
+   "summary": "Ordered to stop offering crypto services in or from the Netherlands without DNB registration. No objection; the order is irrevocable.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": null
+    }
+   ],
+   "status": "irrevocable",
+   "chain": null,
+   "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/last-onder-dwangsom-voor-peken-global-limited-vanwege-het-zonder-registratie-aanbieden-van-cryptodiensten-in-nederland/",
+   "verify": false,
+   "group": "kucoin"
+  },
+  {
+   "id": "CASE:dnb-bybit-2024",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "administrative fine",
+   "amount": 2250000,
+   "currency": "EUR",
+   "party": "Bybit Fintech Limited",
+   "date": "2024-10-22",
+   "published": "2024-10-30",
+   "title": "DNB: fine Bybit Fintech Limited, crypto services without registration until September 2023",
+   "summary": "Crypto services in the Netherlands without DNB registration until September 2023. DNB reduced the fine because Bybit ended the violation, including moving its Dutch clients to a local partner.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": null
+    }
+   ],
+   "period": "to 2023-09",
+   "status": "published",
+   "chain": null,
+   "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2024/boete-voor-bybit-fintech-limited-vanwege-het-tot-september-2023-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
+   "verify": false,
+   "group": "bybit"
+  },
+  {
+   "id": "CASE:dnb-okx-2025",
+   "jurisdiction": "NL",
+   "authorities": [
+    "DNB"
+   ],
+   "measure": "administrative fine",
+   "amount": 2250000,
+   "currency": "EUR",
+   "party": "Aux Cayes Fintech Co. Ltd. (OKX)",
+   "date": "2025-05-27",
+   "published": "2025-09-03",
+   "title": "DNB: fine Aux Cayes Fintech Co. Ltd. (OKX), crypto services without registration July 2023 to August 2024",
+   "summary": "Crypto services in the Netherlands without DNB registration from July 2023 to August 2024.",
+   "violated": [
+    {
+     "law": "NL:wwft",
+     "art": null
+    }
+   ],
+   "period": "2023-07 to 2024-08",
+   "status": "published",
+   "chain": null,
+   "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/boete-voor-aux-cayes-fintech-co-ltd-vanwege-het-van-juli-2023-tot-augustus-2024-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
+   "verify": false,
+   "group": "okx"
+  },
+  {
+   "id": "CASE:afm-mexc-2025",
+   "jurisdiction": "NL",
+   "authorities": [
+    "AFM"
+   ],
+   "measure": "public warning",
+   "amount": null,
+   "currency": null,
+   "party": "MEXC Global",
+   "date": "2025-09-24",
+   "published": "2025-09-24",
+   "title": "AFM: warning against crypto platform MEXC Global, crypto-asset services without a MiCAR licence",
+   "summary": "The AFM warns that MEXC Global offers crypto-asset services in the Netherlands without the required MiCAR licence; listed in ESMA's register of non-compliant entities.",
+   "violated": [
+    {
+     "law": "NL:mica",
+     "art": "59"
+    }
+   ],
+   "status": "published",
+   "chain": null,
+   "url": "https://www.afm.nl/en/sector/actueel/2025/sep/mr-mexc-waarschuwing",
+   "verify": false,
+   "group": "mexc"
+  },
+  {
+   "id": "CASE:om-knaken-2026",
+   "jurisdiction": "NL",
+   "authorities": [
+    "OM"
+   ],
+   "measure": "bankruptcy petition in the public interest",
+   "amount": null,
+   "currency": null,
+   "party": "Knaken Cryptohandel B.V. and Stichting Knaken Payments",
+   "date": "2026-06-30",
+   "published": "2026-06-30",
+   "title": "OM: bankruptcy petition for crypto company Knaken, no AFM licence",
+   "summary": "Knaken offered exchange and custody of crypto without the required AFM licence and stopped paying out clients; the OM asked the Rotterdam court to declare it bankrupt, after signals from the AFM. FIOD investigation runs separately.",
+   "violated": [
+    {
+     "law": "NL:mica",
+     "art": "59"
+    }
+   ],
+   "status": "petition (court decision to link)",
+   "chain": null,
+   "url": "https://www.om.nl/actueel/nieuws/2026/06/30/om-verzoekt-faillissement-cryptocurrency-bedrijf-knaken",
+   "verify": false
   },
   {
    "id": "CASE:us-binance-2023",
@@ -89,7 +292,8 @@
    ],
    "chain": "transactions between US users and users in sanctioned jurisdictions; illicit proceeds (ransomware, darknet, scams) through the exchange",
    "url": "https://www.justice.gov/opa/pr/binance-and-ceo-plead-guilty-federal-charges-4b-resolution",
-   "verify": false
+   "verify": false,
+   "group": "binance"
   },
   {
    "id": "CASE:us-okx-2025",
@@ -117,7 +321,8 @@
    ],
    "chain": "over USD 5 billion of suspicious transactions and criminal proceeds (per DOJ)",
    "url": "https://www.justice.gov/usao-sdny/pr/okx-pleads-guilty-violating-us-anti-money-laundering-laws-and-agrees-pay-penalties",
-   "verify": false
+   "verify": false,
+   "group": "okx"
   },
   {
    "id": "CASE:us-kucoin-2025",
@@ -145,7 +350,8 @@
    ],
    "chain": "suspicious and criminal funds (darknet, malware, ransomware, fraud) through the exchange",
    "url": "https://www.justice.gov/usao-sdny/pr/kucoin-pleads-guilty-unlicensed-money-transmission-charge-and-agrees-pay-penalties",
-   "verify": false
+   "verify": false,
+   "group": "kucoin"
   },
   {
    "id": "CASE:us-bittrex-2022",
