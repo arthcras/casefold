@@ -53,7 +53,8 @@ query in Relate, and a score or a match is information for the customer's own de
 - [ ] NL: the national terrorism sanctions list.
 - [ ] Agent: extend `casefold/agent_mcp.py` with `regulation_for`, `cases_like`, `screen_address`; the grounding check stays.
 - [ ] Wave 2 and 3, jurisdiction by jurisdiction, the same steps.
-- [ ] Blockchain layer (from NeoArbiTrader's block harvester): the neighbourhood of known addresses, exposure with explanation.
+- [x] On chain: `casefold/fetch_chain.py` (`chain` workflow) traces the listed addresses of Garantex (OFAC, EU) and Grinex (OFAC) with public explorers (mempool.space, Blockscout, TronGrid): the latest transfers of each address and of its largest counterparties (two hops), `data/crypto/chain/`. In the graph: `(:Address)-[:SENT {asset, amount, count, first, last, tx}]->(:Address)`, only native coins and the known USDT and USDC contracts (lookalike tokens marked `*` and left out). Query 08 exposure per listed entity, 09 counterparties shared by two listed entities; the viewer's *Trace on chain* view and exposure in *Screen*.
+- [ ] On chain next: more listed entities, deeper hops on demand, clustering (common inputs on bitcoin), labels for exchanges, and NeoArbiTrader's block harvester for full history instead of the latest transfers.
 
 Sources for third-party lists and labels (OpenSanctions, Chainabuse, commercial labels) are used only under a licence that allows
 commercial use; the licence is recorded per source.

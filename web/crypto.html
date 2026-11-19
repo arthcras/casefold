@@ -86,7 +86,7 @@ textarea{font:14px/1.45 var(--m)}input[type=file]{max-width:100%}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <script type="module">
 const RELATE=new URL('vendor/relate/relate.js',location.href).href;
-const VIEWS=[['register','Supervision per country'],['cases','Cases and fines'],['sanctions','Sanctions and screening'],['sources','Add a source'],['search','Search']];
+const VIEWS=[['register','Supervision per country'],['cases','Cases and fines'],['sanctions','Sanctions and screening'],['trace','Trace on chain'],['sources','Add a source'],['search','Search']];
 const S={view:'register',jur:'NL',props:[],kind:'case',msg:'',sel:null};
 let db,D,cy,NAMES=null;
 const $=id=>document.getElementById(id);
@@ -98,20 +98,24 @@ const fmtN=n=>Number(n||0).toLocaleString('en-US');
 /* ---------- graph ---------- */
 const COL={Jurisdiction:'#6c4fc0',Sector:'#8a94a6',Regulator:'#1d3f73',Law:'#a86b1f',Article:'#c99a3a',Case:'#e2660f',Source:'#5f7d95',Party:'#c2334d',Listed:'#8b1e3f',SanctionsList:'#1f8a56',Address:'#2f6fb5'};
 const KIND={Case:'Case',Party:'Party in a case',Listed:'Listed on a sanctions list',SanctionsList:'Sanctions list',Address:'Crypto address',Regulator:'Supervisor',Law:'Law',Article:'Article',Jurisdiction:'Country',Sector:'Sector',Source:'Source'};
-const WORD={SUPERVISES:'supervises',IN_JURISDICTION:'in',SUBJECT_TO:'subject to',BY:'by',AGAINST:'against',VIOLATED:'violated',VIOLATED_ARTICLE:'violated',REPLACED_BY:'replaced by',HAS_ARTICLE:'article',LISTS:'lists',CONTROLS:'controls',POSSIBLY_SAME:'possibly the same',UNDER_POWER:'power',PUBLISHED_BY:'published by',NAMES:'names',CITES:'cites'};
-const N=x=>`{id: coalesce(${x}.id, ${x}.code, ${x}.key), t: labels(${x})[0], name: coalesce(${x}.short, ${x}.party, ${x}.name, ${x}.title, ${x}.code, ${x}.address), kind: ${x}.kind, listed: ${x}.listed, art: ${x}.art, law: ${x}.law_short}`;
+const WORD={SENT:'sent',SUPERVISES:'supervises',IN_JURISDICTION:'in',SUBJECT_TO:'subject to',BY:'by',AGAINST:'against',VIOLATED:'violated',VIOLATED_ARTICLE:'violated',REPLACED_BY:'replaced by',HAS_ARTICLE:'article',LISTS:'lists',CONTROLS:'controls',POSSIBLY_SAME:'possibly the same',UNDER_POWER:'power',PUBLISHED_BY:'published by',NAMES:'names',CITES:'cites'};
+const N=x=>`{id: coalesce(${x}.id, ${x}.code, ${x}.key), t: labels(${x})[0], name: coalesce(${x}.short, ${x}.party, ${x}.name, ${x}.title, ${x}.code, ${x}.address), kind: ${x}.kind, listed: coalesce(${x}.listed, ${x}.hop = 0), art: ${x}.art, law: ${x}.law_short}`;
 const kindOf=d=>d.t==='Source'?(d.kind==='case'?'Case':'Source'):d.t==='Entity'?(d.listed?'Listed':'Party'):d.t;
 const labelOf=d=>d.t==='Article'?`${d.law||''} art. ${d.art}`:d.t==='Address'?String(d.name||'').slice(0,10)+'…':String(d.name||d.id).slice(0,34);
-function els(rows){const nodes={},edges={};for(const r of rows){for(const n of [r.a,r.b]){if(!nodes[n.id])nodes[n.id]={data:{id:n.id,t:n.t,k:kindOf(n),label:labelOf(n)}}}
- const id=r.a.id+'|'+r.rel+'|'+r.b.id;edges[id]={data:{id,source:r.a.id,target:r.b.id,label:WORD[r.rel]||r.rel.toLowerCase()}}}
+function els(rows){const nodes={},edges={};for(const r of rows){for(const n of [r.a,r.b]){if(!nodes[n.id])nodes[n.id]={data:{id:n.id,t:n.t,k:kindOf(n),label:labelOf(n),listed:n.t==='Address'&&n.listed?true:undefined}}}
+ const id=r.a.id+'|'+r.rel+'|'+r.b.id+'|'+(r.asset||'');edges[id]={data:{id,source:r.a.id,target:r.b.id,label:r.rel==='SENT'&&r.amount!=null?amt(r.amount,r.asset):WORD[r.rel]||r.rel.toLowerCase(),flow:r.rel==='SENT'?1:0}}}
  return [...Object.values(nodes),...Object.values(edges)];}
-const E=(pattern,params)=>q(`${pattern} RETURN ${N('a')} AS a, type(r) AS rel, ${N('b')} AS b`,params);
+const short=k=>{const a=String(k).split(':').pop();return a.length>16?a.slice(0,8)+'…'+a.slice(-6):a};
+const E=(pattern,params)=>q(`${pattern} RETURN ${N('a')} AS a, type(r) AS rel, ${N('b')} AS b, r.amount AS amount, r.asset AS asset`,params);
+const amt=(v,a)=>`${Number(v).toLocaleString('en-US',{maximumFractionDigits:v<10?4:0})} ${a}`;
 function style(){const cs=getComputedStyle(document.documentElement),fg=cs.getPropertyValue('--fg').trim()||'#121a26',mut=cs.getPropertyValue('--muted').trim(),line=cs.getPropertyValue('--line2').trim(),bg=cs.getPropertyValue('--panel').trim();
  return [{selector:'node',style:{'background-color':e=>COL[e.data('k')]||'#888','label':'data(label)','font-size':10,'color':fg,'text-valign':'bottom','text-margin-y':4,'width':18,'height':18,'text-wrap':'ellipsis','text-max-width':120,'text-outline-color':bg,'text-outline-width':2}},
   {selector:'node[k="Case"],node[k="Jurisdiction"]',style:{'width':24,'height':24,'font-weight':600}},
   {selector:'node[k="Address"]',style:{'width':10,'height':10,'font-size':8}},
   {selector:'edge',style:{'width':1.2,'line-color':line,'target-arrow-color':line,'target-arrow-shape':'triangle','arrow-scale':.7,'curve-style':'bezier','label':'','font-size':8,'color':mut,'text-rotation':'autorotate','text-outline-color':bg,'text-outline-width':2}},
   {selector:'edge[label="possibly the same"]',style:{'line-style':'dashed','line-color':'#c2334d','target-arrow-color':'#c2334d'}},
+  {selector:'edge[flow=1]',style:{'line-color':'#2f6fb5','target-arrow-color':'#2f6fb5','width':1.6}},
+  {selector:'node[k="Address"][?listed]',style:{'background-color':'#8b1e3f'}},
   {selector:'edge.hl',style:{'label':'data(label)','width':2,'line-color':'#e2660f','target-arrow-color':'#e2660f'}},
   {selector:'.sel',style:{'border-width':3,'border-color':'#e2660f'}}];}
 function draw(elements){if(!cy)return;cy.elements().remove();cy.add(elements);run();legend();}
@@ -171,7 +175,25 @@ sanctions(){
  <div class="kpis"><div class="kpi"><b>${fmtN(tot)}</b><span>listed persons and entities</span></div><div class="kpi"><b>${fmtN(lists.reduce((a,x)=>a+(x.addresses||0),0))}</b><span>crypto addresses on the lists</span></div><div class="kpi"><b>${lists.filter(x=>x.imported).length} of ${lists.length}</b><span>lists imported</span></div></div>
  <div id="hits">${S.hits||''}</div>
  <div class="card"><h2>Lists</h2>${lists.map(r=>`<div class="row"><div><b>${esc(r.list)}</b><div class="sub">${r.imported?`${fmtN(r.entries)} entries · ${fmtN(r.addresses)} crypto addresses · fetched ${esc((r.fetched||'').slice(0,10))}`:'not yet imported'}</div></div><div><a href="${esc(r.source)}" target="_blank" rel="noopener" class="sub">source</a></div></div>`).join('')}
- <p class="note">Until a list is imported, a clean result does not cover it. OFAC labels crypto addresses; on the other lists only unambiguous address shapes are taken.</p></div>`;},
+ <p class="note">Until a list is imported, a clean result does not cover it. OFAC labels crypto addresses; on the other lists only unambiguous address shapes are taken.</p></div>
+ <div class="card"><h2>Try</h2><div class="chips">${['Garantex','Grinex','0x7FF9cFad3877F21d41Da833E2F775dB0569eE3D9','TTVJjdzirNgbv3aG95Jc9JiH4nvWnxXD32'].map(x=>`<button class="btn g" type="button" data-try="${esc(x)}" style="min-height:34px">${esc(x.length>20?x.slice(0,10)+'…':x)}</button>`).join('')}</div></div>`;},
+trace(){
+ const ents=q('MATCH (e:Entity)-[:CONTROLS]->(a:Address) WHERE a.traced IS NOT NULL RETURN e.id AS id, e.name AS name, count(a) AS n, max(a.traced) AS fetched ORDER BY name');
+ if(!ents.length){$('side').innerHTML='';return '<h1>Trace on chain</h1><p class="note">No traces yet.</p>'}
+ const cur=ents.find(e=>e.id===S.tent)||ents[0];S.tent=cur.id;const assets=['USDT','USDC','ETH','BTC'];const as=S.tasset||'USDT';
+ $('side').innerHTML=`<div class="card"><h2>Listed entity</h2>${ents.map(e=>`<button class="jur" type="button" data-tent="${esc(e.id)}" aria-current="${e.id===cur.id}"><span>${esc(e.name)}</span><span class="mono">${esc(e.id.split(':')[0])}</span></button>`).join('')}
+  <div class="wave" style="margin-top:12px">Asset</div><div class="chips">${assets.map(a=>`<button class="btn ${a===as?'':'g'}" type="button" data-tasset="${a}" style="min-height:34px;padding:0 10px">${a}</button>`).join('')}</div></div>`;
+ const ex=q(D.queries['08_exposure'],{entity:cur.id});const rows=ex.filter(r=>r.asset===as);
+ const top=rows.slice(0,25).map(r=>r.counterparty);
+ draw(els([...E('MATCH (a:Entity {id:$e})-[r:CONTROLS]->(b:Address) WHERE b.traced IS NOT NULL',{e:cur.id}),
+  ...E('MATCH (:Entity {id:$e})-[:CONTROLS]->(a:Address)-[r:SENT {asset:$as}]->(b:Address) WHERE b.key IN $top',{e:cur.id,as,top}),
+  ...E('MATCH (:Entity {id:$e})-[:CONTROLS]->(b:Address)<-[r:SENT {asset:$as}]-(a:Address) WHERE a.key IN $top',{e:cur.id,as,top})]));
+ const tot={};for(const r of ex){tot[r.asset]=tot[r.asset]||{in:0,out:0,n:0};tot[r.asset].in+=r.received_from;tot[r.asset].out+=r.sent_to;tot[r.asset].n++}
+ const listedCp=ex.filter(r=>r.listed_as.length);
+ return `<h1>${esc(cur.name)}: where the money went</h1><p class="lead">The latest transfers of every address the sanctions list gives for ${esc(cur.name)}, and of its largest counterparties (two hops), from public block explorers, fetched ${esc(String(cur.fetched).slice(0,10))}. Who controls an address that is not on a list is not known here.</p>
+ <div class="kpis"><div class="kpi"><b>${cur.n}</b><span>listed addresses traced</span></div>${Object.entries(tot).filter(([a])=>assets.includes(a)).map(([a,t])=>`<div class="kpi"><b>${amt(t.in,a)}</b><span>received from ${t.n} counterparties · ${amt(t.out,a)} sent</span></div>`).join('')}<div class="kpi"><b>${listedCp.length}</b><span>counterparties that are themselves listed</span></div></div>
+ <div class="card scroll"><h2>Counterparties in ${as} · ${rows.length}</h2><table><thead><tr><th>Address</th><th>Received from ${esc(cur.name)}</th><th>Sent to ${esc(cur.name)}</th><th>Transfers</th><th>Period</th><th>On a list</th></tr></thead><tbody>${rows.slice(0,60).map(r=>`<tr class="click" data-node="${esc(r.counterparty)}"><td class="mono">${esc(r.chain)}: ${esc(short(r.counterparty))}</td><td class="n">${r.sent_to?amt(r.sent_to,as):''}</td><td class="n">${r.received_from?amt(r.received_from,as):''}</td><td class="n">${r.transfers}</td><td class="n">${esc(String(r.first||'').slice(0,10))} – ${esc(String(r.last||'').slice(0,10))}</td><td>${r.listed_as.length?`<span class="tag bad">${esc(r.listed_as.join(', '))}</span>`:''}</td></tr>`).join('')||'<tr><td colspan="6" class="note">No transfers in this asset.</td></tr>'}</tbody></table></div>
+ <p class="note">Facts from the chain: amounts and times as the explorers report them. Tokens that only carry the name USDT or USDC (lookalikes) are left out. Exposure is a lead for review, not a finding.</p>`;},
 sources(){
  $('side').innerHTML=`<div class="card"><h2>How it works</h2><p class="note">What you add is read into proposals. Nothing enters the graph until you confirm it, and confirmed sources stay in this page only.</p></div>`;
  return `<h1>Add a source</h1><p class="lead">A law, the supervisor's guidance, an enforcement decision, a sanctions notice or a crypto screening report. Citations become links to laws, amounts and dates become case facts, wallet addresses become subjects to screen.</p>
@@ -219,9 +241,12 @@ async function screen(s){s=s.trim();if(!s)return '';
  const isAddr=/^(0x[0-9a-fA-F]{40}|bc1[0-9a-z]{20,}|[13][1-9A-HJ-NP-Za-km-z]{25,34}|T[1-9A-HJ-NP-Za-km-z]{33}|[48][0-9AB][1-9A-HJ-NP-Za-km-z]{90,})$/.test(s);
  let html='',graph=[];
  if(isAddr){const rows=q(`MATCH (a:Address) WHERE toLower(a.address) = toLower($s) OPTIONAL MATCH (e:Entity)-[:CONTROLS]->(a) OPTIONAL MATCH (l:SanctionsList)-[:LISTS]->(a) RETURN a.key AS key, a.chain AS chain, collect(DISTINCT e.name) AS names, collect(DISTINCT l.name) AS lists`,{s});
-  if(rows.length){const r=rows[0];html=`<div class="card"><p><span class="tag bad">on a sanctions list</span></p><div class="row"><div><a href="#" data-node="${esc(r.key)}" class="mono">${esc(s)}</a><div class="sub">${esc(r.chain)} · listed for ${esc(r.names.join(', '))}</div></div><div class="sub">${esc(r.lists.join('; '))}</div></div></div>`;
+  if(rows.length&&rows[0].lists.length){const r=rows[0];html=`<div class="card"><p><span class="tag bad">on a sanctions list</span></p><div class="row"><div><a href="#" data-node="${esc(r.key)}" class="mono">${esc(s)}</a><div class="sub">${esc(r.chain)} · listed for ${esc(r.names.join(', '))}</div></div><div class="sub">${esc(r.lists.join('; '))}</div></div></div>`;
    graph=[...E('MATCH (b:Address {key:$k})<-[r:CONTROLS]-(a:Entity)',{k:r.key}),...E('MATCH (a:SanctionsList)-[r:LISTS]->(b:Entity)-[:CONTROLS]->(:Address {key:$k})',{k:r.key}),...E('MATCH (b:Entity)-[:CONTROLS]->(:Address {key:$k}) MATCH (a:Entity)-[r:POSSIBLY_SAME]->(b)',{k:r.key}),...E("MATCH (x:Entity)-[:CONTROLS]->(:Address {key:$k}) MATCH (b:Entity)-[:POSSIBLY_SAME]->(x) MATCH (a:Source {kind:'case'})-[r:AGAINST]->(b)",{k:r.key})];}
-  else html=`<div class="card"><p><span class="tag">not on an imported list</span></p><p class="sub">The address is not among the crypto addresses on the imported lists. That does not mean it is clear: exposure through other addresses is the next step (blockchain layer).</p></div>`;}
+  else{const exp=q(`MATCH (c:Address) WHERE toLower(c.address) = toLower($s) MATCH (c)-[f:SENT]-(a:Address)<-[:CONTROLS]-(e:Entity) RETURN c.key AS key, e.name AS entity, f.asset AS asset, startNode(f) = c AS outgoing, f.amount AS amount, f.count AS n, f.first AS first, f.last AS last ORDER BY amount DESC`,{s});
+   if(exp.length){html=`<div class="card"><p><span class="tag warn">direct exposure to a listed entity</span></p><p class="sub">Not on a list itself, but it transacted directly with addresses of a listed entity (from the traced transfers).</p>${exp.map(r=>`<div class="row"><div><b>${r.outgoing?'sent to':'received from'} ${esc(r.entity)}</b><div class="sub">${r.n} ${r.n===1?'transfer':'transfers'}, ${esc(String(r.first||'').slice(0,10))} – ${esc(String(r.last||'').slice(0,10))}</div></div><div class="mono">${amt(r.amount,r.asset)}</div></div>`).join('')}</div>`;
+    graph=[...E('MATCH (a:Address)-[r:SENT]->(b:Address) WHERE toLower(a.address) = toLower($s) OR toLower(b.address) = toLower($s)',{s}),...E('MATCH (c:Address)-[:SENT]-(b:Address) WHERE toLower(c.address) = toLower($s) MATCH (a:Entity)-[r:CONTROLS]->(b)',{s})];}
+   else html=`<div class="card"><p><span class="tag">not on an imported list</span></p><p class="sub">The address is not on the imported lists and not among the traced counterparties of listed addresses. That does not mean it is clear: only the latest transfers of listed addresses are traced so far.</p></div>`;}}
  else{const all=await names();const toks=norm(s).split(' ').filter(t=>t.length>=3);
   const hits=toks.length?all.filter(x=>toks.every(t=>x.n.includes(' '+t+' ')||t.length>=6&&x.n.includes(t))).slice(0,30):[];
   const cases=q("MATCH (k:Source {kind:'case'})-[:AGAINST]->(e:Entity) WHERE toLower(e.name) CONTAINS toLower($s) RETURN k.id AS id, e.name AS party, k.title AS title, k.date AS date ORDER BY date DESC",{s});
@@ -246,6 +271,9 @@ document.addEventListener('click',async e=>{const nodeLink=e.target.closest('[da
  const t=e.target.closest('button');if(!t)return;
  if(t.dataset.v){S.view=t.dataset.v;S.hitGraph=false;history.replaceState(null,'','#'+S.view);render();return}
  if(t.dataset.jur){S.jur=t.dataset.jur;render();return}
+ if(t.dataset.try){$('subject').value=t.dataset.try;$('go').click();return}
+ if(t.dataset.tent){S.tent=t.dataset.tent;render();return}
+ if(t.dataset.tasset){S.tasset=t.dataset.tasset;render();return}
  if(t.dataset.expand){expand(t.dataset.expand);return}
  const keep=()=>{S.kind=$('kind').value;S.title=$('stitle').value;S.url=$('surl').value;S.text=$('stext').value};
  if(t.id==='sexample'){keep();S.text=EX;S.title=S.title||'Example: DNB fine for crypto services without registration';render();return}

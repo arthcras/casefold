@@ -81,6 +81,13 @@ WITH x, l, e UNWIND e.addresses AS a
 MERGE (y:Address {key: a.chain + ':' + a.address}) SET y.chain = a.chain, y.address = a.address, y.currency = a.currency, y.unlabelled = coalesce(a.unlabelled, false)
 MERGE (x)-[:CONTROLS]->(y)
 MERGE (l)-[:LISTS]->(y)""",
+    # on chain: the transfers around listed addresses (public explorers), as flows between addresses
+    """UNWIND $t AS t
+MERGE (a:Address {key: t.from_key}) ON CREATE SET a.chain = t.chain, a.address = t.from
+MERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t.to
+MERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop""",
+    """UNWIND $ts AS x
+MATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count""",
     # a party in a case whose name matches a listed entity: a lead to check, not a finding
     """UNWIND $m AS m
 MATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})
@@ -165,6 +172,30 @@ def name_matches(cases, ents):
     return sorted((dict(t) for t in {tuple(sorted(x.items())) for x in out}), key=lambda x: (x['case_entity'], x['listed']))
 
 
+def chain():
+    """The traces in data/crypto/chain/: transfers summed per (from, to, asset). Only the native coin and the known USDT
+    and USDC contracts count; lookalike tokens (asset ending in *) and impossible amounts are left out of the graph."""
+    d = os.path.join(HERE, 'data', 'crypto', 'chain')
+    flows, sums = {}, []
+    if not os.path.isdir(d):
+        return [], []
+    for f in sorted(os.listdir(d)):
+        r = json.load(open(os.path.join(d, f), encoding='utf-8'))
+        for key, s in sorted(r['summaries'].items()):
+            sums.append({'key': key, 'fetched': r['fetched'], 'hop': s.get('hop'), 'balance': s.get('balance'), 'asset': s.get('asset'),
+                         'received': s.get('received'), 'sent': s.get('sent'), 'tx_count': s.get('tx_count')})
+        for t in r['transfers']:
+            if t['asset'].endswith('*') or not (0 < t['amount'] < 1e12):
+                continue
+            k = (t['chain'], t['from'], t['to'], t['asset'])
+            x = flows.setdefault(k, {'chain': t['chain'], 'from': t['from'], 'to': t['to'], 'from_key': t['chain'] + ':' + t['from'], 'to_key': t['chain'] + ':' + t['to'],
+                                     'asset': t['asset'], 'amount': 0.0, 'count': 0, 'first': t['time'], 'last': t['time'], 'tx': t['tx'], 'hop': t['hop']})
+            x['amount'] = round(x['amount'] + t['amount'], 8); x['count'] += 1; x['hop'] = min(x['hop'], t['hop'])
+            if t['time'] and (not x['first'] or t['time'] < x['first']): x['first'] = t['time']
+            if t['time'] and (not x['last'] or t['time'] > x['last']): x['last'] = t['time']; x['tx'] = t['tx']
+    return sorted(flows.values(), key=lambda x: (x['from_key'], x['to_key'], x['asset'])), sorted({x['key']: x for x in sums}.values(), key=lambda x: x['key'])
+
+
 def names_index(l):
     """Every listed name and alias, for name screening in the viewer: [id, name, aliases, list, type]."""
     d = os.path.join(HERE, 'data', 'crypto', 'sanctions'); rows = []
@@ -187,7 +218,7 @@ def export(j, c, l):
     json.dump(names_index(l), open(os.path.join(HERE, 'web', 'data', 'sanctions_names.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
-    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents)},
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1]},
                'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return out
 
@@ -208,7 +239,7 @@ def main():
         os.remove(db)
     run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
     ls, ents = sanctions(l)
-    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents)}, script=';\n'.join(LOAD) + ';')
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1]}, script=';\n'.join(LOAD) + ';')
     print(f'crypto: {os.path.relpath(db, HERE)}')
 
 

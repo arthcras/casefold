@@ -73,5 +73,10 @@ else:
     ok(arts['Wwft art. 23b']['replaced_by'] == 'MiCAR art. 59' and arts['Wwft art. 23b']['status'] == 'vervallen', '07 articles: Wwft art. 23b has lapsed and is replaced by MiCAR art. 59')
     ok(arts.get('MiCAR art. 59', {}).get('status') == 'in force' and arts.get('TFR art. 14', {}).get('status') == 'in force', '07 articles: MiCAR art. 59 and TFR art. 14 read in from EUR-Lex')
 
+    exp = run(rel, db, {'entity': 'OFAC:55045'}, command=q['08_exposure'], read=True)
+    ok(len(exp) > 50 and any(r['counterparty'] == 'tron:TTVJjdzirNgbv3aG95Jc9JiH4nvWnxXD32' and r['received_from'] > 1e6 for r in exp), f'08 exposure: Grinex has {len(exp)} counterparties on chain; TTVJjdzi... sent it more than 1 million USDT')
+    flows = run(rel, db, {}, read=True, command="MATCH ()-[f:SENT]->() RETURN count(f) AS n, collect(DISTINCT f.asset) AS assets")
+    ok(flows[0]['n'] > 500 and not any(a.endswith('*') for a in flows[0]['assets']), f"on-chain flows: {flows[0]['n']}, assets {sorted(flows[0]['assets'])}, no lookalike tokens")
+
 print(f'crypto: {"all pass" if not failed else str(failed) + " failed"}')
 sys.exit(1 if failed else 0)
