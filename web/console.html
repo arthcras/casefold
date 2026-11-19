@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casefold Console · graph instances</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Casefold Console: one place to see and manage every graph instance behind Casefold, in the manner of a managed
+   graph cloud console. Instances: Relate in the browser (live here), Neo4j Community on our servers, Neo4j Aura. */
+:root{--bg:#eef1f5;--panel:#fff;--sunk:#f6f8fa;--line:#dfe4ea;--line2:#c8d0da;--fg:#132033;--muted:#5d6a7d;--dim:#8b96a6;--ink:#1d3f73;--sig:#e2660f;--ok:#1f8a56;--bad:#c2334d;--warn:#b77712;
+ --f:Inter,system-ui,sans-serif;--h:'Space Grotesk',Inter,sans-serif;--m:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 var(--f);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:26px 26px 60px}
+h1{font:600 26px var(--h);margin:0 0 4px}.lead{color:var(--muted);margin:0 0 20px;max-width:860px}
+h2{font:600 15px var(--f);margin:0 0 10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.head{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}.head .sp{flex:1}
+.btn{border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:8px 13px;cursor:pointer;font:500 14px var(--f);color:var(--fg)}
+.btn.p{background:var(--ink);border-color:var(--ink);color:#fff}.btn:disabled{opacity:.5;cursor:not-allowed}
+.inst{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.ic{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .15s}
+.ic:hover,.ic[aria-current=true]{border-color:var(--ink)}
+.ic .t{display:flex;align-items:center;gap:10px}.ic .t b{font:600 16px var(--h)}
+.st{display:inline-flex;align-items:center;gap:6px;font:500 12px var(--f);border-radius:999px;padding:3px 10px;border:1px solid var(--line)}
+.st i{width:8px;height:8px;border-radius:50%}
+.st.run{color:var(--ok);background:#ecf8f1;border-color:#bfe3cf}.st.run i{background:var(--ok);box-shadow:0 0 0 3px rgba(31,138,86,.18)}
+.st.off{color:var(--bad);background:#fcf0f2;border-color:#f0c4cd}.st.off i{background:var(--bad)}
+.st.plan{color:var(--warn);background:#fdf6e9;border-color:#ecd7ae}.st.plan i{background:var(--warn)}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;font-size:13px}.kv span:nth-child(odd){color:var(--dim)}
+.mono{font-family:var(--m)}
+.tag{font:500 11px var(--m);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--sunk)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+textarea{width:100%;min-height:96px;border:1px solid var(--line2);border-radius:8px;padding:10px 12px;font:13px/1.5 var(--m);background:#0f1726;color:#d6e2f3}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th{text-align:left;font:500 11px var(--m);text-transform:uppercase;letter-spacing:.05em;color:var(--dim);padding:7px 8px;border-bottom:1px solid var(--line)}
+table.t td{padding:7px 8px;border-bottom:1px solid var(--line);font-family:var(--m);font-size:12.5px;vertical-align:top;word-break:break-word}
+.num{text-align:right}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-4px 0 14px}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:9px 12px;color:var(--muted);cursor:pointer;font:500 14px var(--f)}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--ink)}
+.bar{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0}.bar .b{height:8px;border-radius:4px;background:var(--ink)}
+.note{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="head"><div><h1>Casefold Console</h1><p class="lead">Every graph instance behind Casefold in one place: what it holds, where it runs, whether it is up, and the way in. Hume (the workspace) and the websites read from these instances.</p></div><span class="sp"></span><button class="btn" type="button" id="recheck">Check status</button><button class="btn p" type="button" id="create" title="Needs the console server">New instance</button></div>
+ <div class="inst" id="inst"></div>
+ <div id="detail"></div>
+</div>
+<script type="module">
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('en-US');
+let db,D;const q=(c,p)=>{const r=JSON.parse(db.execute(c,p?JSON.stringify(p):null));if(r.error)throw new Error(r.error);return r.rows};
+/* The registry. Status of the server instances is the last check made from the operator's machine; the browser
+   cannot reach a Bolt port, so the console server will take over these checks. */
+const CHECKED='2026-11-19 17:35 (Europe/Amsterdam)';
+const INST=[
+ {id:'casefold-crypto',name:'casefold-crypto',kind:'Relate',where:'In the browser (WASM)',purpose:'Crypto register: sanctions lists, chain traces, regulators, enforcement cases. Feeds the public site, the viewer and the workspace.',status:'run',version:'Relate 1.1.0 (openCypher)',used:['Website','Public viewer','Workspace (Hume)'],live:true},
+ {id:'casefold-community',name:'casefold-community',kind:'Neo4j Community',where:'Hetzner, api server (docker compose, knode-platform)',purpose:'Server copy of the crypto register plus investigations, notes, users and audit trail for the workspace. Same Cypher as Relate.',status:'plan',version:'Neo4j 5 Community',used:['Workspace (Hume)','Pipelines (Orchestra)'],note:'To be created: loads the same LOAD statements as casefold-crypto.'},
+ {id:'cryptointel',name:'cryptointel',kind:'Neo4j Aura',where:'Aura, instance bbf1e609',purpose:'Earlier crypto-intelligence database.',status:'off',version:'Aura',used:[],note:`Not reachable at the last check (${CHECKED}): the hostname does not resolve, so the instance is paused or deleted.`},
+ {id:'arbitrader-prod',name:'arbitrader-prod',kind:'Neo4j (server)',where:'NeoArbiTrader production',purpose:'NeoArbiTrader arbitrage graph: venues, pairs, cycles and their outcomes.',status:'off',version:'Neo4j',used:['NeoArbiTrader app'],note:`No routing information at the last check (${CHECKED}). Read-only from here; no changes to production without approval.`},
+ {id:'arbitrader-productie',name:'arbitrader-productie',kind:'Neo4j (server)',where:'NeoArbiTrader production (second connection)',purpose:'Same NeoArbiTrader production graph, second configured connection.',status:'off',version:'Neo4j',used:['NeoArbiTrader app'],note:`No routing information at the last check (${CHECKED}).`}];
+const ST={run:['run','Running'],off:['off','Not reachable'],plan:['plan','Planned']};
+let SEL='casefold-crypto',TAB='overview';
+function cards(){$('inst').innerHTML=INST.map(i=>`<div class="ic" tabindex="0" role="button" data-i="${i.id}" aria-current="${i.id===SEL}"><div class="t"><b>${esc(i.name)}</b><span class="tag">${esc(i.kind)}</span><span style="margin-left:auto" class="st ${ST[i.status][0]}"><i></i>${ST[i.status][1]}</span></div>
+ <div class="kv"><span>Runs</span><span>${esc(i.where)}</span><span>Version</span><span>${esc(i.version)}</span><span>Used by</span><span>${esc(i.used.join(', ')||'nothing now')}</span>${i.live?`<span>Size</span><span class="mono">${fmt(i.nodes)} nodes · ${fmt(i.rels)} relationships</span>`:''}</div>
+ <div class="note">${esc(i.purpose)}</div></div>`).join('')}
+function detail(){const i=INST.find(x=>x.id===SEL);
+ if(!i.live){$('detail').innerHTML=`<div class="card"><h2>${esc(i.name)}</h2><p class="note">${esc(i.note||'')}</p><div class="kv" style="margin-top:8px"><span>Kind</span><span>${esc(i.kind)}</span><span>Runs</span><span>${esc(i.where)}</span><span>Purpose</span><span>${esc(i.purpose)}</span></div><p class="note" style="margin-top:12px">Pause, resume, resize, back-up and connection details for server and Aura instances come with the console server, which holds the credentials; this page never asks for or shows a password.</p></div>`;return}
+ const tabs=[['overview','Overview'],['query','Query'],['data','Data and sources']];
+ let body='';
+ if(TAB==='overview'){const L=q('MATCH (n) RETURN labels(n)[0] AS l, count(n) AS n ORDER BY n DESC'),R=q('MATCH ()-[r]->() RETURN type(r) AS t, count(r) AS n ORDER BY n DESC');const mx=Math.max(...L.map(x=>x.n));
+  body=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div><h2>Nodes per label</h2>${L.map(x=>`<div class="bar"><span style="width:110px">${esc(x.l)}</span><div class="b" style="width:${Math.max(2,180*x.n/mx)}px"></div><span class="mono">${fmt(x.n)}</span></div>`).join('')}</div><div><h2>Relationships per type</h2><table class="t"><tbody>${R.map(x=>`<tr><td>${esc(x.t)}</td><td class="num">${fmt(x.n)}</td></tr>`).join('')}</tbody></table></div></div>`}
+ if(TAB==='query'){body=`<p class="note" style="margin-top:0">Read queries run on this instance in your browser. Changes are not kept: the instance reloads from its pipelines.</p><textarea id="cq" spellcheck="false" aria-label="Cypher query">MATCH (e:Entity)-[:CONTROLS]->(a:Address)
+RETURN e.name AS listed_party, a.chain AS chain, count(a) AS wallets
+ORDER BY wallets DESC LIMIT 10</textarea><div style="display:flex;gap:8px;margin:8px 0"><button class="btn p" type="button" id="run">Run</button><span class="note" id="qt"></span></div><div id="qr"></div>`}
+ if(TAB==='data'){const L=q('MATCH (l:SanctionsList) RETURN l.name AS n, l.imported AS i, l.fetched AS f, l.entries_total AS e, l.sha256 AS h ORDER BY e DESC');
+  body=`<table class="t"><thead><tr><th>Source</th><th>Fetched</th><th class="num">Entries</th><th>Checksum</th></tr></thead><tbody>${L.map(x=>`<tr><td>${esc(x.n)}</td><td>${esc(x.i?(x.f||'').slice(0,16).replace('T',' '):'not imported')}</td><td class="num">${x.e?fmt(x.e):''}</td><td>${esc((x.h||'').slice(0,16))}</td></tr>`).join('')}</tbody></table><p class="note">Built from <span class="mono">web/data/crypto.json</span> (data as of ${esc(D.as_of)}): ${D.schema.length} schema statements and ${D.load.length} load statements, the same ones the Relate CLI and Neo4j run.</p>`}
+ $('detail').innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><h2 style="margin:0">${esc(i.name)}</h2><span class="st run"><i></i>Running</span><span style="margin-left:auto;display:flex;gap:6px"><a class="btn" href="workspace.html">Open in the workspace</a><a class="btn" href="crypto.html">Public viewer</a></span></div><div class="tabs">${tabs.map(([k,v])=>`<button type="button" data-tab="${k}" aria-selected="${k===TAB}">${v}</button>`).join('')}</div>${body}</div>`;
+ if(TAB==='query')$('run').onclick=run}
+function run(){const t0=performance.now();try{const rows=q($('cq').value);$('qt').textContent=`${rows.length} rows in ${(performance.now()-t0).toFixed(0)} ms`;const cols=rows.length?Object.keys(rows[0]):[];
+ $('qr').innerHTML=rows.length?`<table class="t"><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(0,200).map(r=>`<tr>${cols.map(c=>`<td>${esc(typeof r[c]==='object'?JSON.stringify(r[c]):r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="note">No rows.</p>'}catch(e){$('qt').textContent='';$('qr').innerHTML=`<p class="note" style="color:var(--bad)">${esc(e.message)}</p>`}}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-i]');if(c){SEL=c.dataset.i;TAB='overview';cards();detail();return}const t=e.target.closest('[data-tab]');if(t){TAB=t.dataset.tab;detail()}});
+document.addEventListener('keydown',e=>{const c=e.target.closest&&e.target.closest('[data-i]');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();c.click()}});
+$('recheck').onclick=()=>{const i=INST[0];const t0=performance.now();i.nodes=q('MATCH (n) RETURN count(n) AS n')[0].n;i.rels=q('MATCH ()-[r]->() RETURN count(r) AS n')[0].n;cards();$('recheck').textContent=`Checked: casefold-crypto up (${(performance.now()-t0).toFixed(0)} ms); server instances need the console server`};
+$('create').onclick=()=>alert('Creating, pausing and resizing instances needs the console server, which holds the Aura and server credentials. This prototype shows the registry and runs the in-browser instance.');
+(async()=>{try{D=await (await fetch('data/crypto.json')).json();const relate=await import(new URL('vendor/relate/relate.js',location.href).href);await relate.default();db=new relate.RelateDb();
+ for(const s of D.schema)db.execute(s);for(const s of D.load){const r=JSON.parse(db.execute(s,JSON.stringify(D.params)));if(r.error)throw new Error(r.error)}
+ const i=INST[0];i.nodes=q('MATCH (n) RETURN count(n) AS n')[0].n;i.rels=q('MATCH ()-[r]->() RETURN count(r) AS n')[0].n;cards();detail();
+}catch(e){INST[0].status='off';INST[0].live=false;INST[0].note='Relate could not start in this browser: '+e.message;cards();detail()}})();
+cards();
+</script>
+</body>
+</html>
