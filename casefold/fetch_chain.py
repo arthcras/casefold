@@ -167,7 +167,7 @@ def labels():
     Bitcoin has no public label service here. Writes data/crypto/chain/labels.json."""
     addrs = set()
     for f in os.listdir(OUT):
-        if f.endswith('.json') and f != 'labels.json':
+        if f.endswith('.json') and not f.startswith('labels'):
             r = json.load(open(os.path.join(OUT, f), encoding='utf-8'))
             for t in r['transfers']:
                 if not t['asset'].endswith('*'):

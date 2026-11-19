@@ -220,6 +220,10 @@
  ],
  "label_map": [
   [
+   "ofac|blocked|sanction",
+   "sanctions"
+  ],
+  [
    "tornado|mixer|mixing|blender|sinbad|wasabi|samourai|coinjoin",
    "mixer"
   ],
@@ -248,7 +252,7 @@
    "p2p_exchange"
   ],
   [
-   "binance|okx|okex|huobi|\\bhtx\\b|kucoin|bybit|gate\\.io|\\bgate\\b|mexc|kraken|coinbase|bitfinex|poloniex|bitstamp|gemini|crypto\\.com|upbit|bithumb|bitget|whitebit|exmo|exchange|hot wallet|deposit",
+   "binance|okx|okex|huobi|\\bhtx\\b|kucoin|bybit|gate\\.io|\\bgate\\b|mexc|kraken|coinbase|bitfinex|poloniex|bitstamp|gemini|crypto\\.com|upbit|bithumb|bitget|whitebit|exmo|exchange|hot wallet|deposit|cobo|blofin|fiat-gateway|custody",
    "exchange"
   ],
   [

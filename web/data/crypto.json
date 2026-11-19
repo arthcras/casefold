@@ -38,10 +38,10 @@
   "UNWIND $s AS e\nMATCH (l:SanctionsList {id: e.list})\nMERGE (x:Entity {id: e.id}) SET x.name = e.name, x.type = e.type, x.programs = e.programs, x.aliases = e.aliases, x.listed = true\nMERGE (l)-[:LISTS]->(x)\nWITH x, l, e UNWIND e.addresses AS a\nMERGE (y:Address {key: a.chain + ':' + a.address}) SET y.chain = a.chain, y.address = a.address, y.currency = a.currency, y.unlabelled = coalesce(a.unlabelled, false)\nMERGE (x)-[:CONTROLS]->(y)\nMERGE (l)-[:LISTS]->(y)",
   "UNWIND $t AS t\nMERGE (a:Address {key: t.from_key}) ON CREATE SET a.chain = t.chain, a.address = t.from\nMERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t.to\nMERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop",
   "UNWIND $ts AS x\nMATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count",
-  "UNWIND $al AS x\nMERGE (a:Address {key: x.key}) SET a.label = x.label, a.label_source = x.source, a.label_scam = x.is_scam\nWITH a, x WHERE x.category IS NOT NULL\nMATCH (c:RiskCategory {id: x.category})\nMERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label",
   "UNWIND $rc AS c\nMERGE (x:RiskCategory {id: c.id}) SET x.name = c.name, x.severity = c.severity, x.group = c.group, x.description = c.description",
   "UNWIND $ec AS m\nMATCH (e:Entity {id: m.entity}) MATCH (x:RiskCategory {id: m.category})\nMERGE (e)-[r:IN_CATEGORY]->(x) SET r.by = m.by",
   "UNWIND $c AS c UNWIND coalesce(c.typologies, []) AS t\nMATCH (k:Source {id: c.id}) MATCH (x:RiskCategory {id: t})\nMERGE (k)-[:TYPOLOGY]->(x)",
+  "UNWIND $al AS x\nMERGE (a:Address {key: x.key}) SET a.label = x.label, a.label_source = x.source, a.label_scam = x.is_scam\nWITH a, x WHERE x.category IS NOT NULL\nMATCH (c:RiskCategory {id: x.category})\nMERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label",
   "UNWIND $m AS m\nMATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})\nMERGE (a)-[r:POSSIBLY_SAME]->(b) SET r.by = m.by"
  ],
  "params": {
@@ -27041,7 +27041,120 @@
     "by": "listed"
    }
   ],
-  "al": []
+  "al": [
+   {
+    "key": "ethereum:0x111111125421cA6dc452d289314280a0f8842A65",
+    "label": "1inch Network : Aggregation Router V6",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "defi"
+   },
+   {
+    "key": "ethereum:0x1AB4973a48dc892Cd9971ECE8e01DcC7688f8F23",
+    "label": "Bitget 6",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x276cdBa3a39aBF9cEdBa0F1948312c0681E6D5Fd",
+    "label": "OKX 22",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x3D55CCb2a943d88D39dd2E62DAf767C69fD0179F",
+    "label": "OKX 23",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x5041ed759Dd4aFc3a72b8192C143F72f4724081A",
+    "label": "OKX 7",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x5f65f7b609678448494De4C87521CdF6cEf1e932",
+    "label": "Gemini 4",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x68841a1806fF291314946EebD0cdA8b348E73d6D",
+    "label": "OKX 26",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x7FF9cFad3877F21d41Da833E2F775dB0569eE3D9",
+    "label": "OFAC Blocked: 0x7FF...3D9",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "sanctions"
+   },
+   {
+    "key": "ethereum:0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    "label": "BloFin: Hot Wallet 1",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x7eb6c83AB7D8D9B8618c0Ed973cbEF71d1921EF2",
+    "label": "OKX 20",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0x89e51fA8CA5D66cd220bAed62ED01e8951aa7c40",
+    "label": "Kraken 7",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0xA9D1e08C7793af67e9d92fe308d5697FB81d3E43",
+    "label": "Coinbase 10",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0xB8001C3eC9AA1985f6c747E25c28324E4A361ec1",
+    "label": "Cobo: Custody 1",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0xBDa23B750dD04F792ad365B5F2a6F1d8593796f2",
+    "label": "OKX 21",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0xc5a93444Cc4dA6EfB9e6FC6e5D3CB55A53b52396",
+    "label": "OKX: Deposit Funder",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   },
+   {
+    "key": "ethereum:0xd91eFec7E42f80156d1D9f660a69847188950747",
+    "label": "KuCoin: ERC-20 Batch Transfer",
+    "source": "eth-labels (Etherscan label cloud)",
+    "is_scam": false,
+    "category": "exchange"
+   }
+  ]
  },
  "queue": [
   "NL: KuCoin 2024: read the exact Wwft articles from the decision (the six other DNB decisions: art. 23b(1)(2) and 23c(3), read)",

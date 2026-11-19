@@ -79,6 +79,8 @@ else:
     ok(flows[0]['n'] > 500 and not any(a.endswith('*') for a in flows[0]['assets']), f"on-chain flows: {flows[0]['n']}, assets {sorted(flows[0]['assets'])}, no lookalike tokens")
     ty = {r['id']: r for r in run(rel, db, {}, command=q['10_typologies'], read=True)}
     ok(ty['sanctions']['entities'] >= 100 and ty['terrorist_financing']['entities'] > 0 and ty['unlicensed_service']['cases'] >= 9, f"10 typologies: {ty['sanctions']['entities']} listed entities, {ty['terrorist_financing']['entities']} for terrorist financing, {ty['unlicensed_service']['cases']} cases of unlicensed service")
+    lab = run(rel, db, {}, read=True, command="MATCH (a:Address)-[:IN_CATEGORY]->(c:RiskCategory {id: 'exchange'}) MATCH (a)-[:SENT]-() RETURN count(DISTINCT a) AS n, collect(DISTINCT a.label)[0..5] AS labels")
+    ok(lab[0]['n'] >= 5, f"labels: {lab[0]['n']} traced addresses labelled as an exchange, e.g. {lab[0]['labels']}")
 
 print(f'crypto: {"all pass" if not failed else str(failed) + " failed"}')
 sys.exit(1 if failed else 0)

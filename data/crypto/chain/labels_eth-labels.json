@@ -1,0 +1,176 @@
+{
+ "note": "Ethereum address labels from the eth-labels dataset (MIT; labels from the Etherscan label cloud: check the terms before commercial use), only for the traced addresses.",
+ "source": "local file",
+ "fetched": "2026-11-19T14:25:10Z",
+ "checked": 490,
+ "labels": {
+  "ethereum:0x111111125421ca6dc452d289314280a0f8842a65": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "1inch",
+     "text": "1inch Network : Aggregation Router V6"
+    },
+    {
+     "field": "1inch",
+     "text": "1inch: Aggregation Router V6"
+    },
+    {
+     "field": "router",
+     "text": "1inch: Aggregation Router V6"
+    }
+   ]
+  },
+  "ethereum:0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "bitget",
+     "text": "Bitget 6"
+    }
+   ]
+  },
+  "ethereum:0x276cdba3a39abf9cedba0f1948312c0681e6d5fd": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX 22"
+    }
+   ]
+  },
+  "ethereum:0x3d55ccb2a943d88d39dd2e62daf767c69fd0179f": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX 23"
+    }
+   ]
+  },
+  "ethereum:0x5041ed759dd4afc3a72b8192c143f72f4724081a": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX 7"
+    }
+   ]
+  },
+  "ethereum:0x5f65f7b609678448494de4c87521cdf6cef1e932": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "fiat-gateway",
+     "text": "Gemini 4"
+    },
+    {
+     "field": "gemini",
+     "text": "Gemini 4"
+    }
+   ]
+  },
+  "ethereum:0x68841a1806ff291314946eebd0cda8b348e73d6d": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX 26"
+    }
+   ]
+  },
+  "ethereum:0x7eb6c83ab7d8d9b8618c0ed973cbef71d1921ef2": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX 20"
+    }
+   ]
+  },
+  "ethereum:0x7ff8bbf9c8ab106db589e7863fb100525f61cce5": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "blofin-exchange",
+     "text": "BloFin: Hot Wallet 1"
+    }
+   ]
+  },
+  "ethereum:0x7ff9cfad3877f21d41da833e2f775db0569ee3d9": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "blocked",
+     "text": "OFAC Blocked: 0x7FF...3D9"
+    },
+    {
+     "field": "ofac-sanctioned",
+     "text": "OFAC Blocked: 0x7FF...3D9"
+    },
+    {
+     "field": "ofac-sanctions-lists",
+     "text": "null"
+    },
+    {
+     "field": "ofac-sanctions-lists",
+     "text": "null"
+    }
+   ]
+  },
+  "ethereum:0x89e51fa8ca5d66cd220baed62ed01e8951aa7c40": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "kraken",
+     "text": "Kraken 7"
+    }
+   ]
+  },
+  "ethereum:0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "coinbase",
+     "text": "Coinbase 10"
+    }
+   ]
+  },
+  "ethereum:0xb8001c3ec9aa1985f6c747e25c28324e4a361ec1": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "cobo",
+     "text": "Cobo: Custody 1"
+    }
+   ]
+  },
+  "ethereum:0xbda23b750dd04f792ad365b5f2a6f1d8593796f2": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX 21"
+    }
+   ]
+  },
+  "ethereum:0xc5a93444cc4da6efb9e6fc6e5d3cb55a53b52396": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "okx",
+     "text": "OKX: Deposit Funder"
+    }
+   ]
+  },
+  "ethereum:0xd91efec7e42f80156d1d9f660a69847188950747": {
+   "source": "eth-labels (Etherscan label cloud)",
+   "tags": [
+    {
+     "field": "kucoin",
+     "text": "KuCoin: ERC-20 Batch Transfer"
+    }
+   ]
+  }
+ }
+}

@@ -156,7 +156,8 @@ function radarData(keys,as,maxHop,perRing){const seen=new Set(keys),nodes=[],edg
   for(let h=1;h<=maxHop&&frontier.length;h++){const fk=frontier.map(f=>f.key);
    const rows=q(dir==='out'?'MATCH (a:Address)-[f:SENT {asset:$as}]->(b:Address) WHERE a.key IN $fk RETURN a.key AS p, b.key AS c, sum(f.amount) AS v, sum(f.count) AS n':'MATCH (b:Address)-[f:SENT {asset:$as}]->(a:Address) WHERE a.key IN $fk RETURN a.key AS p, b.key AS c, sum(f.amount) AS v, sum(f.count) AS n',{as,fk});
    const by={};for(const r of rows){if(seen.has(r.c))continue;const x=by[r.c]=by[r.c]||{key:r.c,v:0,n:0,parents:{}};x.v+=r.v;x.n+=r.n;x.parents[r.p]=(x.parents[r.p]||0)+r.v}
-   const ring=Object.values(by).sort((a,b)=>b.v-a.v);const shown=ring.slice(0,perRing),rest=ring.slice(perRing);
+   const ring=Object.values(by).sort((a,b)=>b.v-a.v);const cc=catOf(ring.map(x=>x.key));const top=new Set(ring.slice(0,perRing).map(x=>x.key));
+   const shown=ring.filter(x=>top.has(x.key)||cc[x.key]),rest=ring.filter(x=>!top.has(x.key)&&!cc[x.key]);
    for(const x of shown){seen.add(x.key);nodes.push({...x,hop:h,dir});for(const [p,v] of Object.entries(x.parents))edges.push({from:p,to:x.key,v,dir})}
    if(rest.length)nodes.push({key:`more:${dir}:${h}`,more:rest.length,v:rest.reduce((a,x)=>a+x.v,0),hop:h,dir});
    frontier=shown.map(x=>({key:x.key}));}}

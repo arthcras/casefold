@@ -1,0 +1,73 @@
+{
+ "tron_labels": "not fetched: set TRONSCAN_API_KEY",
+ "note": "Address labels as given by public explorers (Blockscout for ethereum, Tronscan for tron), fetched with the traces. A label is the explorer's attribution, not ours; it is shown with its source.",
+ "fetched": "2026-11-19T14:19:04Z",
+ "checked": 1017,
+ "labels": {
+  "ethereum:0x111111125421cA6dc452d289314280a0f8842A65": {
+   "source": "blockscout",
+   "tags": [
+    {
+     "field": "name",
+     "text": "AggregationRouterV6"
+    }
+   ],
+   "is_contract": true
+  },
+  "ethereum:0x16347cef8A339D1AE785DDefB948A16ea52ffb51": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0x1AB4973a48dc892Cd9971ECE8e01DcC7688f8F23": {
+   "source": "blockscout",
+   "tags": [],
+   "is_scam": true
+  },
+  "ethereum:0x238f4FeD9E1632b96710f974F72F9a6d9d5244D0": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0x2B0221eDe77aaA3eDFB5CAC5837558bA2c338B59": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0x446AEd9c4BBAF3C2E19aF451e15360F001Dd4d05": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0x5f65f7b609678448494De4C87521CdF6cEf1e932": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0x8299C73F669e0058BBAa69bF26d7eBa4f9803211": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0x8c6239d8EdEF6aA36b64a3af41F113c34794F318": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0xA9D1e08C7793af67e9d92fe308d5697FB81d3E43": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0xc34AAa34BD762045eE5CA736a230dF38a0C776cf": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  },
+  "ethereum:0xeE1493b6E1ADaFB856484A08be10F0414F844e91": {
+   "source": "blockscout",
+   "tags": [],
+   "is_contract": true
+  }
+ }
+}

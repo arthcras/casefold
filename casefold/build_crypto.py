@@ -88,12 +88,6 @@ MERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t
 MERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop""",
     """UNWIND $ts AS x
 MATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count""",
-    # explorer labels on addresses, and the category the label puts them in
-    """UNWIND $al AS x
-MERGE (a:Address {key: x.key}) SET a.label = x.label, a.label_source = x.source, a.label_scam = x.is_scam
-WITH a, x WHERE x.category IS NOT NULL
-MATCH (c:RiskCategory {id: x.category})
-MERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label""",
     # risk typology: categories, the categories of listed entities (from their programmes), the typologies of the cases
     """UNWIND $rc AS c
 MERGE (x:RiskCategory {id: c.id}) SET x.name = c.name, x.severity = c.severity, x.group = c.group, x.description = c.description""",
@@ -103,6 +97,12 @@ MERGE (e)-[r:IN_CATEGORY]->(x) SET r.by = m.by""",
     """UNWIND $c AS c UNWIND coalesce(c.typologies, []) AS t
 MATCH (k:Source {id: c.id}) MATCH (x:RiskCategory {id: t})
 MERGE (k)-[:TYPOLOGY]->(x)""",
+    # explorer labels on addresses, and the category the label puts them in
+    """UNWIND $al AS x
+MERGE (a:Address {key: x.key}) SET a.label = x.label, a.label_source = x.source, a.label_scam = x.is_scam
+WITH a, x WHERE x.category IS NOT NULL
+MATCH (c:RiskCategory {id: x.category})
+MERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label""",
     # a party in a case whose name matches a listed entity: a lead to check, not a finding
     """UNWIND $m AS m
 MATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})
@@ -195,6 +195,8 @@ def chain():
     if not os.path.isdir(d):
         return [], []
     for f in sorted(os.listdir(d)):
+        if f.startswith('labels') or not f.endswith('.json'):
+            continue
         r = json.load(open(os.path.join(d, f), encoding='utf-8'))
         for key, s in sorted(r['summaries'].items()):
             sums.append({'key': key, 'fetched': r['fetched'], 'hop': s.get('hop'), 'balance': s.get('balance'), 'asset': s.get('asset'),
@@ -227,19 +229,28 @@ def risk(ents):
 
 def address_labels():
     """data/crypto/chain/labels.json -> one label per address (the first tag the explorer gives) and its category."""
-    f = os.path.join(HERE, 'data', 'crypto', 'chain', 'labels.json')
-    if not os.path.exists(f):
-        return []
+    d = os.path.join(HERE, 'data', 'crypto', 'chain')
     m = json.load(open(os.path.join(HERE, 'data', 'crypto', 'risk_categories.json'), encoding='utf-8'))['label_map']
+    merged = {}
+    for f in ('labels.json', 'labels_eth-labels.json'):      # later files win: the curated dataset over the explorer's tags
+        if os.path.exists(os.path.join(d, f)):
+            merged.update(json.load(open(os.path.join(d, f), encoding='utf-8'))['labels'])
+    case = {}      # the key as the traces spell it (ethereum addresses are checksummed there, lower case in the label sets)
+    flows, sums = chain()
+    for x in flows:
+        case[x['from_key'].lower()] = x['from_key']; case[x['to_key'].lower()] = x['to_key']
+    for x in sums:
+        case[x['key'].lower()] = x['key']
     out = []
-    for key, v in sorted(json.load(open(f, encoding='utf-8'))['labels'].items()):
+    for key, v in sorted(merged.items()):
+        key = case.get(key.lower(), key)
         texts = [t['text'] for t in v.get('tags', [])]
         label = next((t for t in texts if not re.fullmatch(r'0x[0-9a-fA-F]{6,}.*|T[1-9A-HJ-NP-Za-km-z]{20,}', t)), None)
         if not label and not v.get('is_scam'):
             continue
         cat = 'scam' if v.get('is_scam') else next((c for pat, c in m if re.search(pat, ' '.join(texts), re.I)), None)
         out.append({'key': key, 'label': label or 'flagged as scam', 'source': v.get('source'), 'is_scam': bool(v.get('is_scam')), 'category': cat})
-    return out
+    return sorted({x['key']: x for x in out}.values(), key=lambda x: x['key'])
 
 
 def names_index(l):
