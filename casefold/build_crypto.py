@@ -88,6 +88,12 @@ MERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t
 MERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop""",
     """UNWIND $ts AS x
 MATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count""",
+    # explorer labels on addresses, and the category the label puts them in
+    """UNWIND $al AS x
+MERGE (a:Address {key: x.key}) SET a.label = x.label, a.label_source = x.source, a.label_scam = x.is_scam
+WITH a, x WHERE x.category IS NOT NULL
+MATCH (c:RiskCategory {id: x.category})
+MERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label""",
     # risk typology: categories, the categories of listed entities (from their programmes), the typologies of the cases
     """UNWIND $rc AS c
 MERGE (x:RiskCategory {id: c.id}) SET x.name = c.name, x.severity = c.severity, x.group = c.group, x.description = c.description""",
@@ -219,6 +225,23 @@ def risk(ents):
     return r['categories'], out
 
 
+def address_labels():
+    """data/crypto/chain/labels.json -> one label per address (the first tag the explorer gives) and its category."""
+    f = os.path.join(HERE, 'data', 'crypto', 'chain', 'labels.json')
+    if not os.path.exists(f):
+        return []
+    m = json.load(open(os.path.join(HERE, 'data', 'crypto', 'risk_categories.json'), encoding='utf-8'))['label_map']
+    out = []
+    for key, v in sorted(json.load(open(f, encoding='utf-8'))['labels'].items()):
+        texts = [t['text'] for t in v.get('tags', [])]
+        label = next((t for t in texts if not re.fullmatch(r'0x[0-9a-fA-F]{6,}.*|T[1-9A-HJ-NP-Za-km-z]{20,}', t)), None)
+        if not label and not v.get('is_scam'):
+            continue
+        cat = 'scam' if v.get('is_scam') else next((c for pat, c in m if re.search(pat, ' '.join(texts), re.I)), None)
+        out.append({'key': key, 'label': label or 'flagged as scam', 'source': v.get('source'), 'is_scam': bool(v.get('is_scam')), 'category': cat})
+    return out
+
+
 def names_index(l):
     """Every listed name and alias, for name screening in the viewer: [id, name, aliases, list, type]."""
     d = os.path.join(HERE, 'data', 'crypto', 'sanctions'); rows = []
@@ -241,7 +264,7 @@ def export(j, c, l):
     json.dump(names_index(l), open(os.path.join(HERE, 'web', 'data', 'sanctions_names.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
-    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1]},
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1], 'al': address_labels()},
                'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return out
 
@@ -262,7 +285,7 @@ def main():
         os.remove(db)
     run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
     ls, ents = sanctions(l)
-    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1]}, script=';\n'.join(LOAD) + ';')
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1], 'al': address_labels()}, script=';\n'.join(LOAD) + ';')
     print(f'crypto: {os.path.relpath(db, HERE)}')
 
 

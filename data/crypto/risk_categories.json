@@ -1,5 +1,5 @@
 {
- "note": "Casefold's own risk typology, in plain words: what a counterparty address belongs to (counterparty) and what went wrong in a case (case). Severity orders them; it is not a score. Programme codes of the sanctions lists map to categories; every listed entity is also 'sanctions'. Based on public sources: the FATF red-flag indicators for virtual assets and the sanctions programmes themselves.",
+ "note": "Casefold's own risk typology, in plain words: what a counterparty address belongs to (counterparty) and what went wrong in a case (case). Severity orders them; it is not a score. Programme codes of the sanctions lists map to categories; every listed entity is also 'sanctions'. Based on public sources: the FATF red-flag indicators for virtual assets and the sanctions programmes themselves. label_map: keywords in an explorer's label (Blockscout, Tronscan) that put the address in a category; the first match wins, and the label is always shown with its source.",
  "categories": [
   {
    "id": "sanctions",
@@ -121,6 +121,13 @@
    "description": "Online gambling services."
   },
   {
+   "id": "exchange",
+   "name": "Exchange (named by an explorer)",
+   "severity": "low",
+   "group": "counterparty",
+   "description": "An address an explorer labels as belonging to an exchange; whether that exchange is licensed is not checked here."
+  },
+  {
    "id": "licensed_exchange",
    "name": "Licensed exchange",
    "severity": "low",
@@ -209,6 +216,44 @@
   [
    "ELECTION",
    "state_influence"
+  ]
+ ],
+ "label_map": [
+  [
+   "tornado|mixer|mixing|blender|sinbad|wasabi|samourai|coinjoin",
+   "mixer"
+  ],
+  [
+   "scam|phish|fake|fraud|ponzi|drainer",
+   "scam"
+  ],
+  [
+   "exploit|hack|heist|stolen|attacker",
+   "stolen_funds"
+  ],
+  [
+   "lazarus|dprk",
+   "state_theft"
+  ],
+  [
+   "garantex|grinex|bitzlato|suex|chatex",
+   "sanctions"
+  ],
+  [
+   "casino|gambl|\\bbet\\b|dice|roobet|stake\\.com",
+   "gambling"
+  ],
+  [
+   "localbitcoins|paxful|hodlhodl|\\botc\\b|p2p",
+   "p2p_exchange"
+  ],
+  [
+   "binance|okx|okex|huobi|\\bhtx\\b|kucoin|bybit|gate\\.io|\\bgate\\b|mexc|kraken|coinbase|bitfinex|poloniex|bitstamp|gemini|crypto\\.com|upbit|bithumb|bitget|whitebit|exmo|exchange|hot wallet|deposit",
+   "exchange"
+  ],
+  [
+   "uniswap|sushi|1inch|curve|bridge|router|swap|aave|compound|lido|wormhole|stargate|multichain|0x: exchange proxy|metamask",
+   "defi"
   ]
  ]
 }

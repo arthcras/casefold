@@ -38,6 +38,7 @@
   "UNWIND $s AS e\nMATCH (l:SanctionsList {id: e.list})\nMERGE (x:Entity {id: e.id}) SET x.name = e.name, x.type = e.type, x.programs = e.programs, x.aliases = e.aliases, x.listed = true\nMERGE (l)-[:LISTS]->(x)\nWITH x, l, e UNWIND e.addresses AS a\nMERGE (y:Address {key: a.chain + ':' + a.address}) SET y.chain = a.chain, y.address = a.address, y.currency = a.currency, y.unlabelled = coalesce(a.unlabelled, false)\nMERGE (x)-[:CONTROLS]->(y)\nMERGE (l)-[:LISTS]->(y)",
   "UNWIND $t AS t\nMERGE (a:Address {key: t.from_key}) ON CREATE SET a.chain = t.chain, a.address = t.from\nMERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t.to\nMERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop",
   "UNWIND $ts AS x\nMATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count",
+  "UNWIND $al AS x\nMERGE (a:Address {key: x.key}) SET a.label = x.label, a.label_source = x.source, a.label_scam = x.is_scam\nWITH a, x WHERE x.category IS NOT NULL\nMATCH (c:RiskCategory {id: x.category})\nMERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label",
   "UNWIND $rc AS c\nMERGE (x:RiskCategory {id: c.id}) SET x.name = c.name, x.severity = c.severity, x.group = c.group, x.description = c.description",
   "UNWIND $ec AS m\nMATCH (e:Entity {id: m.entity}) MATCH (x:RiskCategory {id: m.category})\nMERGE (e)-[r:IN_CATEGORY]->(x) SET r.by = m.by",
   "UNWIND $c AS c UNWIND coalesce(c.typologies, []) AS t\nMATCH (k:Source {id: c.id}) MATCH (x:RiskCategory {id: t})\nMERGE (k)-[:TYPOLOGY]->(x)",
@@ -25600,6 +25601,13 @@
     "description": "Online gambling services."
    },
    {
+    "id": "exchange",
+    "name": "Exchange (named by an explorer)",
+    "severity": "low",
+    "group": "counterparty",
+    "description": "An address an explorer labels as belonging to an exchange; whether that exchange is licensed is not checked here."
+   },
+   {
     "id": "licensed_exchange",
     "name": "Licensed exchange",
     "severity": "low",
@@ -27032,7 +27040,8 @@
     "category": "sanctions",
     "by": "listed"
    }
-  ]
+  ],
+  "al": []
  },
  "queue": [
   "NL: KuCoin 2024: read the exact Wwft articles from the decision (the six other DNB decisions: art. 23b(1)(2) and 23c(3), read)",
