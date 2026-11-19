@@ -25,7 +25,7 @@ query in Relate, and a score or a match is information for the customer's own de
 | `casefold/build_crypto.py` | checks the data, builds `register/crypto.rl` with the Relate CLI and exports `web/data/crypto.json` |
 | `queries/crypto/` | 01 register, 02 cases, 03 cases per law, 04 sanctions lists, 05 full-text search, 06 the same company in more than one country, 07 per article (duty, cases, fines, replaced by) (`python3 casefold/ask.py register/crypto.rl crypto/03`) |
 | `tests/test_crypto.py` | data checks, then the register and every query (run by `run.sh` and in CI) |
-| `web/crypto.html` | the viewer: Register, Cases and fines, Add a source (proposals, confirm), Screen, Ask the graph; Relate in WebAssembly, the same statements as the build |
+| `web/crypto.html` | the public viewer, laid out like Casefold: views left, the graph in the middle with the answer below, the inspector right (click to inspect, double-click to expand). Supervision per country, Cases and fines, Sanctions and screening, Add a source, Search; plain words, no queries shown. Relate in WebAssembly (`web/vendor/relate`), the same statements as the build |
 
 ## The graph
 
@@ -49,7 +49,8 @@ query in Relate, and a score or a match is information for the customer's own de
 - [x] `data/crypto/articles.json`: 22 key articles (MiCAR 59-63, 67, 68, 70, 75, 76, 94, 111, 143; TFR 14, 16, 17, 19, 23; Wwft 23b, 23c, 29, 30) with their text from the law files; query 07 per article: duty, cases, fines, replaced by.
 - [ ] Crypto duties with `valid_from` / `valid_to` in the Casefold duty map (`data/rules/duty_map.json`).
 - [ ] NL: AFM warnings on unlicensed crypto providers as `Entity` with source.
-- [ ] Sanctions: daily import of OFAC SDN (incl. digital currency addresses), EU, UN, UK into `SanctionsList`-`LISTS`->`Entity|Address`.
+- [x] Sanctions: OFAC SDN (19,571 entries, 1,081 crypto addresses), EU (6,269), UN (1,007) and UK (6,447) fetched by `casefold/fetch_sanctions.py` (`sanctions` workflow, daily once on `main`) into `data/crypto/sanctions/`; listed entities with crypto addresses in the graph (`SanctionsList`-`LISTS`->`Entity`-`CONTROLS`->`Address`); every name in `web/data/sanctions_names.json` for name screening; a case party whose name matches a listed entity gets `POSSIBLY_SAME` (a lead, e.g. Garantex).
+- [ ] NL: the national terrorism sanctions list.
 - [ ] Agent: extend `casefold/agent_mcp.py` with `regulation_for`, `cases_like`, `screen_address`; the grounding check stays.
 - [ ] Wave 2 and 3, jurisdiction by jurisdiction, the same steps.
 - [ ] Blockchain layer (from NeoArbiTrader's block harvester): the neighbourhood of known addresses, exposure with explanation.

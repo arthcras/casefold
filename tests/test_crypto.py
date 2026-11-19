@@ -58,6 +58,10 @@ else:
     ok(by.get('Wwft', {}).get('cases') == wwft_n, f'03 by law: {wwft_n} Dutch registration cases on the Wwft')
     lists = run(rel, db, {}, command=q['04_sanctions_lists'], read=True)
     ok(len(lists) == len(l), f'04 sanctions lists: {len(lists)}')
+    ofac = next((x for x in lists if x['list'].startswith('OFAC')), {})
+    ok(ofac.get('imported') and (ofac.get('entries') or 0) > 10000 and (ofac.get('addresses') or 0) > 500, f"04 OFAC SDN imported: {ofac.get('entries')} entries, {ofac.get('addresses')} crypto addresses")
+    g = run(rel, db, {}, read=True, command="MATCH (:Entity {id: 'ENTITY:garantex'})-[:POSSIBLY_SAME]->(e:Entity)<-[:LISTS]-(l:SanctionsList) RETURN collect(DISTINCT l.id) AS lists")
+    ok(g and 'LIST:ofac-sdn' in g[0]['lists'], 'Garantex in the cases is linked, as a lead, to its listing on the OFAC SDN list')
     hits = run(rel, db, {'q': 'sanctions'}, command=q['05_search_cases'], read=True)
     ok(any('Bittrex' in h['party'] for h in hits), '05 full text: "sanctions" finds Bittrex')
 

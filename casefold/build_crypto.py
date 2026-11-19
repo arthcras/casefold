@@ -67,10 +67,24 @@ MERGE (x)-[:REPLACED_BY]->(y)""",
     """UNWIND $c AS c UNWIND c.violated AS v
 MATCH (k:Source {id: c.id}) MATCH (x:Article {id: v.law + ':' + coalesce(v.art, '')})
 MERGE (k)-[r:VIOLATED_ARTICLE]->(x) SET r.lids = coalesce(v.lids, []), r.stated = coalesce(v.stated, false)""",
-    # sanctions lists (the entries come with the daily import)
+    # sanctions lists, with what the daily import found
     """UNWIND $l AS l
-MERGE (x:SanctionsList {id: l.id}) SET x.name = l.name, x.url = l.url, x.refresh = l.refresh, x.imported = l.imported
+MERGE (x:SanctionsList {id: l.id}) SET x.name = l.name, x.url = l.url, x.refresh = l.refresh, x.imported = coalesce(l.imported, false),
+  x.entries_total = l.entries_total, x.addresses_total = l.addresses_total, x.fetched = l.fetched, x.sha256 = l.sha256
 WITH x, l OPTIONAL MATCH (g:Regulator {id: l.owner}) FOREACH (_ IN CASE WHEN g IS NULL THEN [] ELSE [1] END | MERGE (x)-[:PUBLISHED_BY]->(g))""",
+    # listed persons and entities that have crypto addresses on a list, and those addresses
+    """UNWIND $s AS e
+MATCH (l:SanctionsList {id: e.list})
+MERGE (x:Entity {id: e.id}) SET x.name = e.name, x.type = e.type, x.programs = e.programs, x.aliases = e.aliases, x.listed = true
+MERGE (l)-[:LISTS]->(x)
+WITH x, l, e UNWIND e.addresses AS a
+MERGE (y:Address {key: a.chain + ':' + a.address}) SET y.chain = a.chain, y.address = a.address, y.currency = a.currency, y.unlabelled = coalesce(a.unlabelled, false)
+MERGE (x)-[:CONTROLS]->(y)
+MERGE (l)-[:LISTS]->(y)""",
+    # a party in a case whose name matches a listed entity: a lead to check, not a finding
+    """UNWIND $m AS m
+MATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})
+MERGE (a)-[r:POSSIBLY_SAME]->(b) SET r.by = m.by""",
 ]
 
 
@@ -122,6 +136,46 @@ def check(j, c, l):
     return errors
 
 
+def sanctions(l):
+    """Per list what the import found; the listed entries that carry crypto addresses; name matches with case parties."""
+    d = os.path.join(HERE, 'data', 'crypto', 'sanctions')
+    ents, lists = [], []
+    for x in l:
+        f = os.path.join(d, x['id'].split(':', 1)[1] + '.json')
+        if os.path.exists(f):
+            r = json.load(open(f, encoding='utf-8'))
+            x = {**x, 'imported': True, 'entries_total': r['entries_total'], 'addresses_total': r['addresses_total'], 'fetched': r['fetched'], 'sha256': r['sha256']}
+            ents += [{**e, 'list': x['id']} for e in r['entries'] if e['addresses']]
+        lists.append(x)
+    return lists, ents
+
+
+def name_matches(cases, ents):
+    """A case party whose distinctive name (6+ letters, not a legal form) appears in a listed entity's name or alias."""
+    stop = {'limited', 'holdings', 'global', 'international', 'markets', 'fintech', 'payments', 'services', 'cryptohandel', 'stichting', 'unnamed', 'provider', 'service', 'crypto', 'europe', 'europa', 'netherlands', 'nederland', 'exchange', 'trading', 'company', 'technologies'}
+    out = []
+    for c in cases:
+        cid = 'ENTITY:' + (c.get('group') or c['party'].lower())
+        words = {w for w in re.findall(r'[a-z]{6,}', c['party'].lower()) if w not in stop}
+        for e in ents:
+            names = ' '.join([e['name']] + e.get('aliases', [])).lower()
+            hit = next((w for w in sorted(words) if re.search(r'\b' + w + r'\b', names)), None)
+            if hit:
+                out.append({'case_entity': cid, 'listed': e['id'], 'by': f'name: {hit}'})
+    return sorted((dict(t) for t in {tuple(sorted(x.items())) for x in out}), key=lambda x: (x['case_entity'], x['listed']))
+
+
+def names_index(l):
+    """Every listed name and alias, for name screening in the viewer: [id, name, aliases, list, type]."""
+    d = os.path.join(HERE, 'data', 'crypto', 'sanctions'); rows = []
+    for x in l:
+        f = os.path.join(d, x['id'].split(':', 1)[1] + '.json')
+        if os.path.exists(f):
+            for e in json.load(open(f, encoding='utf-8'))['entries']:
+                rows.append([e['id'], e['name'], ' | '.join(e.get('aliases', [])), x['id'], e.get('type', '')])
+    return rows
+
+
 def queries():
     qd = os.path.join(HERE, 'queries', 'crypto')
     return {f[:-7]: open(os.path.join(qd, f), encoding='utf-8').read() for f in sorted(os.listdir(qd)) if f.endswith('.cypher')}
@@ -129,9 +183,11 @@ def queries():
 
 def export(j, c, l):
     out = os.path.join(HERE, 'web', 'data', 'crypto.json')
+    l, ents = sanctions(l)
+    json.dump(names_index(l), open(os.path.join(HERE, 'web', 'data', 'sanctions_names.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
-    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles()},
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents)},
                'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return out
 
@@ -151,7 +207,8 @@ def main():
     if os.path.exists(db):
         os.remove(db)
     run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
-    run(rel, db, {'j': j, 'c': c['cases'], 'l': l, 'a': articles()}, script=';\n'.join(LOAD) + ';')
+    ls, ents = sanctions(l)
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents)}, script=';\n'.join(LOAD) + ';')
     print(f'crypto: {os.path.relpath(db, HERE)}')
 
 
