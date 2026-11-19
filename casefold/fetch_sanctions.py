@@ -42,6 +42,8 @@ def chain_of(currency, address):
         return 'ethereum' if c != 'BSC' else 'bsc'
     if c in ('TRX',) or (c == 'USDT' and address.startswith('T')):
         return 'tron'
+    if c == 'USDT':
+        return 'bitcoin'   # USDT on Omni, a bitcoin address
     return {'XMR': 'monero', 'LTC': 'litecoin', 'ZEC': 'zcash', 'DASH': 'dash', 'BTG': 'bitcoin-gold', 'BCH': 'bitcoin-cash', 'XRP': 'xrp',
             'SOL': 'solana', 'XVG': 'verge'}.get(c, c.lower() or 'unknown')
 

@@ -3631,27 +3631,27 @@
      },
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "1KUUJPkyDhamZXgpsyXqNGc3x1QPXtdhgz"
      },
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "1CF46Rfbp97absrs7zb7dFfZS6qBXUm9EP"
      },
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "1LrxsRd7zNuxPJcL5rttnoeJFy1y4AffYY"
      },
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "1Df883c96LVauVsx9FEgnsourD8DELwCUQ"
      },
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "16iWn2J1McqjToYLHSsAyS6En3QA8YQ91H"
      },
      {
@@ -3758,7 +3758,7 @@
     "addresses": [
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "3LtcaPbCj87CwJHnRX3vh7c2y9RZQqeSy8"
      },
      {
@@ -4042,7 +4042,7 @@
      },
      {
       "currency": "USDT",
-      "chain": "usdt",
+      "chain": "bitcoin",
       "address": "3E6ZCKRrsdPc35chA9Eftp1h3DLW18NFNV"
      },
      {

@@ -1,0 +1,6 @@
+{
+ "note": "Listed entities whose crypto addresses are traced on chain by casefold/fetch_chain.py: the latest transfers of each address (hop 1) and, for the largest counterparties, their latest transfers (hop 2). Public block explorers only, no keys. Chosen because they are both on a sanctions list and in a case.",
+ "max_transfers_per_address": 50,
+ "hop2_counterparties": 8,
+ "entities": ["OFAC:36025", "EU:172907", "OFAC:55045"]
+}
