@@ -62,3 +62,17 @@ query in Relate, and a score or a match is information for the customer's own de
 
 Sources for third-party lists and labels (OpenSanctions, Chainabuse, commercial labels) are used only under a licence that allows
 commercial use; the licence is recorded per source.
+
+## In the Hume workspace (own data, own framework)
+
+Decision 19 Nov 2026: all data is collected by Casefold itself (no partner feed), and investigators work in the
+Hume workspace from knode-platform (`gatekeeper/hume`).
+
+- `casefold/export_hume.py` writes the crypto register as a Hume graph (`exports/hume/casefold-crypto.json`, not in git):
+  SanctionAuthority, ScreeningHit, Organization/Person (listed parties, supervisors, case parties), Wallet,
+  Transaction (Wallet -SENT-> Transaction -RECEIVED-> Wallet), Jurisdiction (with lat/lon), Document (cases, articles).
+- `casefold/fci_api.py` answers the workspace's `/fci-api/graph/search`, `/nodes/{id}/expand` and `/subgraph` from that
+  file, read-only on 127.0.0.1: `python3 casefold/fci_api.py --hume ../knode-platform/gatekeeper/hume` and open
+  `http://127.0.0.1:8791/?blank=1&instance=casefold-crypto`. Next: the same three calls with Cypher on Neo4j Community.
+- Note for knode-platform: in `?blank=1` the BOOT block still runs the demo `tx(...)` on the emptied graph and stops the
+  page; `if(!window.__HUME_LIVE__ && !window.__HUME_BLANK__)` fixes it.
