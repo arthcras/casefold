@@ -71,7 +71,7 @@ textarea{font:14px/1.45 var(--m)}input[type=file]{max-width:100%}
 <body>
 <header class="top">
  <div class="brand"><b>Casefold Crypto Intelligence</b><span>Who supervises crypto, where it went wrong, and who is on a sanctions list, in one graph</span></div>
- <div class="engine" id="engine">loading…</div>
+ <div style="display:flex;gap:8px;align-items:center"><button class="btn g" type="button" id="theme" style="min-height:32px;padding:0 12px" aria-label="Switch between light and dark">Dark</button><div class="engine" id="engine">loading…</div></div>
 </header>
 <div class="app">
  <aside><nav class="card views" id="views" aria-label="Views"></nav><div id="side"></div></aside>
@@ -360,6 +360,8 @@ document.addEventListener('change',e=>{if(e.target.dataset.pi!==undefined)S.prop
  const t=performance.now();for(const s of D.schema)db.execute(s);for(const s of D.load){const r=JSON.parse(db.execute(s,JSON.stringify(D.params)));if(r.error)throw new Error(r.error)}
  const n=q('MATCH (n) RETURN count(n) AS n')[0].n;
  $('engine').innerHTML=`<b>Relate</b> in this page · ${fmtN(n)} nodes · ${(performance.now()-t).toFixed(0)} ms · data as of ${esc(D.as_of)}`;
+ (function(){let t='light';try{t=localStorage.getItem('cf-theme')||'light'}catch(e){}document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'Light':'Dark';
+  $('theme').onclick=()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;$('theme').textContent=n==='dark'?'Light':'Dark';try{localStorage.setItem('cf-theme',n)}catch(e){}if(cy)cy.style(style());render()}})();
  if(window.cytoscape){cy=cytoscape({container:$('cy'),style:style(),wheelSensitivity:.25,minZoom:.2,maxZoom:3});cy.on('tap','node',ev=>select(ev.target.id()));cy.on('dbltap','node',ev=>expand(ev.target.id()));}
  else $('cy').innerHTML='<p class="note" style="padding:14px">The graph library did not load; the lists below still work.</p>';
  const h=location.hash.slice(1);if(VIEWS.some(v=>v[0]===h))S.view=h;render();}
