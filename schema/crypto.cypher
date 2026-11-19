@@ -12,6 +12,7 @@ CREATE CONSTRAINT entity_id IF NOT EXISTS FOR (n:Entity) REQUIRE n.id IS UNIQUE;
 CREATE CONSTRAINT sanctions_list_id IF NOT EXISTS FOR (n:SanctionsList) REQUIRE n.id IS UNIQUE;
 CREATE CONSTRAINT address_key IF NOT EXISTS FOR (n:Address) REQUIRE n.key IS UNIQUE;
 CREATE CONSTRAINT proposal_id IF NOT EXISTS FOR (n:Proposal) REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT risk_category_id IF NOT EXISTS FOR (n:RiskCategory) REQUIRE n.id IS UNIQUE;
 
 // 2. Required fields and types (Relate, Neo4j Enterprise or Aura), not on Neo4j Community
 CREATE CONSTRAINT source_kind IF NOT EXISTS FOR (n:Source) REQUIRE n.kind IS NOT NULL;

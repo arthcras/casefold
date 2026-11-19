@@ -77,6 +77,8 @@ else:
     ok(len(exp) > 50 and any(r['counterparty'] == 'tron:TTVJjdzirNgbv3aG95Jc9JiH4nvWnxXD32' and r['received_from'] > 1e6 for r in exp), f'08 exposure: Grinex has {len(exp)} counterparties on chain; TTVJjdzi... sent it more than 1 million USDT')
     flows = run(rel, db, {}, read=True, command="MATCH ()-[f:SENT]->() RETURN count(f) AS n, collect(DISTINCT f.asset) AS assets")
     ok(flows[0]['n'] > 500 and not any(a.endswith('*') for a in flows[0]['assets']), f"on-chain flows: {flows[0]['n']}, assets {sorted(flows[0]['assets'])}, no lookalike tokens")
+    ty = {r['id']: r for r in run(rel, db, {}, command=q['10_typologies'], read=True)}
+    ok(ty['sanctions']['entities'] >= 100 and ty['terrorist_financing']['entities'] > 0 and ty['unlicensed_service']['cases'] >= 9, f"10 typologies: {ty['sanctions']['entities']} listed entities, {ty['terrorist_financing']['entities']} for terrorist financing, {ty['unlicensed_service']['cases']} cases of unlicensed service")
 
 print(f'crypto: {"all pass" if not failed else str(failed) + " failed"}')
 sys.exit(1 if failed else 0)

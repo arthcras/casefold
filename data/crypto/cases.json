@@ -49,7 +49,10 @@
    "decision": "https://www.dnb.nl/media/0jxfaxck/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-binance-gelakte-versie-pdf.pdf",
    "verify": false,
    "group": "binance",
-   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 25 April 2022"
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 25 April 2022",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:dnb-coinbase-2023",
@@ -96,7 +99,10 @@
     "law": "NL:wwft",
     "art": "30"
    },
-   "decision": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf"
+   "decision": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:dnb-kraken-2023",
@@ -143,7 +149,10 @@
     "law": "NL:wwft",
     "art": "29",
     "point": "a"
-   }
+   },
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:dnb-unnamed-casp-2023",
@@ -191,7 +200,10 @@
    },
    "decision": "https://www.dnb.nl/media/sq2itqhg/bestuurlijke-boete-cryptodienstaanbieder.pdf",
    "note": "Likely the same decision as DNB's earlier named publication on Foris DAX MT Limited (Crypto.com): same date (2 October 2023), amount (EUR 2,850,000) and publication date (13 March 2024), and the same articles. DNB now publishes it without a name; not confirmed, so not linked to Crypto.com.",
-   "related": "https://www.dnb.nl/en/sector-news/enforcement-measures-2024/fine-for-foris-dax-mt-limited-crypto-com-for-providing-crypto-services-without-the-required-registration"
+   "related": "https://www.dnb.nl/en/sector-news/enforcement-measures-2024/fine-for-foris-dax-mt-limited-crypto-com-for-providing-crypto-services-without-the-required-registration",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:dnb-kucoin-2024",
@@ -220,7 +232,10 @@
    "verify": false,
    "group": "kucoin",
    "decision": "https://www.dnb.nl/media/hxfl10uk/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-aan-peken-global-limited.pdf",
-   "violated_from": "article to read from the decision"
+   "violated_from": "article to read from the decision",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:dnb-bybit-2024",
@@ -267,7 +282,10 @@
     "art": "30",
     "point": "a"
    },
-   "decision": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf"
+   "decision": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:dnb-okx-2025",
@@ -313,7 +331,10 @@
     "law": "NL:wwft",
     "art": "30"
    },
-   "decision": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf"
+   "decision": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:afm-mexc-2025",
@@ -339,7 +360,10 @@
    "chain": null,
    "url": "https://www.afm.nl/en/sector/actueel/2025/sep/mr-mexc-waarschuwing",
    "verify": false,
-   "group": "mexc"
+   "group": "mexc",
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:om-knaken-2026",
@@ -364,7 +388,10 @@
    "status": "petition (court decision to link)",
    "chain": null,
    "url": "https://www.om.nl/actueel/nieuws/2026/06/30/om-verzoekt-faillissement-cryptocurrency-bedrijf-knaken",
-   "verify": false
+   "verify": false,
+   "typologies": [
+    "unlicensed_service"
+   ]
   },
   {
    "id": "CASE:us-binance-2023",
@@ -400,7 +427,12 @@
    "chain": "transactions between US users and users in sanctioned jurisdictions; illicit proceeds (ransomware, darknet, scams) through the exchange",
    "url": "https://www.justice.gov/opa/pr/binance-and-ceo-plead-guilty-federal-charges-4b-resolution",
    "verify": false,
-   "group": "binance"
+   "group": "binance",
+   "typologies": [
+    "aml_failure",
+    "unlicensed_service",
+    "sanctions_violation"
+   ]
   },
   {
    "id": "CASE:us-okx-2025",
@@ -429,7 +461,11 @@
    "chain": "over USD 5 billion of suspicious transactions and criminal proceeds (per DOJ)",
    "url": "https://www.justice.gov/usao-sdny/pr/okx-pleads-guilty-violating-us-anti-money-laundering-laws-and-agrees-pay-penalties",
    "verify": false,
-   "group": "okx"
+   "group": "okx",
+   "typologies": [
+    "unlicensed_service",
+    "aml_failure"
+   ]
   },
   {
    "id": "CASE:us-kucoin-2025",
@@ -458,7 +494,11 @@
    "chain": "suspicious and criminal funds (darknet, malware, ransomware, fraud) through the exchange",
    "url": "https://www.justice.gov/usao-sdny/pr/kucoin-pleads-guilty-unlicensed-money-transmission-charge-and-agrees-pay-penalties",
    "verify": false,
-   "group": "kucoin"
+   "group": "kucoin",
+   "typologies": [
+    "unlicensed_service",
+    "aml_failure"
+   ]
   },
   {
    "id": "CASE:us-bittrex-2022",
@@ -487,7 +527,11 @@
    ],
    "chain": "users with an IP or physical address in sanctioned jurisdictions",
    "url": "https://ofac.treasury.gov/recent-actions/20221011",
-   "verify": false
+   "verify": false,
+   "typologies": [
+    "sanctions_violation",
+    "aml_failure"
+   ]
   },
   {
    "id": "CASE:us-terraform-2024",
@@ -511,7 +555,10 @@
    ],
    "chain": "TerraUSD / LUNA collapse",
    "url": "https://www.sec.gov/news/press-release/2024-73",
-   "verify": false
+   "verify": false,
+   "typologies": [
+    "fraud"
+   ]
   },
   {
    "id": "CASE:us-bitzlato-2023",
@@ -535,7 +582,10 @@
    ],
    "chain": "funds from Russian ransomware groups and darknet markets",
    "url": "https://www.fincen.gov/news/news-releases/fincen-identifies-virtual-currency-exchange-bitzlato-primary-money-laundering",
-   "verify": false
+   "verify": false,
+   "typologies": [
+    "money_laundering"
+   ]
   },
   {
    "id": "CASE:us-garantex-2025",
@@ -567,7 +617,12 @@
    ],
    "chain": "exchange allegedly used to launder proceeds of crime",
    "url": "https://www.justice.gov/usao-edva/pr/garantex-cryptocurrency-exchange-disrupted-international-operation",
-   "verify": false
+   "verify": false,
+   "typologies": [
+    "money_laundering",
+    "sanctions_violation",
+    "unlicensed_service"
+   ]
   }
  ]
 }

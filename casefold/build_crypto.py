@@ -88,6 +88,15 @@ MERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t
 MERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop""",
     """UNWIND $ts AS x
 MATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count""",
+    # risk typology: categories, the categories of listed entities (from their programmes), the typologies of the cases
+    """UNWIND $rc AS c
+MERGE (x:RiskCategory {id: c.id}) SET x.name = c.name, x.severity = c.severity, x.group = c.group, x.description = c.description""",
+    """UNWIND $ec AS m
+MATCH (e:Entity {id: m.entity}) MATCH (x:RiskCategory {id: m.category})
+MERGE (e)-[r:IN_CATEGORY]->(x) SET r.by = m.by""",
+    """UNWIND $c AS c UNWIND coalesce(c.typologies, []) AS t
+MATCH (k:Source {id: c.id}) MATCH (x:RiskCategory {id: t})
+MERGE (k)-[:TYPOLOGY]->(x)""",
     # a party in a case whose name matches a listed entity: a lead to check, not a finding
     """UNWIND $m AS m
 MATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})
@@ -196,6 +205,20 @@ def chain():
     return sorted(flows.values(), key=lambda x: (x['from_key'], x['to_key'], x['asset'])), sorted({x['key']: x for x in sums}.values(), key=lambda x: x['key'])
 
 
+def risk(ents):
+    """The risk categories, and per listed entity its categories: 'sanctions' always, plus what its programmes map to."""
+    r = json.load(open(os.path.join(HERE, 'data', 'crypto', 'risk_categories.json'), encoding='utf-8'))
+    out = []
+    for e in ents:
+        cats = {'sanctions': 'listed'}
+        for p in e.get('programs') or []:
+            for pat, cat in r['program_map']:
+                if re.search(pat, p):
+                    cats.setdefault(cat, 'programme ' + p)
+        out += [{'entity': e['id'], 'category': c, 'by': b} for c, b in sorted(cats.items())]
+    return r['categories'], out
+
+
 def names_index(l):
     """Every listed name and alias, for name screening in the viewer: [id, name, aliases, list, type]."""
     d = os.path.join(HERE, 'data', 'crypto', 'sanctions'); rows = []
@@ -218,7 +241,7 @@ def export(j, c, l):
     json.dump(names_index(l), open(os.path.join(HERE, 'web', 'data', 'sanctions_names.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
-    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1]},
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1]},
                'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return out
 
@@ -239,7 +262,7 @@ def main():
         os.remove(db)
     run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
     ls, ents = sanctions(l)
-    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1]}, script=';\n'.join(LOAD) + ';')
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1]}, script=';\n'.join(LOAD) + ';')
     print(f'crypto: {os.path.relpath(db, HERE)}')
 
 

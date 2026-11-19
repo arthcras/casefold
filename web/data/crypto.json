@@ -11,6 +11,7 @@
   "CREATE CONSTRAINT sanctions_list_id IF NOT EXISTS FOR (n:SanctionsList) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT address_key IF NOT EXISTS FOR (n:Address) REQUIRE n.key IS UNIQUE",
   "CREATE CONSTRAINT proposal_id IF NOT EXISTS FOR (n:Proposal) REQUIRE n.id IS UNIQUE",
+  "CREATE CONSTRAINT risk_category_id IF NOT EXISTS FOR (n:RiskCategory) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT source_kind IF NOT EXISTS FOR (n:Source) REQUIRE n.kind IS NOT NULL",
   "CREATE CONSTRAINT source_url IF NOT EXISTS FOR (n:Source) REQUIRE n.url IS NOT NULL",
   "CREATE CONSTRAINT source_date IF NOT EXISTS FOR (n:Source) REQUIRE n.date IS NOT NULL",
@@ -37,6 +38,9 @@
   "UNWIND $s AS e\nMATCH (l:SanctionsList {id: e.list})\nMERGE (x:Entity {id: e.id}) SET x.name = e.name, x.type = e.type, x.programs = e.programs, x.aliases = e.aliases, x.listed = true\nMERGE (l)-[:LISTS]->(x)\nWITH x, l, e UNWIND e.addresses AS a\nMERGE (y:Address {key: a.chain + ':' + a.address}) SET y.chain = a.chain, y.address = a.address, y.currency = a.currency, y.unlabelled = coalesce(a.unlabelled, false)\nMERGE (x)-[:CONTROLS]->(y)\nMERGE (l)-[:LISTS]->(y)",
   "UNWIND $t AS t\nMERGE (a:Address {key: t.from_key}) ON CREATE SET a.chain = t.chain, a.address = t.from\nMERGE (b:Address {key: t.to_key}) ON CREATE SET b.chain = t.chain, b.address = t.to\nMERGE (a)-[f:SENT {asset: t.asset}]->(b) SET f.amount = t.amount, f.count = t.count, f.first = t.first, f.last = t.last, f.tx = t.tx, f.hop = t.hop",
   "UNWIND $ts AS x\nMATCH (a:Address {key: x.key}) SET a.traced = x.fetched, a.hop = x.hop, a.balance = x.balance, a.balance_asset = x.asset, a.received = x.received, a.sent = x.sent, a.tx_count = x.tx_count",
+  "UNWIND $rc AS c\nMERGE (x:RiskCategory {id: c.id}) SET x.name = c.name, x.severity = c.severity, x.group = c.group, x.description = c.description",
+  "UNWIND $ec AS m\nMATCH (e:Entity {id: m.entity}) MATCH (x:RiskCategory {id: m.category})\nMERGE (e)-[r:IN_CATEGORY]->(x) SET r.by = m.by",
+  "UNWIND $c AS c UNWIND coalesce(c.typologies, []) AS t\nMATCH (k:Source {id: c.id}) MATCH (x:RiskCategory {id: t})\nMERGE (k)-[:TYPOLOGY]->(x)",
   "UNWIND $m AS m\nMATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})\nMERGE (a)-[r:POSSIBLY_SAME]->(b) SET r.by = m.by"
  ],
  "params": {
@@ -828,7 +832,10 @@
     "decision": "https://www.dnb.nl/media/0jxfaxck/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-binance-gelakte-versie-pdf.pdf",
     "verify": false,
     "group": "binance",
-    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 25 April 2022"
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 25 April 2022",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:dnb-coinbase-2023",
@@ -875,7 +882,10 @@
      "law": "NL:wwft",
      "art": "30"
     },
-    "decision": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf"
+    "decision": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:dnb-kraken-2023",
@@ -922,7 +932,10 @@
      "law": "NL:wwft",
      "art": "29",
      "point": "a"
-    }
+    },
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:dnb-unnamed-casp-2023",
@@ -970,7 +983,10 @@
     },
     "decision": "https://www.dnb.nl/media/sq2itqhg/bestuurlijke-boete-cryptodienstaanbieder.pdf",
     "note": "Likely the same decision as DNB's earlier named publication on Foris DAX MT Limited (Crypto.com): same date (2 October 2023), amount (EUR 2,850,000) and publication date (13 March 2024), and the same articles. DNB now publishes it without a name; not confirmed, so not linked to Crypto.com.",
-    "related": "https://www.dnb.nl/en/sector-news/enforcement-measures-2024/fine-for-foris-dax-mt-limited-crypto-com-for-providing-crypto-services-without-the-required-registration"
+    "related": "https://www.dnb.nl/en/sector-news/enforcement-measures-2024/fine-for-foris-dax-mt-limited-crypto-com-for-providing-crypto-services-without-the-required-registration",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:dnb-kucoin-2024",
@@ -999,7 +1015,10 @@
     "verify": false,
     "group": "kucoin",
     "decision": "https://www.dnb.nl/media/hxfl10uk/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-aan-peken-global-limited.pdf",
-    "violated_from": "article to read from the decision"
+    "violated_from": "article to read from the decision",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:dnb-bybit-2024",
@@ -1046,7 +1065,10 @@
      "art": "30",
      "point": "a"
     },
-    "decision": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf"
+    "decision": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:dnb-okx-2025",
@@ -1092,7 +1114,10 @@
      "law": "NL:wwft",
      "art": "30"
     },
-    "decision": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf"
+    "decision": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:afm-mexc-2025",
@@ -1118,7 +1143,10 @@
     "chain": null,
     "url": "https://www.afm.nl/en/sector/actueel/2025/sep/mr-mexc-waarschuwing",
     "verify": false,
-    "group": "mexc"
+    "group": "mexc",
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:om-knaken-2026",
@@ -1143,7 +1171,10 @@
     "status": "petition (court decision to link)",
     "chain": null,
     "url": "https://www.om.nl/actueel/nieuws/2026/06/30/om-verzoekt-faillissement-cryptocurrency-bedrijf-knaken",
-    "verify": false
+    "verify": false,
+    "typologies": [
+     "unlicensed_service"
+    ]
    },
    {
     "id": "CASE:us-binance-2023",
@@ -1179,7 +1210,12 @@
     "chain": "transactions between US users and users in sanctioned jurisdictions; illicit proceeds (ransomware, darknet, scams) through the exchange",
     "url": "https://www.justice.gov/opa/pr/binance-and-ceo-plead-guilty-federal-charges-4b-resolution",
     "verify": false,
-    "group": "binance"
+    "group": "binance",
+    "typologies": [
+     "aml_failure",
+     "unlicensed_service",
+     "sanctions_violation"
+    ]
    },
    {
     "id": "CASE:us-okx-2025",
@@ -1208,7 +1244,11 @@
     "chain": "over USD 5 billion of suspicious transactions and criminal proceeds (per DOJ)",
     "url": "https://www.justice.gov/usao-sdny/pr/okx-pleads-guilty-violating-us-anti-money-laundering-laws-and-agrees-pay-penalties",
     "verify": false,
-    "group": "okx"
+    "group": "okx",
+    "typologies": [
+     "unlicensed_service",
+     "aml_failure"
+    ]
    },
    {
     "id": "CASE:us-kucoin-2025",
@@ -1237,7 +1277,11 @@
     "chain": "suspicious and criminal funds (darknet, malware, ransomware, fraud) through the exchange",
     "url": "https://www.justice.gov/usao-sdny/pr/kucoin-pleads-guilty-unlicensed-money-transmission-charge-and-agrees-pay-penalties",
     "verify": false,
-    "group": "kucoin"
+    "group": "kucoin",
+    "typologies": [
+     "unlicensed_service",
+     "aml_failure"
+    ]
    },
    {
     "id": "CASE:us-bittrex-2022",
@@ -1266,7 +1310,11 @@
     ],
     "chain": "users with an IP or physical address in sanctioned jurisdictions",
     "url": "https://ofac.treasury.gov/recent-actions/20221011",
-    "verify": false
+    "verify": false,
+    "typologies": [
+     "sanctions_violation",
+     "aml_failure"
+    ]
    },
    {
     "id": "CASE:us-terraform-2024",
@@ -1290,7 +1338,10 @@
     ],
     "chain": "TerraUSD / LUNA collapse",
     "url": "https://www.sec.gov/news/press-release/2024-73",
-    "verify": false
+    "verify": false,
+    "typologies": [
+     "fraud"
+    ]
    },
    {
     "id": "CASE:us-bitzlato-2023",
@@ -1314,7 +1365,10 @@
     ],
     "chain": "funds from Russian ransomware groups and darknet markets",
     "url": "https://www.fincen.gov/news/news-releases/fincen-identifies-virtual-currency-exchange-bitzlato-primary-money-laundering",
-    "verify": false
+    "verify": false,
+    "typologies": [
+     "money_laundering"
+    ]
    },
    {
     "id": "CASE:us-garantex-2025",
@@ -1346,7 +1400,12 @@
     ],
     "chain": "exchange allegedly used to launder proceeds of crime",
     "url": "https://www.justice.gov/usao-edva/pr/garantex-cryptocurrency-exchange-disrupted-international-operation",
-    "verify": false
+    "verify": false,
+    "typologies": [
+     "money_laundering",
+     "sanctions_violation",
+     "unlicensed_service"
+    ]
    }
   ],
   "l": [
@@ -25419,6 +25478,1560 @@
     "sent": null,
     "tx_count": null
    }
+  ],
+  "rc": [
+   {
+    "id": "sanctions",
+    "name": "Sanctioned entity",
+    "severity": "severe",
+    "group": "counterparty",
+    "description": "On a sanctions list (OFAC, EU, UN, UK). Dealing with it can itself be a violation."
+   },
+   {
+    "id": "terrorist_financing",
+    "name": "Terrorist financing",
+    "severity": "severe",
+    "group": "counterparty",
+    "description": "Designated as a terrorist organisation or financier (e.g. OFAC SDGT, FTO; UK and EU counter-terrorism regimes)."
+   },
+   {
+    "id": "state_theft",
+    "name": "State-sponsored theft and hacking",
+    "severity": "severe",
+    "group": "counterparty",
+    "description": "State actors that steal or launder crypto (e.g. OFAC DPRK programmes)."
+   },
+   {
+    "id": "proliferation",
+    "name": "Weapons proliferation",
+    "severity": "severe",
+    "group": "counterparty",
+    "description": "Financing of weapons of mass destruction (e.g. OFAC NPWMD)."
+   },
+   {
+    "id": "csam",
+    "name": "Child sexual abuse material",
+    "severity": "severe",
+    "group": "counterparty",
+    "description": "Vendors of child sexual abuse material."
+   },
+   {
+    "id": "cybercrime",
+    "name": "Cybercrime and ransomware",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Ransomware, malware and other cybercrime (e.g. OFAC CYBER programmes)."
+   },
+   {
+    "id": "darknet_market",
+    "name": "Darknet market",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Marketplaces for illegal goods."
+   },
+   {
+    "id": "drug_trafficking",
+    "name": "Drug trafficking and organised crime",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Narcotics and transnational criminal organisations (e.g. OFAC ILLICIT-DRUGS, SDNTK, TCO)."
+   },
+   {
+    "id": "scam",
+    "name": "Scam and fraud",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Investment scams, pig butchering, fake platforms, phishing."
+   },
+   {
+    "id": "stolen_funds",
+    "name": "Stolen funds",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Proceeds of hacks and thefts."
+   },
+   {
+    "id": "mixer",
+    "name": "Mixer and obfuscation",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Services that break the trail of funds."
+   },
+   {
+    "id": "sanctioned_jurisdiction",
+    "name": "Sanctioned jurisdiction programme",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Listed under a country programme (e.g. Russia, Iran, Ukraine-related)."
+   },
+   {
+    "id": "human_rights",
+    "name": "Human rights abuse",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Listed under a human rights regime."
+   },
+   {
+    "id": "state_influence",
+    "name": "Election interference and state influence",
+    "severity": "high",
+    "group": "counterparty",
+    "description": "Listed for interference in elections or influence operations."
+   },
+   {
+    "id": "high_risk_exchange",
+    "name": "High-risk exchange",
+    "severity": "medium",
+    "group": "counterparty",
+    "description": "Exchanges without effective KYC or a licence where they serve customers."
+   },
+   {
+    "id": "p2p_exchange",
+    "name": "Peer-to-peer exchange",
+    "severity": "medium",
+    "group": "counterparty",
+    "description": "P2P platforms and OTC desks."
+   },
+   {
+    "id": "gambling",
+    "name": "Gambling",
+    "severity": "medium",
+    "group": "counterparty",
+    "description": "Online gambling services."
+   },
+   {
+    "id": "licensed_exchange",
+    "name": "Licensed exchange",
+    "severity": "low",
+    "group": "counterparty",
+    "description": "Exchanges with a licence or registration where they operate."
+   },
+   {
+    "id": "defi",
+    "name": "DeFi protocol and bridge",
+    "severity": "low",
+    "group": "counterparty",
+    "description": "Smart-contract services, swaps and bridges."
+   },
+   {
+    "id": "unattributed",
+    "name": "Unattributed",
+    "severity": "none",
+    "group": "counterparty",
+    "description": "Not (yet) attributed to a known entity or service."
+   },
+   {
+    "id": "unlicensed_service",
+    "name": "Crypto services without licence or registration",
+    "severity": "medium",
+    "group": "case",
+    "description": "Offering crypto services where a licence or registration is required (e.g. Wwft art. 23b, MiCAR art. 59, 18 USC 1960)."
+   },
+   {
+    "id": "aml_failure",
+    "name": "AML programme failure",
+    "severity": "high",
+    "group": "case",
+    "description": "No effective customer due diligence, monitoring or reporting of suspicious transactions."
+   },
+   {
+    "id": "sanctions_violation",
+    "name": "Sanctions violation",
+    "severity": "severe",
+    "group": "case",
+    "description": "Transactions with sanctioned persons or jurisdictions."
+   },
+   {
+    "id": "money_laundering",
+    "name": "Money laundering",
+    "severity": "severe",
+    "group": "case",
+    "description": "Laundering the proceeds of crime, or a service built for it."
+   },
+   {
+    "id": "fraud",
+    "name": "Fraud on investors",
+    "severity": "high",
+    "group": "case",
+    "description": "Misleading investors or misusing customer funds."
+   }
+  ],
+  "ec": [
+   {
+    "entity": "OFAC:18647",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:18647",
+    "category": "terrorist_financing",
+    "by": "programme FTO"
+   },
+   {
+    "entity": "OFAC:22985",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:22985",
+    "category": "state_theft",
+    "by": "programme DPRK4"
+   },
+   {
+    "entity": "OFAC:24003",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:24003",
+    "category": "human_rights",
+    "by": "programme HRIT-IR"
+   },
+   {
+    "entity": "OFAC:24003",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:25308",
+    "category": "drug_trafficking",
+    "by": "programme SDNTK"
+   },
+   {
+    "entity": "OFAC:25308",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:26137",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:26137",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:26138",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:26138",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:26236",
+    "category": "drug_trafficking",
+    "by": "programme SDNTK"
+   },
+   {
+    "entity": "OFAC:26236",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:26323",
+    "category": "drug_trafficking",
+    "by": "programme SDNTK"
+   },
+   {
+    "entity": "OFAC:26323",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:27307",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:27307",
+    "category": "state_theft",
+    "by": "programme DPRK3"
+   },
+   {
+    "entity": "OFAC:28263",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:28263",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:28263",
+    "category": "state_theft",
+    "by": "programme DPRK3"
+   },
+   {
+    "entity": "OFAC:28264",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:28264",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:28264",
+    "category": "state_theft",
+    "by": "programme DPRK3"
+   },
+   {
+    "entity": "OFAC:29584",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:29584",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:29585",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:29585",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:29702",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:29702",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:29702",
+    "category": "state_influence",
+    "by": "programme ELECTION-EO13848"
+   },
+   {
+    "entity": "OFAC:29703",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:29703",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:29703",
+    "category": "state_influence",
+    "by": "programme ELECTION-EO13848"
+   },
+   {
+    "entity": "OFAC:30518",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:30518",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:30518",
+    "category": "state_influence",
+    "by": "programme ELECTION-EO13848"
+   },
+   {
+    "entity": "OFAC:30520",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:30520",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:30520",
+    "category": "state_influence",
+    "by": "programme ELECTION-EO13848"
+   },
+   {
+    "entity": "OFAC:31164",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:31164",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme UKRAINE-EO13661"
+   },
+   {
+    "entity": "OFAC:31164",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:31164",
+    "category": "state_influence",
+    "by": "programme ELECTION-EO13848"
+   },
+   {
+    "entity": "OFAC:31212",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:31212",
+    "category": "proliferation",
+    "by": "programme NPWMD"
+   },
+   {
+    "entity": "OFAC:31212",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:31212",
+    "category": "state_influence",
+    "by": "programme ELECTION-EO13848"
+   },
+   {
+    "entity": "OFAC:32171",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IFSR"
+   },
+   {
+    "entity": "OFAC:32171",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:32171",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:32313",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:32313",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:33151",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:33151",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:33854",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:33854",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:33858",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:33858",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:33859",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:33859",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:36025",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:36025",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:36025",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:36216",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:36216",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:37070",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:37070",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:38419",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:38419",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IFSR"
+   },
+   {
+    "entity": "OFAC:38419",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:38419",
+    "category": "terrorist_financing",
+    "by": "programme IRGC"
+   },
+   {
+    "entity": "OFAC:38420",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:38420",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IFSR"
+   },
+   {
+    "entity": "OFAC:38420",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:38420",
+    "category": "terrorist_financing",
+    "by": "programme IRGC"
+   },
+   {
+    "entity": "OFAC:38665",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:38665",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:39585",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:39585",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:39593",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:39593",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:40488",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:40488",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:41297",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:41297",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:42496",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:42496",
+    "category": "state_theft",
+    "by": "programme DPRK3"
+   },
+   {
+    "entity": "OFAC:42498",
+    "category": "proliferation",
+    "by": "programme NPWMD"
+   },
+   {
+    "entity": "OFAC:42498",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:43085",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:43085",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:43377",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:43377",
+    "category": "state_theft",
+    "by": "programme DPRK4"
+   },
+   {
+    "entity": "OFAC:43421",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:43421",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:44029",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:44029",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:44437",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:44437",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:44437",
+    "category": "state_theft",
+    "by": "programme DPRK3"
+   },
+   {
+    "entity": "OFAC:44445",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:44445",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:44718",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:44718",
+    "category": "state_theft",
+    "by": "programme DPRK3"
+   },
+   {
+    "entity": "OFAC:45188",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:45188",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45213",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:45213",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45312",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:45312",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45314",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:45314",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45349",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:45349",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45350",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:45350",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45391",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:45391",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45404",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:45404",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45678",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:45678",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:4632",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN"
+   },
+   {
+    "entity": "OFAC:4632",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:4632",
+    "category": "terrorist_financing",
+    "by": "programme IRGC"
+   },
+   {
+    "entity": "OFAC:47635",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:47635",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:47664",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:47664",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:47680",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:47680",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:47682",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:47682",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:48302",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:48302",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:48432",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:48432",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:48603",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:48603",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:50110",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:50110",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:50641",
+    "category": "cybercrime",
+    "by": "programme CYBER2"
+   },
+   {
+    "entity": "OFAC:50641",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:50641",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:50867",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:50867",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:52071",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:52071",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:52074",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme RUSSIA-EO14024"
+   },
+   {
+    "entity": "OFAC:52074",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:52830",
+    "category": "cybercrime",
+    "by": "programme CYBER3"
+   },
+   {
+    "entity": "OFAC:52830",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:52832",
+    "category": "cybercrime",
+    "by": "programme CYBER3"
+   },
+   {
+    "entity": "OFAC:52832",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:53033",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:53033",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:53953",
+    "category": "cybercrime",
+    "by": "programme CYBER3"
+   },
+   {
+    "entity": "OFAC:53953",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:53994",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:53994",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme CAATSA - RUSSIA"
+   },
+   {
+    "entity": "OFAC:53994",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:54566",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:54566",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme CAATSA - RUSSIA"
+   },
+   {
+    "entity": "OFAC:54566",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55045",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:55045",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55046",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:55046",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55065",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55065",
+    "category": "state_theft",
+    "by": "programme DPRK2"
+   },
+   {
+    "entity": "OFAC:55447",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:55447",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55484",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IFSR"
+   },
+   {
+    "entity": "OFAC:55484",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55484",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:55502",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IFSR"
+   },
+   {
+    "entity": "OFAC:55502",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:55502",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:55505",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:55505",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:56357",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:56357",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:56360",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:56360",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:56865",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN-EO13902"
+   },
+   {
+    "entity": "OFAC:56865",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:56865",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:57034",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57034",
+    "category": "state_theft",
+    "by": "programme DPRK4"
+   },
+   {
+    "entity": "OFAC:57035",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57035",
+    "category": "state_theft",
+    "by": "programme DPRK4"
+   },
+   {
+    "entity": "OFAC:57056",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57056",
+    "category": "state_theft",
+    "by": "programme DPRK4"
+   },
+   {
+    "entity": "OFAC:57061",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:57061",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57064",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:57064",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57065",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:57065",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57107",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:57107",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57107",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:57118",
+    "category": "drug_trafficking",
+    "by": "programme ILLICIT-DRUGS-EO14059"
+   },
+   {
+    "entity": "OFAC:57118",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57961",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57961",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:57975",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:57975",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:57978",
+    "category": "cybercrime",
+    "by": "programme CYBER4"
+   },
+   {
+    "entity": "OFAC:57978",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58161",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58161",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58161",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58199",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58199",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58254",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58254",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58254",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58255",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58255",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58255",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58256",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58256",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58256",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58257",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58257",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58257",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58258",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58258",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58260",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58260",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58260",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58262",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58262",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58262",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58284",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58284",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58287",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58287",
+    "category": "terrorist_financing",
+    "by": "programme SDGT"
+   },
+   {
+    "entity": "OFAC:58361",
+    "category": "drug_trafficking",
+    "by": "programme TCO"
+   },
+   {
+    "entity": "OFAC:58361",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58409",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN-EO13902"
+   },
+   {
+    "entity": "OFAC:58409",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58886",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58886",
+    "category": "state_theft",
+    "by": "programme DPRK2"
+   },
+   {
+    "entity": "OFAC:58887",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58887",
+    "category": "state_theft",
+    "by": "programme DPRK2"
+   },
+   {
+    "entity": "OFAC:58889",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:58889",
+    "category": "state_theft",
+    "by": "programme DPRK2"
+   },
+   {
+    "entity": "OFAC:59091",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN-EO13902"
+   },
+   {
+    "entity": "OFAC:59091",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:59093",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN-EO13902"
+   },
+   {
+    "entity": "OFAC:59093",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:59095",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN-EO13902"
+   },
+   {
+    "entity": "OFAC:59095",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "OFAC:59096",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme IRAN-EO13902"
+   },
+   {
+    "entity": "OFAC:59096",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "EU:172907",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme UKR"
+   },
+   {
+    "entity": "EU:172907",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "EU:179375",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme UKR"
+   },
+   {
+    "entity": "EU:179375",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "UK:CTD0004",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "UK:CTD0004",
+    "category": "terrorist_financing",
+    "by": "programme The Counter-Terrorism (Sanctions) (EU Exit) Regulations 2019"
+   },
+   {
+    "entity": "UK:GHR0174",
+    "category": "human_rights",
+    "by": "programme The Global Human Rights Sanctions Regulations 2020"
+   },
+   {
+    "entity": "UK:GHR0174",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "UK:GHR0190",
+    "category": "human_rights",
+    "by": "programme The Global Human Rights Sanctions Regulations 2020"
+   },
+   {
+    "entity": "UK:GHR0190",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "UK:RUS1421",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme The Russia (Sanctions) (EU Exit) Regulations 2019"
+   },
+   {
+    "entity": "UK:RUS1421",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "UK:RUS3602",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme The Russia (Sanctions) (EU Exit) Regulations 2019"
+   },
+   {
+    "entity": "UK:RUS3602",
+    "category": "sanctions",
+    "by": "listed"
+   },
+   {
+    "entity": "UK:RUS3605",
+    "category": "sanctioned_jurisdiction",
+    "by": "programme The Russia (Sanctions) (EU Exit) Regulations 2019"
+   },
+   {
+    "entity": "UK:RUS3605",
+    "category": "sanctions",
+    "by": "listed"
+   }
   ]
  },
  "queue": [
@@ -25430,13 +27043,14 @@
  ],
  "queries": {
   "01_register": "// Who supervises crypto, in which role, under which laws? Per jurisdiction; wave 1 = the Netherlands.\n// from: - | yields: Jurisdiction\nMATCH (x:Jurisdiction)<-[:IN_JURISDICTION]-(s:Sector)<-[v:SUPERVISES]-(g:Regulator)\nOPTIONAL MATCH (s)-[:SUBJECT_TO]->(w:Law)\nRETURN x.wave AS wave, x.code AS code, x.name AS jurisdiction, x.regime AS regime,\n       collect(DISTINCT g.short + ' (' + v.role + ')') AS supervisors, collect(DISTINCT w.short) AS laws, x.verify AS verify\nORDER BY wave, jurisdiction\n",
-  "02_cases": "// Every public crypto enforcement case: who, by whom, how much, which law, and the source. The Netherlands first, newest first.\n// from: - | yields: Source\nMATCH (k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nOPTIONAL MATCH (k)-[r:VIOLATED]->(w:Law)\nRETURN x.code AS country, k.date AS date, k.party AS party, collect(DISTINCT g.short) AS authorities, k.measure AS measure,\n       k.amount AS amount, k.currency AS currency, k.amount_note AS amount_note, collect(DISTINCT w.short + CASE WHEN r.art IS NULL OR r.art = '' THEN '' ELSE ' art. ' + r.art + CASE WHEN size(coalesce(r.lids, [])) > 0 THEN '(' + reduce(t = '', l IN r.lids | t + CASE t WHEN '' THEN '' ELSE ')(' END + l) + ')' ELSE '' END END) AS laws, k.status AS status, k.url AS source, k.decision AS decision, k.verify AS verify, k.id AS id\nORDER BY CASE x.code WHEN 'NL' THEN 0 ELSE 1 END, date DESC\n",
+  "02_cases": "// Every public crypto enforcement case: who, by whom, how much, which law, and the source. The Netherlands first, newest first.\n// from: - | yields: Source\nMATCH (k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nOPTIONAL MATCH (k)-[:TYPOLOGY]->(ty:RiskCategory)\nOPTIONAL MATCH (k)-[r:VIOLATED]->(w:Law)\nRETURN x.code AS country, k.date AS date, k.party AS party, collect(DISTINCT g.short) AS authorities, k.measure AS measure,\n       k.amount AS amount, k.currency AS currency, k.amount_note AS amount_note, collect(DISTINCT w.short + CASE WHEN r.art IS NULL OR r.art = '' THEN '' ELSE ' art. ' + r.art + CASE WHEN size(coalesce(r.lids, [])) > 0 THEN '(' + reduce(t = '', l IN r.lids | t + CASE t WHEN '' THEN '' ELSE ')(' END + l) + ')' ELSE '' END END) AS laws, collect(DISTINCT ty.name) AS typologies, k.status AS status, k.url AS source, k.decision AS decision, k.verify AS verify, k.id AS id\nORDER BY CASE x.code WHEN 'NL' THEN 0 ELSE 1 END, date DESC\n",
   "03_cases_by_law": "// Where did the same law go wrong before? Per law: the cases that violated it, and the total published amount per currency.\n// from: - | yields: Law\nMATCH (k:Source {kind: 'case'})-[:VIOLATED]->(w:Law)\nWITH w, collect(DISTINCT k) AS ks\nRETURN w.short AS law, w.title AS title, size(ks) AS cases, [k IN ks | k.party] AS parties,\n       reduce(t = 0.0, k IN ks | t + CASE WHEN k.currency = 'USD' THEN coalesce(k.amount, 0.0) ELSE 0.0 END) AS usd,\n       reduce(t = 0.0, k IN ks | t + CASE WHEN k.currency = 'EUR' THEN coalesce(k.amount, 0.0) ELSE 0.0 END) AS eur\nORDER BY cases DESC, law\n",
   "04_sanctions_lists": "// The sanctions lists a crypto screening checks against, who publishes them, and what the daily import found.\n// from: - | yields: SanctionsList\nMATCH (l:SanctionsList)\nOPTIONAL MATCH (l)-[:PUBLISHED_BY]->(g:Regulator)\nRETURN l.name AS list, g.short AS publisher, l.refresh AS refresh, l.imported AS imported, l.entries_total AS entries,\n       l.addresses_total AS addresses, l.fetched AS fetched, l.url AS source\nORDER BY imported DESC, entries DESC, list\n",
   "05_search_cases": "// Search the cases in full text (title, summary, what happened on chain, party). param: q (e.g. sanctions, registratie, ransomware)\n// from: - | yields: Source\nMATCH (k:Source {kind: 'case'}) SEARCH k IN (FULLTEXT INDEX crypto_case_text FOR $q LIMIT 10) SCORE AS relevance\nRETURN k.party AS party, k.date AS date, k.title AS title, k.url AS source, relevance\nORDER BY relevance DESC\n",
   "06_same_party_elsewhere": "// The same company, sanctioned by more than one authority or in more than one country: where else did it go wrong?\n// from: - | yields: Entity\nMATCH (e:Entity)<-[:AGAINST]-(k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nWITH e, k, x, collect(g.short) AS by\nORDER BY k.date\nWITH e, collect(x.code + ' ' + k.date + ' ' + k.measure + ' (' + reduce(s = '', a IN by | s + CASE s WHEN '' THEN '' ELSE ', ' END + a) + ')') AS cases, count(DISTINCT x) AS countries\nWHERE size(cases) > 1\nRETURN e.group AS group, e.name AS party, countries, cases\nORDER BY countries DESC, size(cases) DESC\n",
   "07_articles": "// Per article: the duty, how often it was violated in the cases (with the total of the fines in EUR, as published), and the article that replaced it.\n// from: - | yields: Article\nMATCH (x:Article)\nOPTIONAL MATCH (k:Source {kind: 'case'})-[:VIOLATED_ARTICLE]->(x)\nOPTIONAL MATCH (x)-[:REPLACED_BY]->(y:Article)\nWITH x, y, collect(k) AS ks\nRETURN x.law_short + ' art. ' + x.art AS article, x.heading AS heading, x.duty AS duty, x.status AS status, size(ks) AS cases,\n       [k IN ks | k.party] AS parties,\n       reduce(t = 0.0, k IN ks | t + CASE WHEN k.currency = 'EUR' AND k.measure ENDS WITH 'fine' THEN coalesce(k.amount, 0.0) ELSE 0.0 END) AS fines_eur,\n       CASE WHEN y IS NULL THEN null ELSE y.law_short + ' art. ' + y.art END AS replaced_by\nORDER BY cases DESC, x.law_short, size(x.art), x.art\n",
   "08_exposure": "// Direct exposure on chain: the counterparties of a listed entity's addresses, what moved each way, and whether the\n// counterparty is itself on a list. param: entity (e.g. OFAC:36025). Facts from the chain; who controls an unlisted address is not known.\n// from: Entity | yields: Address\nMATCH (e:Entity {id: $entity})-[:CONTROLS]->(a:Address)-[f:SENT]-(c:Address)\nWHERE NOT (e)-[:CONTROLS]->(c)\nWITH c, f, startNode(f) = a AS outgoing\nOPTIONAL MATCH (x:Entity)-[:CONTROLS]->(c)\nRETURN c.key AS counterparty, c.chain AS chain, f.asset AS asset,\n       sum(CASE WHEN outgoing THEN f.amount ELSE 0.0 END) AS sent_to, sum(CASE WHEN outgoing THEN 0.0 ELSE f.amount END) AS received_from,\n       sum(f.count) AS transfers, min(f.first) AS first, max(f.last) AS last, collect(DISTINCT x.name) AS listed_as\nORDER BY sent_to + received_from DESC\n",
-  "09_shared_counterparties": "// Counterparties that dealt with the addresses of two different listed entities (for example Garantex and Grinex).\n// from: - | yields: Address\nMATCH (e1:Entity)-[:CONTROLS]->(:Address)-[f1:SENT]-(c:Address)-[f2:SENT]-(:Address)<-[:CONTROLS]-(e2:Entity)\nWHERE e1.id < e2.id AND split(toLower(e1.name), ' ')[0] <> split(toLower(e2.name), ' ')[0] AND NOT (e1)-[:CONTROLS]->(c) AND NOT (e2)-[:CONTROLS]->(c)\nRETURN c.key AS counterparty, e1.name AS first_entity, e2.name AS second_entity, collect(DISTINCT f1.asset) AS assets, count(*) AS links\nORDER BY links DESC LIMIT 25\n"
+  "09_shared_counterparties": "// Counterparties that dealt with the addresses of two different listed entities (for example Garantex and Grinex).\n// from: - | yields: Address\nMATCH (e1:Entity)-[:CONTROLS]->(:Address)-[f1:SENT]-(c:Address)-[f2:SENT]-(:Address)<-[:CONTROLS]-(e2:Entity)\nWHERE e1.id < e2.id AND split(toLower(e1.name), ' ')[0] <> split(toLower(e2.name), ' ')[0] AND NOT (e1)-[:CONTROLS]->(c) AND NOT (e2)-[:CONTROLS]->(c)\nRETURN c.key AS counterparty, e1.name AS first_entity, e2.name AS second_entity, collect(DISTINCT f1.asset) AS assets, count(*) AS links\nORDER BY links DESC LIMIT 25\n",
+  "10_typologies": "// The risk typology: per category its severity, how many listed entities and cases fall in it.\n// from: - | yields: RiskCategory\nMATCH (x:RiskCategory)\nOPTIONAL MATCH (e:Entity)-[:IN_CATEGORY]->(x)\nWITH x, count(DISTINCT e) AS entities\nOPTIONAL MATCH (k:Source {kind: 'case'})-[:TYPOLOGY]->(x)\nRETURN x.id AS id, x.name AS category, x.severity AS severity, x.group AS kind, x.description AS description, entities, count(DISTINCT k) AS cases\nORDER BY CASE x.severity WHEN 'severe' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END, x.group, category\n"
  }
 }
