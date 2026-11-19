@@ -6,7 +6,7 @@ exports/hume/casefold-crypto.json (python3 casefold/export_hume.py), so the cryp
 Hume before it is loaded into Neo4j Community. The same three calls can later be answered from Neo4j with Cypher.
 
     python3 casefold/fci_api.py --hume ../knode-platform/gatekeeper/hume --port 8791
-    open http://127.0.0.1:8791/?blank=1&instance=casefold-crypto
+    open http://127.0.0.1:8791/   (Visualisations > New, then search e.g. Garantex)
 
 Local use only: no login, read-only, binds to 127.0.0.1.
 """
@@ -90,7 +90,26 @@ def handler(graph, hume_dir):
                 return self._json(200, {'gebruiker': 'local', 'tenant': 'casefold-crypto', 'tenants': ['casefold-crypto'], 'owner': False})
             if p.startswith('/api/'):
                 return self._json(404, {'detail': 'not here'})
+            if p in ('/', '/index.html'):
+                if 'blank=1' not in u.query:
+                    self.send_response(302)
+                    self.send_header('Location', '/?blank=1&instance=casefold-crypto')
+                    self.end_headers()
+                    return
+                return self._page()
             return super().do_GET()
+
+        def _page(self):
+            html = open(os.path.join(hume_dir, 'index.html'), encoding='utf-8').read()
+            # Blank mode must not run the demo seed on the emptied graph (fixed here, in memory only).
+            html = html.replace('if(!window.__HUME_LIVE__){\n  runAlerts(', 'if(!window.__HUME_LIVE__ && !window.__HUME_BLANK__){\n  runAlerts(', 1)
+            data = html.encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Content-Length', str(len(data)))
+            self.send_header('Cache-Control', 'no-store')
+            self.end_headers()
+            self.wfile.write(data)
 
         def do_POST(self):
             n = int(self.headers.get('Content-Length') or 0)
@@ -107,8 +126,11 @@ def main():
     ap.add_argument('--port', type=int, default=8791)
     ap.add_argument('--export', default=EXPORT)
     a = ap.parse_args()
+    if not os.path.exists(a.export):
+        import subprocess, sys
+        subprocess.run([sys.executable, os.path.join(ROOT, 'casefold', 'export_hume.py')], check=True)
     g = Graph(a.export)
-    print(f'fci-api: {len(g.nodes)} nodes, {len(g.rels)} relationships on http://127.0.0.1:{a.port}/?blank=1&instance=casefold-crypto')
+    print(f'fci-api: {len(g.nodes)} nodes, {len(g.rels)} relationships. Open http://127.0.0.1:{a.port}/')
     ThreadingHTTPServer(('127.0.0.1', a.port), handler(g, os.path.abspath(a.hume))).serve_forever()
 
 
