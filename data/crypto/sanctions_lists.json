@@ -7,7 +7,12 @@
    "owner": "US:ofac",
    "url": "https://ofac.treasury.gov/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists",
    "refresh": "daily",
-   "imported": false
+   "imported": false,
+   "parser": "ofac",
+   "fetch": [
+    "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML",
+    "https://www.treasury.gov/ofac/downloads/sdn.xml"
+   ]
   },
   {
    "id": "LIST:eu-fsf",
@@ -15,7 +20,11 @@
    "owner": "EU",
    "url": "https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions",
    "refresh": "daily",
-   "imported": false
+   "imported": false,
+   "parser": "eu",
+   "fetch": [
+    "https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw"
+   ]
   },
   {
    "id": "LIST:un-sc",
@@ -23,7 +32,11 @@
    "owner": "UN",
    "url": "https://main.un.org/securitycouncil/en/content/un-sc-consolidated-list",
    "refresh": "daily",
-   "imported": false
+   "imported": false,
+   "parser": "un",
+   "fetch": [
+    "https://scsanctions.un.org/resources/xml/en/consolidated.xml"
+   ]
   },
   {
    "id": "LIST:uk",
@@ -31,7 +44,12 @@
    "owner": "GB:ofsi",
    "url": "https://www.gov.uk/government/publications/the-uk-sanctions-list",
    "refresh": "daily",
-   "imported": false
+   "imported": false,
+   "parser": "uk",
+   "fetch": [
+    "https://sanctionslist.fcdo.gov.uk/docs/UK-Sanctions-List.xml",
+    "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.xml"
+   ]
   },
   {
    "id": "LIST:nl-sanctieregeling",
