@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Trace
-        run: python3 casefold/fetch_chain.py
+        run: python3 casefold/fetch_chain.py --labels
       - name: Put the traces on the branch chain-out
         run: |
           git config user.name "chain workflow"

@@ -146,5 +146,57 @@ def main():
         print(f'{eid}: {len(rows)} transfers kept')
 
 
+def tags_of(obj, path=''):
+    """Every string under a key that names a tag or a label, from an explorer's address record."""
+    out = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            kl = k.lower()
+            if isinstance(v, str) and v.strip() and any(w in kl for w in ('tag', 'label', 'name')) and not kl.endswith(('logo', 'url', 'hash', 'icon')) and kl not in ('token_name',):
+                out.append((path + k, v.strip()))
+            elif isinstance(v, (dict, list)) and kl not in ('tokens', 'token_balances', 'trc20token_balances', 'withPriceTokens', 'balances'):
+                out += tags_of(v, path + k + '.')
+    elif isinstance(obj, list):
+        for x in obj[:20]:
+            out += tags_of(x, path)
+    return out
+
+
+def labels():
+    """Labels the public explorers give for the addresses in the traces: Blockscout (ethereum) and Tronscan (tron).
+    Bitcoin has no public label service here. Writes data/crypto/chain/labels.json."""
+    addrs = set()
+    for f in os.listdir(OUT):
+        if f.endswith('.json') and f != 'labels.json':
+            r = json.load(open(os.path.join(OUT, f), encoding='utf-8'))
+            for t in r['transfers']:
+                if not t['asset'].endswith('*'):
+                    addrs |= {(t['chain'], t['from']), (t['chain'], t['to'])}
+    out = {}
+    for chain, a in sorted(addrs):
+        if chain == 'ethereum':
+            r = get(f'https://eth.blockscout.com/api/v2/addresses/{a}', tries=2) or {}
+            tags = [(k, v) for k, v in tags_of({'name': r.get('name'), 'metadata': r.get('metadata'), 'public_tags': r.get('public_tags'), 'private_tags': r.get('private_tags')})]
+            src = 'blockscout'
+            extra = {'is_contract': r.get('is_contract'), 'is_scam': r.get('is_scam')}
+        elif chain == 'tron':
+            r = get(f'https://apilist.tronscanapi.com/api/accountv2?address={a}', tries=2) or {}
+            keep = {k: r.get(k) for k in r if any(w in k.lower() for w in ('tag', 'risk', 'label'))}
+            tags = tags_of(keep); src = 'tronscan'
+            extra = {k: v for k, v in keep.items() if isinstance(v, (bool, int)) and v}
+            time.sleep(0.4)
+        else:
+            continue
+        tags = [(k, v) for k, v in tags if v and v.lower() not in ('none', 'null')]
+        if tags or any(extra.values()):
+            out[f'{chain}:{a}'] = {'source': src, 'tags': [{'field': k, 'text': v} for k, v in tags][:8], **{k: v for k, v in extra.items() if v}}
+    json.dump({'note': 'Address labels as given by public explorers (Blockscout for ethereum, Tronscan for tron), fetched with the traces. A label is the explorer\'s attribution, not ours; it is shown with its source.',
+               'fetched': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'checked': len(addrs), 'labels': dict(sorted(out.items()))},
+              open(os.path.join(OUT, 'labels.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f'labels: {len(out)} of {len(addrs)} addresses labelled')
+
+
 if __name__ == '__main__':
-    main()
+    if '--labels' not in sys.argv:
+        main()
+    labels()
