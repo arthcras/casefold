@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casefold Workspace · crypto investigations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Casefold Workspace: an investigation workspace in the manner of a knowledge-graph analytics platform.
+   Rail on the left (Overview, Visualisations, Perspectives, Orchestra, Alerts), a canvas with global search, actions per
+   node, an inspector and a timeline. The graph runs in this page on Relate (the embedded graph database by Neo4j);
+   the same Cypher runs on Neo4j Community on the server. */
+:root{--rail:#101a2b;--rail2:#1a2840;--rink:#9fb0c8;--bg:#eef1f5;--panel:#fff;--sunk:#f6f8fa;--line:#dfe4ea;--line2:#c8d0da;--fg:#132033;--muted:#5d6a7d;--dim:#8b96a6;
+ --ink:#1d3f73;--sig:#e2660f;--ok:#1f8a56;--bad:#c2334d;--warn:#b77712;--out:#2f6fb5;
+ --f:Inter,system-ui,sans-serif;--h:'Space Grotesk',Inter,sans-serif;--m:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 var(--f);-webkit-font-smoothing:antialiased;display:grid;grid-template-columns:60px 1fr;grid-template-rows:100%;overflow:hidden}
+button{font:inherit;color:inherit}
+.mono{font-family:var(--m)}
+.rail{background:var(--rail);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px}
+.rail .logo{margin-bottom:14px}
+.rail button{width:42px;height:42px;border:0;background:transparent;color:var(--rink);border-radius:10px;cursor:pointer;display:grid;place-items:center;position:relative}
+.rail button:hover{background:var(--rail2);color:#fff}
+.rail button[aria-current=true]{background:var(--rail2);color:#fff}
+.rail button[aria-current=true]::before{content:"";position:absolute;left:-9px;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--sig)}
+.rail .badge{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-radius:8px;background:var(--sig);color:#fff;font:600 10px/16px var(--f);padding:0 4px}
+.rail .sp{flex:1}
+.main{display:grid;grid-template-rows:auto auto 1fr;min-width:0;min-height:0}
+.top{display:flex;align-items:center;gap:14px;padding:0 20px;height:54px;background:var(--panel);border-bottom:1px solid var(--line)}
+.crumb{font-size:13.5px;color:var(--muted)}.crumb b{color:var(--fg);font-weight:600}.crumb a{color:var(--ink);text-decoration:none;cursor:pointer}
+.top .eng{margin-left:auto;font:500 11.5px var(--m);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px}.top .eng b{color:var(--ok);font-weight:500}
+.tabs{display:flex;gap:2px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:11px 12px;color:var(--muted);cursor:pointer;font-weight:500}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--ink)}
+.page{overflow:auto;min-height:0}
+.pad{padding:22px 24px;max-width:1280px}
+h1{font:600 24px var(--h);letter-spacing:-.01em;margin:0 0 4px}.lead{color:var(--muted);margin:0 0 18px;max-width:820px}
+h2{font:600 15px var(--f);margin:0 0 10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:14px}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}
+@media(max-width:1000px){.g3,.g4,.g2{grid-template-columns:1fr 1fr}}
+.kpi b{display:block;font:600 26px var(--h)}.kpi span{color:var(--muted);font-size:13px}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{text-align:left;font:500 11px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:8px;border-bottom:1px solid var(--line)}
+table.t td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr.click{cursor:pointer}table.t tr.click:hover td{background:var(--sunk)}
+.num{text-align:right;font-family:var(--m)}
+.pill{display:inline-block;font:500 11px var(--f);border-radius:999px;padding:2px 9px;background:var(--sunk);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.ok{color:var(--ok);border-color:#bfe3cf;background:#ecf8f1}.pill.bad{color:var(--bad);border-color:#f0c4cd;background:#fcf0f2}.pill.warn{color:var(--warn);border-color:#ecd7ae;background:#fdf6e9}.pill.sig{color:var(--sig);border-color:#f3cdb3;background:#fdf1e8}
+.btn{border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500}
+.btn.p{background:var(--ink);border-color:var(--ink);color:#fff}.btn:hover{border-color:var(--ink)}
+pre.cy{background:#0f1726;color:#d6e2f3;border-radius:8px;padding:10px 12px;font:12px/1.5 var(--m);overflow:auto;margin:8px 0 0;white-space:pre-wrap}
+/* canvas */
+.vz{display:grid;grid-template-columns:1fr 340px;height:100%;min-height:0}
+.stage{position:relative;display:grid;grid-template-rows:auto 1fr auto;min-height:0;border-right:1px solid var(--line)}
+.bar{display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+.search{position:relative;flex:1;max-width:560px}
+.search input{width:100%;border:1px solid var(--line2);border-radius:9px;padding:9px 12px 9px 34px;font:14px var(--f);background:var(--panel)}
+.search input:focus{outline:2px solid var(--ink);outline-offset:0}
+.search svg{position:absolute;left:11px;top:11px;color:var(--dim)}
+.dd{position:absolute;left:0;right:0;top:42px;background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:0 14px 40px rgba(16,26,43,.18);z-index:20;max-height:420px;overflow:auto;display:none}
+.dd.on{display:block}.dd .h{font:500 10.5px var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);padding:8px 12px 4px}
+.dd button{display:flex;gap:9px;align-items:center;width:100%;text-align:left;border:0;background:none;padding:8px 12px;cursor:pointer}
+.dd button:hover,.dd button.act{background:var(--sunk)}.dd .sub{margin-left:auto;font-size:12px;color:var(--dim)}
+.chip{font:600 10.5px var(--f);color:#fff;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.counts{font:12px var(--m);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:6px 10px;white-space:nowrap}
+#cy{min-height:0;background:radial-gradient(circle,#d4dae3 1px,transparent 1.2px) 0 0/18px 18px,#f7f9fb}
+.tools{position:absolute;right:12px;top:66px;display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px;z-index:5}
+.tools button{width:32px;height:32px;border:0;background:none;border-radius:7px;cursor:pointer;display:grid;place-items:center;color:var(--muted)}.tools button:hover{background:var(--sunk);color:var(--fg)}
+.empty{position:absolute;inset:120px 0 auto;text-align:center;color:var(--muted);pointer-events:none}
+.empty b{display:block;font:600 18px var(--h);color:var(--fg);margin-bottom:6px}
+.menu{position:absolute;z-index:30;background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:0 14px 40px rgba(16,26,43,.2);min-width:240px;padding:6px;display:none}
+.menu.on{display:block}.menu .h{font:600 12px var(--f);padding:6px 10px;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:4px}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:6px;cursor:pointer}.menu button:hover{background:var(--sunk)}
+.menu button small{display:block;color:var(--dim);font-size:11.5px}
+.tl{background:var(--panel);border-top:1px solid var(--line);padding:8px 14px 10px}
+.tl .row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+#hist{width:100%;height:46px;display:block;cursor:crosshair}
+.insp{overflow:auto;background:var(--panel);min-height:0}
+.insp .sec{padding:14px 16px;border-bottom:1px solid var(--line)}
+.insp .k{font:500 10.5px var(--m);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-top:8px}.insp .v{word-break:break-word}
+.insp .nb{display:flex;gap:8px;align-items:center;width:100%;border:0;background:none;padding:6px 0;border-bottom:1px solid var(--line);text-align:left;cursor:pointer}
+.insp .nb:hover{color:var(--ink)}
+.acts{display:grid;gap:6px;margin-top:8px}.acts button{text-align:left;border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:8px 10px;cursor:pointer}.acts button:hover{border-color:var(--ink)}
+.acts small{display:block;color:var(--dim);font-size:11.5px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--rail);color:#fff;border-radius:8px;padding:9px 14px;font-size:13px;opacity:0;transition:opacity .2s;z-index:50;pointer-events:none}
+.toast.on{opacity:1}
+.sev{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.wf{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:stretch;margin-top:10px}
+.wf div{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--sunk);font-size:12.5px;position:relative}
+.wf div b{display:block;font-size:13px}.wf div:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:40%;color:var(--dim)}
+#schema{height:420px;border:1px solid var(--line);border-radius:10px;background:#f7f9fb}
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="Main">
+ <div class="logo" title="Casefold Workspace"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13.5" fill="none" stroke="#2c3d5a"/><circle cx="15" cy="15" r="8.5" fill="none" stroke="#2c3d5a"/><path d="M15 15 L15 1.5 A13.5 13.5 0 0 1 27.4 9.6 Z" fill="#e2660f" opacity=".45"/><circle cx="15" cy="15" r="3" fill="#e2660f"/></svg></div>
+ <button type="button" data-tab="overview" title="Knowledge graph overview" aria-label="Knowledge graph overview"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="7" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.3 7l7.4.2M7.2 8.2l3.7 7.6M16.8 9.2l-3.6 6.6" stroke="currentColor" stroke-width="1.5"/></svg></button>
+ <button type="button" data-tab="viz" title="Visualisations" aria-label="Visualisations"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+ <button type="button" data-tab="alerts" title="Alerts" aria-label="Alerts"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span class="badge" id="abadge" hidden></span></button>
+ <button type="button" data-tab="perspectives" title="Perspectives and actions" aria-label="Perspectives and actions"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+ <button type="button" data-tab="orchestra" title="Orchestra: data pipelines" aria-label="Orchestra"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="15" y="4" width="6" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="15" width="6" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 9v3h12V9M12 12v3" stroke="currentColor" stroke-width="1.6"/></svg></button>
+ <span class="sp"></span>
+ <button type="button" onclick="location.href='crypto.html'" title="Public viewer" aria-label="Public viewer"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></button>
+</nav>
+<div class="main">
+ <header class="top"><div class="crumb" id="crumb">Casefold Workspace</div><div class="eng" id="eng">starting Relate…</div></header>
+ <div class="tabs" id="tabs" role="tablist"></div>
+ <div class="page" id="page"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<script type="module">
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
+const short=a=>{a=String(a).split(':').pop();return a.length>14?a.slice(0,6)+'…'+a.slice(-4):a};
+let db,D,cy;const q=(c,p)=>{const r=JSON.parse(db.execute(c,p?JSON.stringify(p):null));if(r.error)throw new Error(r.error+'\n'+c);return r.rows};
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),2200)}
+window.__ws={q:(a,b)=>q(a,b),cy:()=>cy};
+
+/* ---------- the model: labels as the workspace draws them ---------- */
+const LAB={Listed:['Listed party','#8b1e3f','shield'],Party:['Party in a case','#c2334d','org'],Address:['Wallet','#2f6fb5','wallet'],Labelled:['Named wallet','#1f8a56','wallet'],Case:['Enforcement case','#e2660f','gavel'],
+ SanctionsList:['Sanctions list','#0f766e','list'],Regulator:['Supervisor','#1d3f73','bank'],Jurisdiction:['Country','#6c4fc0','globe'],Law:['Law','#a86b1f','book'],Article:['Article','#c99a3a','doc'],RiskCategory:['Risk category','#3d4657','tag'],Sector:['Sector','#8a94a6','org'],Source:['Source','#5f7d95','doc']};
+const ICON={shield:'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z',org:'M5 21V5h9v16M14 9h5v12M8 8h3M8 12h3M8 16h3',wallet:'M4 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4zM4 7l11-3v3M16 13h2',gavel:'M4 20h9M13 4l6 6M10 7l6 6M8.5 11.5l4-4M3 21l7.5-7.5',
+ list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',bank:'M3 9l9-5 9 5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18',globe:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18',book:'M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h10',doc:'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',tag:'M3 12V4h8l10 10-8 8z M7.5 7.5h.01'};
+const icon=k=>'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${ICON[k]}" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+const N=x=>`{id: coalesce(${x}.id, ${x}.code, ${x}.key), t: labels(${x})[0], name: coalesce(${x}.short, ${x}.party, ${x}.name, ${x}.title, ${x}.code, ${x}.address), kind: ${x}.kind, listed: ${x}.listed, hop: ${x}.hop, label: ${x}.label, art: ${x}.art, law: ${x}.law_short, chain: ${x}.chain}`;
+const kindOf=d=>d.t==='Source'?(d.kind==='case'?'Case':'Source'):d.t==='Entity'?(d.listed||String(d.id).match(/^(OFAC|EU|UN|UK):/)?'Listed':'Party'):d.t==='Address'?(d.label?'Labelled':'Address'):d.t;
+const nameOf=d=>d.t==='Article'?`${d.law||''} art. ${d.art}`:d.t==='Address'?(d.label||short(d.id)):String(d.name||d.id);
+const WORD={SENT:'sent',SUPERVISES:'supervises',IN_JURISDICTION:'in',BY:'by',AGAINST:'against',VIOLATED:'violated',VIOLATED_ARTICLE:'violated',REPLACED_BY:'replaced by',LISTS:'lists',CONTROLS:'controls',POSSIBLY_SAME:'possibly the same',UNDER_POWER:'under',IN_CATEGORY:'category',TYPOLOGY:'typology',HAS_LAW:'law',HAS_ARTICLE:'article',IN_SECTOR:'sector'};
+
+/* ---------- canvas ---------- */
+const VZ={saved:[],cur:{name:'New investigation',created:new Date().toISOString()},range:null};
+function node(d){const k=kindOf(d);const L=LAB[k]||['?','#888','doc'];return {group:'nodes',data:{id:d.id,t:d.t,k,label:nameOf(d).slice(0,30),full:nameOf(d),col:L[1],icon:icon(L[2])}}}
+function addRows(rows){const add=[];const have=id=>cy.getElementById(id).length;
+ for(const r of rows){for(const n of [r.a,r.b])if(n&&n.id&&!have(n.id)&&!add.find(x=>x.data.id===n.id))add.push(node(n));
+  if(r.rel&&r.a&&r.b){const id=`${r.a.id}|${r.rel}|${r.b.id}|${r.asset||''}`;if(!have(id)&&!add.find(x=>x.data.id===id))add.push({group:'edges',data:{id,source:r.a.id,target:r.b.id,rel:r.rel,label:r.rel==='SENT'&&r.amount!=null?`${fmt(r.amount)} ${r.asset}`:(WORD[r.rel]||r.rel.toLowerCase()),flow:r.rel==='SENT'?1:0,date:r.date||null,amount:r.amount||null}})}}
+ if(!add.length)return 0;const before=cy.nodes().length;cy.add(add);layout(before===0);counts();hist();$('empty').hidden=cy.nodes().length>0;return add.filter(x=>x.group==='nodes').length}
+function layout(full){const fresh=cy.nodes().filter(n=>!n.data('placed'));cy.layout({name:'cose',animate:false,randomize:full,nodeRepulsion:12000,idealEdgeLength:110,fit:true,padding:40,...(full?{}:{})}).run();cy.nodes().forEach(n=>n.data('placed',1))}
+function counts(){$('counts').innerHTML=`Nodes <b>${cy.nodes(':visible').length}</b> · Relationships <b>${cy.edges(':visible').length}</b>${cy.$(':selected').length?` · Selected <b>${cy.$(':selected').length}</b>`:''}`}
+const E=(pat,p)=>q(`${pat} RETURN ${N('a')} AS a, type(r) AS rel, ${N('b')} AS b, r.amount AS amount, r.asset AS asset, r.last AS date`,p);
+function expand(id,limit=40){const rows=[...E(`MATCH (a)-[r]->(b) WHERE coalesce(a.id, a.code, a.key) = $id WITH a, r, b LIMIT ${limit}`,{id}),...E(`MATCH (a)-[r]->(b) WHERE coalesce(b.id, b.code, b.key) = $id WITH a, r, b LIMIT ${limit}`,{id})];const n=addRows(rows);toast(n?`Added ${n} related ${n===1?'entity':'entities'}`:'Nothing new to add');return n}
+
+/* ---------- perspectives: actions per kind, each one Cypher ---------- */
+const ACTIONS=[
+ {id:'expand',name:'Expand',desc:'Everything directly connected (up to 40 each way)',on:['*'],run:id=>expand(id),cypher:'MATCH (a)-[r]-(b) WHERE id(a) = $id RETURN a, r, b LIMIT 40'},
+ {id:'wallets',name:'Wallets of this party',desc:'Crypto addresses the sanctions list publishes for it',on:['Listed'],cypher:"MATCH (a:Entity {id:$id})-[r:CONTROLS]->(b:Address)",run:id=>addRows(E("MATCH (a:Entity {id:$id})-[r:CONTROLS]->(b:Address)",{id}))},
+ {id:'listings',name:'Listings and cases',desc:'The lists it is on, the same party in other lists and in enforcement cases',on:['Listed','Party'],cypher:"MATCH (l:SanctionsList)-[:LISTS]->(e:Entity {id:$id}); (e)-[:POSSIBLY_SAME]-(x); (c:Source {kind:'case'})-[:AGAINST]->(x)",
+  run:id=>addRows([...E("MATCH (a:SanctionsList)-[r:LISTS]->(b:Entity {id:$id})",{id}),...E("MATCH (a:Entity {id:$id})-[r:POSSIBLY_SAME]-(b:Entity)",{id}),...E("MATCH (e:Entity {id:$id})-[:POSSIBLY_SAME]-(x:Entity) MATCH (a:Source {kind:'case'})-[r:AGAINST]->(x) WITH a, r, x AS b",{id}),...E("MATCH (a:Source {kind:'case'})-[r:AGAINST]->(b:Entity {id:$id})",{id})])},
+ {id:'in',name:'Funds in (1 hop)',desc:'Who sent to this wallet, largest first',on:['Address','Labelled'],cypher:'MATCH (a:Address)-[r:SENT]->(b:Address {key:$id}) RETURN a, r, b ORDER BY r.amount DESC LIMIT 15',run:id=>addRows(E('MATCH (a:Address)-[r:SENT]->(b:Address {key:$id}) WITH a, r, b ORDER BY r.amount DESC LIMIT 15',{id}))},
+ {id:'out',name:'Funds out (1 hop)',desc:'Where this wallet sent to, largest first',on:['Address','Labelled'],cypher:'MATCH (a:Address {key:$id})-[r:SENT]->(b:Address) RETURN a, r, b ORDER BY r.amount DESC LIMIT 15',run:id=>addRows(E('MATCH (a:Address {key:$id})-[r:SENT]->(b:Address) WITH a, r, b ORDER BY r.amount DESC LIMIT 15',{id}))},
+ {id:'trace',name:'Trace two hops out',desc:'Outbound funds and their next hop, top 8 per hop',on:['Address','Labelled','Listed'],cypher:'MATCH (a:Address {key:$id})-[r:SENT]->(b:Address) … then (b)-[:SENT]->(c) for the top 8',
+  run:id=>{const isAddr=(q('MATCH (n) WHERE coalesce(n.id, n.code, n.key) = $id RETURN labels(n)[0] AS t',{id})[0]||{}).t==='Address';let keys=isAddr?[id]:q('MATCH (e:Entity {id:$id})-[:CONTROLS]->(a:Address) RETURN a.key AS k',{id}).map(r=>r.k);let rows=[];if(!isAddr)rows.push(...E('MATCH (a:Entity {id:$id})-[r:CONTROLS]->(b:Address) WHERE (b)-[:SENT]-()',{id}));
+   for(let h=0;h<2&&keys.length;h++){const rs=E('MATCH (a:Address)-[r:SENT]->(b:Address) WHERE a.key IN $k AND NOT r.asset ENDS WITH \'*\' WITH a, r, b ORDER BY r.amount DESC LIMIT 8',{k:keys});rows.push(...rs);keys=[...new Set(rs.map(r=>r.b.id))]}return addRows(rows)}},
+ {id:'owner',name:'Owner and labels',desc:'The listed party behind it, and its explorer label category',on:['Address','Labelled'],cypher:'MATCH (a:Entity)-[r:CONTROLS]->(b:Address {key:$id}); (b)-[:IN_CATEGORY]->(c)',run:id=>addRows([...E('MATCH (a:Entity)-[r:CONTROLS]->(b:Address {key:$id})',{id}),...E('MATCH (a:Address {key:$id})-[r:IN_CATEGORY]->(b:RiskCategory)',{id})])},
+ {id:'case',name:'Case file',desc:'Authority, party, articles broken and the power used',on:['Case'],cypher:"MATCH (a:Source {id:$id})-[r:BY|AGAINST|VIOLATED_ARTICLE|UNDER_POWER|IN_JURISDICTION|TYPOLOGY]->(b)",run:id=>addRows(E("MATCH (a:Source {id:$id})-[r]->(b)",{id}))},
+ {id:'samearticle',name:'Same article elsewhere',desc:'Other cases that broke the same articles',on:['Case','Article'],cypher:"MATCH (c:Source {id:$id})-[:VIOLATED_ARTICLE]->(x:Article)<-[r:VIOLATED_ARTICLE]-(o:Source)",
+  run:id=>addRows(id.startsWith('CASE:')?E("MATCH (c:Source {id:$id})-[:VIOLATED_ARTICLE]->(b:Article) MATCH (a:Source)-[r:VIOLATED_ARTICLE]->(b)",{id}):E("MATCH (a:Source)-[r:VIOLATED_ARTICLE]->(b:Article {id:$id})",{id}))},
+ {id:'members',name:'Members',desc:'Listed parties and named wallets in this category (top 25)',on:['RiskCategory'],cypher:"MATCH (a)-[r:IN_CATEGORY]->(b:RiskCategory {id:$id}) LIMIT 25",run:id=>addRows(E("MATCH (a)-[r:IN_CATEGORY]->(b:RiskCategory {id:$id}) WITH a, r, b LIMIT 25",{id}))},
+ {id:'supervision',name:'Supervision',desc:'Supervisors and the laws of this country',on:['Jurisdiction'],cypher:"MATCH (j:Jurisdiction {code:$id})-[:HAS_SECTOR]->(s)<-[r:SUPERVISES]-(g)",run:id=>addRows([...E("MATCH (b:Jurisdiction {code:$id}) MATCH (a)-[r]->(b) WHERE labels(a)[0] IN ['Sector','Law','Source'] WITH a, r, b LIMIT 40",{id}),...E("MATCH (j:Jurisdiction {code:$id})--(b:Sector) MATCH (a:Regulator)-[r:SUPERVISES]->(b) WITH a, r, b LIMIT 30",{id})])}];
+const actionsFor=k=>ACTIONS.filter(a=>a.on.includes('*')||a.on.includes(k));
+
+/* ---------- alerts: rules as Cypher over the whole graph ---------- */
+const RULES=[
+ {id:'R1',name:'Listed wallet funds reach a named exchange within two hops',sev:'high',why:'Funds of a sanctioned party ending at an exchange can be frozen or reported there.',
+  cypher:"MATCH (e:Entity)-[:CONTROLS]->(a:Address)-[:SENT]->(b:Address)-[s:SENT]->(c:Address)-[:IN_CATEGORY]->(:RiskCategory {id:'exchange'}) RETURN e.id AS e, e.name AS who, c.key AS c, c.label AS what, sum(s.amount) AS v, s.asset AS asset",
+  events:r=>({title:`${r.who} → ${r.what}`,detail:`${fmt(r.v)} ${r.asset} via one intermediate wallet`,ids:[r.e,r.c],open:()=>{addRows(E('MATCH (a:Entity {id:$e})-[r:CONTROLS]->(b:Address)-[:SENT]->(:Address)-[:SENT]->(:Address {key:$c})',{e:r.e,c:r.c}));addRows(E('MATCH (x:Address)<-[:CONTROLS]-(:Entity {id:$e}) MATCH (x)-[r:SENT]->(b:Address)-[:SENT]->(:Address {key:$c}) WITH x AS a, r, b',{e:r.e,c:r.c}));addRows(E('MATCH (x:Address)<-[:CONTROLS]-(:Entity {id:$e}) MATCH (x)-[:SENT]->(a:Address)-[r:SENT]->(b:Address {key:$c})',{e:r.e,c:r.c}))}})},
+ {id:'R2',name:'Large stablecoin transfer with a listed wallet',sev:'high',why:'A single transfer of 100,000 USDT or USDC or more, to or from an address on a sanctions list.',
+  cypher:"MATCH (e:Entity)-[:CONTROLS]->(a:Address)-[s:SENT]-(b:Address) WHERE s.asset IN ['USDT','USDC'] AND s.amount >= 100000 RETURN e.id AS e, e.name AS who, a.key AS a, b.key AS b, s.amount AS v, s.asset AS asset, s.last AS d",
+  events:r=>({title:`${r.who}: ${fmt(r.v)} ${r.asset}`,detail:`${short(r.a)} ↔ ${short(r.b)} · ${String(r.d||'').slice(0,10)}`,open:()=>addRows([...E('MATCH (a:Entity {id:$e})-[r:CONTROLS]->(b:Address {key:$k})',{e:r.e,k:r.a}),...E('MATCH (a:Address)-[r:SENT]->(b:Address) WHERE (a.key = $x AND b.key = $y) OR (a.key = $y AND b.key = $x)',{x:r.a,y:r.b})])})},
+ {id:'R3',name:'Party in an enforcement case is on a sanctions list',sev:'severe',why:'The same company was fined or prosecuted and is listed: screening hits are likely.',
+  cypher:"MATCH (c:Source {kind:'case'})-[:AGAINST]->(p:Entity)-[:POSSIBLY_SAME]-(x:Entity)<-[:LISTS]-(l:SanctionsList) RETURN c.id AS c, c.title AS t, x.id AS x, x.name AS who, l.id AS l",
+  events:r=>({title:`${r.who} on ${r.l.replace('LIST:','').toUpperCase()}`,detail:r.t,open:()=>addRows([...E("MATCH (a:Source {id:$c})-[r:AGAINST]->(b:Entity)",{c:r.c}),...E("MATCH (a:Entity)-[r:POSSIBLY_SAME]-(b:Entity {id:$x})",{x:r.x}),...E("MATCH (a:SanctionsList)-[r:LISTS]->(b:Entity {id:$x})",{x:r.x})])})},
+ {id:'R4',name:'Listed wallet active in the last 12 months',sev:'medium',why:'A listed address that still moves funds; check counterparties for exposure.',
+  cypher:"MATCH (e:Entity)-[:CONTROLS]->(a:Address)-[s:SENT]-() WHERE s.last >= $since RETURN e.id AS e, e.name AS who, a.key AS a, count(s) AS n, max(s.last) AS d",
+  params:()=>({since:new Date(new Date(D.as_of).getTime()-365*864e5).toISOString().slice(0,10)}),
+  events:r=>({title:`${r.who}: ${short(r.a)}`,detail:`${r.n} transfers, last ${String(r.d).slice(0,10)}`,open:()=>{addRows(E('MATCH (a:Entity {id:$e})-[r:CONTROLS]->(b:Address {key:$k})',{e:r.e,k:r.a}));addRows(E('MATCH (a:Address)-[r:SENT]-(b:Address) WHERE a.key = $k AND r.last >= $since WITH a, r, b LIMIT 15',{k:r.a,since:RULES[3].params().since}))}})},
+ {id:'R5',name:'Sanctioned party with wallets on three or more blockchains',sev:'low',why:'Funds can hop between chains; trace every chain, not only the first one found.',
+  cypher:"MATCH (e:Entity)-[:CONTROLS]->(a:Address) WITH e, collect(DISTINCT a.chain) AS ch, count(a) AS n WHERE size(ch) >= 3 RETURN e.id AS e, e.name AS who, ch, n",
+  events:r=>({title:`${r.who}: ${r.ch.length} blockchains`,detail:`${r.n} wallets on ${r.ch.join(', ')}`,open:()=>addRows(E('MATCH (a:Entity {id:$e})-[r:CONTROLS]->(b:Address)',{e:r.e}))})}];
+const SEVC={severe:'#7a0f2b',high:'#c2334d',medium:'#b77712',low:'#5d6a7d'};
+let EVENTS=[];
+function runAlerts(){EVENTS=[];for(const r of RULES){let rows=[];try{rows=q(r.cypher,r.params?r.params():null)}catch(e){console.warn(r.id,e.message)}r.count=rows.length;rows.forEach((x,i)=>EVENTS.push({id:`${r.id}-${i+1}`,rule:r,...r.events(x),status:'New'}))}
+ const n=EVENTS.filter(e=>e.status==='New').length;$('abadge').hidden=!n;$('abadge').textContent=n}
+
+/* ---------- Orchestra: the collectors that fill the graph ---------- */
+function pipelines(){const L=q('MATCH (l:SanctionsList) WHERE l.imported = true RETURN l.name AS n, l.fetched AS f, l.entries_total AS e, l.addresses_total AS a ORDER BY e DESC');
+ const tr=q('MATCH ()-[s:SENT]->() RETURN count(s) AS n')[0].n,ad=q('MATCH (a:Address) WHERE a.traced IS NOT NULL RETURN count(a) AS n, max(a.traced) AS t')[0],lab=q('MATCH (a:Address) WHERE a.label IS NOT NULL RETURN count(a) AS n')[0].n,cs=q("MATCH (c:Source {kind:'case'}) RETURN count(c) AS n")[0].n,ar=q('MATCH (a:Article) RETURN count(a) AS n')[0].n;
+ return [{name:'Sanctions lists',src:'OFAC SDN · EU FSF · UN SC · UK (XML)',sched:'Daily 05:17',last:(L[0]?.f||'').slice(0,16).replace('T',' '),msgs:L.reduce((a,x)=>a+(x.e||0),0),out:`${fmt(L.reduce((a,x)=>a+(x.a||0),0))} addresses`,steps:['Fetch XML','Parse entries','Extract addresses','Checksum','Merge into graph'],code:'casefold/fetch_sanctions.py'},
+  {name:'Chain traces',src:'mempool.space · Blockscout · TronGrid',sched:'On demand, per listed entity',last:String(ad.t||'').slice(0,16).replace('T',' '),msgs:tr,out:`${fmt(ad.n)} wallets traced`,steps:['Seed: listed addresses','Latest transfers','Real-token filter','Top counterparties, hop 2','SENT relationships'],code:'casefold/fetch_chain.py'},
+  {name:'Address labels',src:'Explorer tags · eth-labels',sched:'After every trace',last:String(ad.t||'').slice(0,10),msgs:lab,out:`${lab} named wallets`,steps:['Collect traced addresses','Explorer tags','Label datasets','Map label → category','IN_CATEGORY'],code:'casefold/fetch_labels.py'},
+  {name:'Enforcement decisions',src:'DNB · AFM · OM · DOJ · SEC',sched:'Weekly, human review',last:D.as_of,msgs:cs,out:`${cs} cases`,steps:['Fetch publication','Read decision PDF','Cite articles','Proposal','Analyst confirms'],code:'casefold/fetch_crypto_sources.py'},
+  {name:'Laws and articles',src:'EU Publications Office · wetten.overheid.nl',sched:'Monthly',last:D.as_of,msgs:ar,out:`${ar} articles`,steps:['Fetch by CELEX','Split articles','Version + checksum','Link REPLACED_BY','Article nodes'],code:'casefold/fetch_crypto_sources.py'}]}
+
+/* ---------- pages ---------- */
+const APP={tab:'viz',sel:null,sub:'events'};
+const TABS={overview:'Overview',viz:'Visualisations',alerts:'Alerts',perspectives:'Perspectives',orchestra:'Orchestra'};
+function nav(t){APP.tab=t;document.querySelectorAll('.rail [data-tab]').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===t));
+ $('tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<button role="tab" data-tab="${k}" aria-selected="${k===t}">${v}</button>`).join('');
+ $('crumb').innerHTML=`<a data-tab="overview">Casefold crypto graph</a> › <b>${TABS[t]}</b>${t==='viz'?` › ${esc(VZ.cur.name)}`:''}`;
+ if(cy&&t!=='viz'){cy.destroy();cy=null}
+ $('page').innerHTML=PAGE[t]();if(t==='viz')mountCanvas();if(t==='overview')mountSchema()}
+
+const PAGE={
+overview(){const c=q('MATCH (n) RETURN labels(n)[0] AS l, count(n) AS n ORDER BY n DESC'),r=q('MATCH ()-[r]->() RETURN type(r) AS t, count(r) AS n ORDER BY n DESC');
+ return `<div class="pad"><h1>Casefold crypto graph</h1><p class="lead">One knowledge graph for crypto compliance: who is listed, which wallets they hold, where the funds went, which rules apply and where it went wrong. Data as of ${esc(D.as_of)}, collected by the pipelines in Orchestra.</p>
+ <div class="grid g4">${[['Nodes',c.reduce((a,x)=>a+x.n,0)],['Relationships',r.reduce((a,x)=>a+x.n,0)],['Open alerts',EVENTS.filter(e=>e.status==='New').length],['Pipelines',5]].map(k=>`<div class="card kpi"><b>${fmt(k[1])}</b><span>${k[0]}</span></div>`).join('')}</div>
+ <div class="grid g2"><div class="card"><h2>Schema</h2><div id="schema" role="img" aria-label="Schema of the graph: labels and relationship types"></div></div>
+ <div class="card"><h2>Labels and relationships</h2><table class="t"><tbody>${c.map(x=>`<tr><td>${esc(x.l)}</td><td class="num">${fmt(x.n)}</td></tr>`).join('')}</tbody></table><table class="t" style="margin-top:10px"><tbody>${r.map(x=>`<tr><td class="mono">${esc(x.t)}</td><td class="num">${fmt(x.n)}</td></tr>`).join('')}</tbody></table></div></div></div>`},
+viz(){return `<div class="vz"><div class="stage"><div class="bar"><div class="search"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M11 4a7 7 0 1 0 4.9 12l4.6 4.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="q" placeholder="Search a name, wallet, case, law or country" autocomplete="off" aria-controls="dd"><div class="dd" id="dd" role="listbox"></div></div><span class="counts" id="counts"></span><button class="btn" id="save" type="button">Save</button></div>
+ <div id="cy" role="img" aria-label="Investigation canvas. Click a node for details; right-click for its actions; double-click to expand."></div>
+ <div class="empty" id="empty"><b>Start from a name or a wallet</b>Search above, or open an alert. Try Garantex, Grinex, Binance or Lazarus.</div>
+ <div class="tools"><button type="button" id="tfit" title="Fit" aria-label="Fit"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><button type="button" id="tin" aria-label="Zoom in" title="Zoom in">+</button><button type="button" id="tout" aria-label="Zoom out" title="Zoom out">−</button><button type="button" id="tlay" title="Re-run layout" aria-label="Re-run layout"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><button type="button" id="tclr" title="Clear canvas" aria-label="Clear canvas"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button></div>
+ <div class="menu" id="menu" role="menu"></div>
+ <div class="tl"><div class="row"><span>Timeline of transfers on the canvas</span><span id="tlr" class="mono" style="margin-left:auto"></span><button class="btn" id="tlreset" type="button" style="padding:3px 9px">All dates</button></div><svg id="hist" aria-label="Transfers per month; drag to filter the canvas by date"></svg></div></div>
+ <aside class="insp" id="insp"><div class="sec"><h2>Details</h2><p style="color:var(--muted);margin:0">Select a node or a relationship. Its properties, its connections and the actions of its perspective appear here.</p></div>${VZ.saved.length?`<div class="sec"><h2>Saved visualisations</h2>${VZ.saved.map((v,i)=>`<button class="nb" type="button" data-open="${i}">${esc(v.name)} <span style="margin-left:auto;color:var(--dim);font-size:12px">${v.nodes} nodes</span></button>`).join('')}</div>`:''}</aside></div>`},
+alerts(){const n=EVENTS.filter(e=>e.status==='New').length;
+ return `<div class="pad"><h1>Alerts</h1><p class="lead">Rules run over the whole graph after every pipeline run. Each event opens on the canvas with the evidence it is based on. ${n} new.</p>
+ <div class="tabs" style="padding:0;margin-bottom:14px;background:none"><button data-sub="events" aria-selected="${APP.sub==='events'}">Events (${EVENTS.length})</button><button data-sub="rules" aria-selected="${APP.sub==='rules'}">Rules (${RULES.length})</button></div>
+ ${APP.sub==='events'?`<div class="card" style="padding:0"><table class="t"><thead><tr><th>Event</th><th>Rule</th><th>Severity</th><th>Status</th></tr></thead><tbody>${EVENTS.map(e=>`<tr class="click" data-ev="${e.id}"><td><b>${esc(e.title)}</b><div style="color:var(--muted);font-size:12.5px">${esc(e.detail)}</div></td><td style="font-size:12.5px">${esc(e.rule.name)}</td><td><span class="sev" style="background:${SEVC[e.rule.sev]}"></span>${e.rule.sev}</td><td><span class="pill ${e.status==='New'?'sig':e.status==='Escalated'?'bad':'ok'}">${e.status}</span></td></tr>`).join('')}</tbody></table></div>`
+ :RULES.map(r=>`<div class="card"><div style="display:flex;gap:10px;align-items:center"><span class="sev" style="background:${SEVC[r.sev]}"></span><b>${r.id} · ${esc(r.name)}</b><span class="pill" style="margin-left:auto">${r.count} events</span></div><p style="color:var(--muted);margin:6px 0 0">${esc(r.why)}</p><pre class="cy">${esc(r.cypher)}</pre></div>`).join('')}</div>`},
+perspectives(){const kinds=[...new Set(ACTIONS.flatMap(a=>a.on))];
+ return `<div class="pad"><h1>Perspectives</h1><p class="lead">The crypto-investigation perspective: which actions an analyst gets on which kind of node. Each action is one Cypher query, run on Relate here and on Neo4j Community on the server.</p>
+ <div class="card"><h2>Kinds of node</h2><div style="display:flex;flex-wrap:wrap;gap:8px">${Object.entries(LAB).map(([k,v])=>`<span class="chip" style="background:${v[1]}">${esc(v[0])}</span>`).join('')}</div></div>
+ ${ACTIONS.map(a=>`<div class="card"><div style="display:flex;gap:10px;align-items:center"><b>${esc(a.name)}</b><span style="color:var(--muted)">${esc(a.desc)}</span><span style="margin-left:auto;display:flex;gap:4px">${a.on.map(k=>`<span class="pill">${esc(k==='*'?'every node':(LAB[k]||[k])[0])}</span>`).join('')}</span></div><pre class="cy">${esc(a.cypher)}</pre></div>`).join('')}</div>`},
+orchestra(){const P=pipelines();
+ return `<div class="pad"><h1>Orchestra</h1><p class="lead">The pipelines that bring data into the graph. All data is collected by Casefold itself from public sources; every node keeps its source and fetch date. On the server these run as scheduled jobs and write to Neo4j; their output is what this page loads.</p>
+ <div class="card" style="padding:0"><table class="t"><thead><tr><th>Pipeline</th><th>Source</th><th>Schedule</th><th>Last run</th><th class="num">Messages</th><th>Output</th><th>Status</th></tr></thead><tbody>${P.map((p,i)=>`<tr class="click" data-pl="${i}"><td><b>${esc(p.name)}</b><div class="mono" style="font-size:11.5px;color:var(--dim)">${esc(p.code)}</div></td><td style="font-size:12.5px">${esc(p.src)}</td><td>${esc(p.sched)}</td><td class="mono" style="font-size:12.5px">${esc(p.last)}</td><td class="num">${fmt(p.msgs)}</td><td>${esc(p.out)}</td><td><span class="pill ok">OK</span></td></tr>`).join('')}</tbody></table></div>
+ <div id="pldet">${pl(P[0])}</div></div>`}};
+function pl(p){return `<div class="card"><h2>${esc(p.name)}</h2><div class="wf">${p.steps.map((s,i)=>`<div><span class="mono" style="font-size:11px;color:var(--dim)">${String(i+1).padStart(2,'0')}</span><b>${esc(s)}</b></div>`).join('')}</div><p style="color:var(--muted);font-size:13px;margin:12px 0 0">Source: ${esc(p.src)} · ${esc(p.sched)} · code: <span class="mono">${esc(p.code)}</span></p></div>`}
+
+/* ---------- canvas wiring ---------- */
+function style(){return [
+ {selector:'node',style:{'background-color':'data(col)','background-image':'data(icon)','background-width':'55%','background-height':'55%','width':38,'height':38,'label':'data(label)','font-size':10.5,'font-family':'Inter','color':'#132033','text-valign':'bottom','text-margin-y':5,'text-wrap':'ellipsis','text-max-width':140,'text-outline-color':'#f7f9fb','text-outline-width':2,'border-width':0}},
+ {selector:'node:selected',style:{'border-width':4,'border-color':'#e2660f'}},
+ {selector:'node[k="Listed"]',style:{'width':46,'height':46}},
+ {selector:'edge',style:{'width':1.3,'line-color':'#a9b4c3','target-arrow-color':'#a9b4c3','target-arrow-shape':'triangle','arrow-scale':.8,'curve-style':'bezier','label':'data(label)','font-size':8.5,'color':'#5d6a7d','text-rotation':'autorotate','text-outline-color':'#f7f9fb','text-outline-width':2}},
+ {selector:'edge[flow=1]',style:{'line-color':'#2f6fb5','target-arrow-color':'#2f6fb5','width':2}},
+ {selector:'edge[rel="POSSIBLY_SAME"]',style:{'line-style':'dashed','line-color':'#c2334d','target-arrow-shape':'none'}},
+ {selector:'edge:selected',style:{'line-color':'#e2660f','target-arrow-color':'#e2660f','width':3.5}},
+ {selector:'.dim',style:{'opacity':.12}}]}
+function mountCanvas(){cy=cytoscape({container:$('cy'),style:style(),wheelSensitivity:.25,minZoom:.15,maxZoom:3,boxSelectionEnabled:true});
+ if(VZ.elements){cy.add(VZ.elements);cy.fit(undefined,40)}$('empty').hidden=cy.nodes().length>0;counts();hist();
+ cy.on('tap','node',e=>inspect(e.target.id()));cy.on('tap','edge',e=>inspectEdge(e.target));cy.on('dbltap','node',e=>expand(e.target.id()));
+ cy.on('cxttap','node',e=>{const p=e.renderedPosition;menu(e.target.id(),p.x+10,p.y+60)});cy.on('tap',e=>{if(e.target===cy){$('menu').classList.remove('on')}});cy.on('select unselect',counts);
+ cy.on('add remove',()=>{VZ.elements=cy.elements().jsons()});
+ const qi=$('q');let sel=0,items=[];
+ qi.oninput=()=>{const s=qi.value.trim();if(s.length<2){$('dd').classList.remove('on');return}items=search(s);sel=0;draw()};
+ qi.onkeydown=e=>{if(!$('dd').classList.contains('on'))return;if(e.key==='ArrowDown'){sel=Math.min(items.length-1,sel+1);draw();e.preventDefault()}if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);draw();e.preventDefault()}if(e.key==='Enter'&&items[sel]){pick(items[sel]);e.preventDefault()}if(e.key==='Escape')$('dd').classList.remove('on')};
+ function draw(){$('dd').innerHTML=items.length?`<div class="h">In the graph</div>`+items.map((d,i)=>{const L=LAB[kindOf(d)]||['?','#888'];return `<button role="option" type="button" data-i="${i}" class="${i===sel?'act':''}"><span class="chip" style="background:${L[1]}">${esc(L[0])}</span>${esc(nameOf(d))}<span class="sub">Add to canvas</span></button>`}).join(''):'<div class="h">No match</div>';$('dd').classList.add('on')}
+ $('dd').onclick=e=>{const b=e.target.closest('[data-i]');if(b)pick(items[+b.dataset.i])};
+ function pick(d){$('dd').classList.remove('on');qi.value='';addRows([{a:d}]);cy.$(':selected').unselect();const n=cy.getElementById(d.id);n.select();cy.animate({center:{eles:n},zoom:Math.max(cy.zoom(),1)},{duration:250});inspect(d.id);toast(`Added ${nameOf(d)}`)}
+ $('tfit').onclick=()=>cy.fit(undefined,40);$('tin').onclick=()=>cy.zoom({level:cy.zoom()*1.25,renderedPosition:{x:cy.width()/2,y:cy.height()/2}});$('tout').onclick=()=>cy.zoom({level:cy.zoom()*.8,renderedPosition:{x:cy.width()/2,y:cy.height()/2}});
+ $('tlay').onclick=()=>layout(true);$('tclr').onclick=()=>{cy.elements().remove();VZ.range=null;hist();counts();$('empty').hidden=false;inspectNone()};
+ $('save').onclick=()=>{const name=prompt('Name of this visualisation',VZ.cur.name);if(!name)return;VZ.cur.name=name;VZ.saved.push({name,elements:cy.elements().jsons(),nodes:cy.nodes().length,at:new Date().toISOString()});try{localStorage.setItem('cf-ws-saved',JSON.stringify(VZ.saved))}catch(e){}nav('viz');toast('Saved')};
+ $('tlreset').onclick=()=>{VZ.range=null;applyRange();hist()};}
+function search(s){const t=s.toLowerCase();
+ const rows=q(`MATCH (n) WHERE toLower(coalesce(n.name, n.party, n.title, n.short, n.code, '')) CONTAINS $t OR toLower(coalesce(n.key, '')) CONTAINS $t OR toLower(coalesce(n.label, '')) CONTAINS $t RETURN ${N('n')} AS n LIMIT 40`,{t}).map(r=>r.n);
+ const rank=d=>({Listed:0,Party:1,Case:2,Labelled:3,Address:4}[kindOf(d)]??5);return rows.sort((a,b)=>rank(a)-rank(b)).slice(0,12)}
+function menu(id,x,y){const d=cy.getElementById(id).data();const acts=actionsFor(d.k);
+ $('menu').innerHTML=`<div class="h">${esc(d.full)}</div>`+acts.map(a=>`<button type="button" data-act="${a.id}" data-id="${esc(id)}">${esc(a.name)}<small>${esc(a.desc)}</small></button>`).join('')+`<button type="button" data-hide="${esc(id)}">Remove from canvas</button>`;
+ const m=$('menu');m.style.left=Math.min(x,$('cy').clientWidth-260)+'px';m.style.top=y+'px';m.classList.add('on')}
+function inspectNone(){$('insp').innerHTML='<div class="sec"><h2>Details</h2><p style="color:var(--muted);margin:0">Select a node or a relationship.</p></div>'}
+function inspect(id){const r=q('MATCH (n) WHERE coalesce(n.id, n.code, n.key) = $id RETURN properties(n) AS p, labels(n)[0] AS t',{id})[0];if(!r)return;const d=cy&&cy.getElementById(id).data()||{};const k=d.k||r.t;const L=LAB[k]||['?','#888'];
+ const deg=q('MATCH (n)-[r]-() WHERE coalesce(n.id, n.code, n.key) = $id RETURN type(r) AS t, count(r) AS n ORDER BY n DESC',{id});const on=cy?cy.getElementById(id).connectedEdges().length:0;
+ const hide=new Set(['text','source_sha256','sha256','unlabelled']);const props=Object.entries(r.p).filter(([k,v])=>v!=null&&v!==''&&!hide.has(k)&&!(Array.isArray(v)&&!v.length));
+ const src=r.t==='Address'&&r.p.chain?{bitcoin:'https://mempool.space/address/',ethereum:'https://eth.blockscout.com/address/',tron:'https://tronscan.org/#/address/'}[r.p.chain]:null;
+ $('insp').innerHTML=`<div class="sec"><span class="chip" style="background:${L[1]}">${esc(L[0])}</span><h2 style="margin:8px 0 0;font-size:17px;word-break:break-word">${esc(nameOf({...r.p,t:r.t,id,law:r.p.law_short}))}</h2>${src?`<a href="${src}${encodeURIComponent(r.p.address)}" target="_blank" rel="noopener" style="font-size:12.5px;color:var(--ink)">Open on the block explorer ↗</a>`:''}${r.p.url&&/^https:/.test(r.p.url)?`<a href="${esc(r.p.url)}" target="_blank" rel="noopener" style="font-size:12.5px;color:var(--ink);display:block">Source ↗</a>`:''}</div>
+ <div class="sec"><h2>Actions</h2><div class="acts">${actionsFor(k).map(a=>`<button type="button" data-act="${a.id}" data-id="${esc(id)}">${esc(a.name)}<small>${esc(a.desc)}</small></button>`).join('')}</div></div>
+ <div class="sec"><h2>Connections</h2><div style="font-size:12.5px;color:var(--muted)">${deg.reduce((a,x)=>a+x.n,0)} relationships, ${on} on the canvas</div>${deg.map(x=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0"><span class="mono">${esc(x.t)}</span><span>${x.n}</span></div>`).join('')}</div>
+ <div class="sec"><h2>Properties</h2>${props.map(([k,v])=>`<div class="k">${esc(k)}</div><div class="v ${/key|address|sha|id/.test(k)?'mono':''}" style="font-size:13px">${esc(Array.isArray(v)?v.join(', '):typeof v==='object'?JSON.stringify(v):String(v).slice(0,600))}</div>`).join('')}</div>`}
+function inspectEdge(e){const d=e.data();const p=q('MATCH (a)-[r]->(b) WHERE coalesce(a.id, a.code, a.key) = $a AND coalesce(b.id, b.code, b.key) = $b AND type(r) = $t RETURN properties(r) AS p',{a:d.source,b:d.target,t:d.rel}).map(r=>r.p).filter(p=>d.rel!=='SENT'||!d.id.split('|')[3]||p.asset===d.id.split('|')[3]);
+ $('insp').innerHTML=`<div class="sec"><span class="chip" style="background:#5d6a7d">Relationship</span><h2 style="margin:8px 0 0">${esc(d.rel)}</h2><div style="font-size:13px;color:var(--muted);margin-top:6px">${esc(cy.getElementById(d.source).data('full'))} → ${esc(cy.getElementById(d.target).data('full'))}</div></div>${p.map(x=>`<div class="sec">${Object.entries(x).map(([k,v])=>`<div class="k">${esc(k)}</div><div class="v mono" style="font-size:12.5px">${esc(Array.isArray(v)?v.join(', '):v)}</div>`).join('')||'<span style="color:var(--muted)">No properties</span>'}</div>`).join('')}`}
+/* timeline: transfers on the canvas per month; drag to filter */
+function hist(){const svg=$('hist');if(!svg||!cy)return;const W=svg.clientWidth||800,H=46;const es=cy.edges('[flow=1]').filter(e=>e.data('date'));
+ if(!es.length){svg.innerHTML=`<text x="8" y="28" font-size="12" fill="#8b96a6">No transfers on the canvas yet</text>`;$('tlr').textContent='';return}
+ const m=d=>String(d).slice(0,7);const months=[...new Set(es.map(e=>m(e.data('date'))))].sort();const all=[];let [y,mo]=months[0].split('-').map(Number);const [y2,m2]=months[months.length-1].split('-').map(Number);while(y<y2||(y===y2&&mo<=m2)){all.push(`${y}-${String(mo).padStart(2,'0')}`);mo++;if(mo>12){mo=1;y++}}
+ const c={};es.forEach(e=>{const k=m(e.data('date'));c[k]=(c[k]||0)+1});const mx=Math.max(...Object.values(c));const bw=W/all.length;const R=VZ.range;
+ svg.innerHTML=all.map((k,i)=>{const h=(c[k]||0)/mx*(H-14);const inR=!R||(k>=R[0]&&k<=R[1]);return `<rect x="${i*bw+1}" y="${H-12-h}" width="${Math.max(1,bw-2)}" height="${h}" rx="1.5" fill="${inR?'#2f6fb5':'#c8d0da'}"><title>${k}: ${c[k]||0}</title></rect>`}).join('')+`<text x="2" y="${H-1}" font-size="10" fill="#8b96a6" font-family="JetBrains Mono">${all[0]}</text><text x="${W-2}" y="${H-1}" font-size="10" fill="#8b96a6" text-anchor="end" font-family="JetBrains Mono">${all[all.length-1]}</text>`;
+ $('tlr').textContent=R?`${R[0]} – ${R[1]}`:`${all[0]} – ${all[all.length-1]} · ${es.length} transfers`;
+ let s0=null;svg.onmousedown=e=>{s0=Math.floor(e.offsetX/bw)};svg.onmouseup=e=>{if(s0==null)return;const s1=Math.floor(e.offsetX/bw);const a=Math.max(0,Math.min(s0,s1)),b=Math.min(all.length-1,Math.max(s0,s1));VZ.range=[all[a],all[b]];s0=null;applyRange();hist()}}
+function applyRange(){if(!cy)return;const R=VZ.range;cy.elements().removeClass('dim');if(!R)return;const out=cy.edges('[flow=1]').filter(e=>{const k=String(e.data('date')||'').slice(0,7);return k&&(k<R[0]||k>R[1])});out.addClass('dim');cy.nodes().filter(n=>n.connectedEdges().length&&n.connectedEdges().every(e=>e.hasClass('dim'))).addClass('dim')}
+/* schema overview */
+function mountSchema(){const rows=q('MATCH (a)-[r]->(b) RETURN labels(a)[0] AS a, type(r) AS t, labels(b)[0] AS b, count(r) AS n');const L={Entity:'#8b1e3f',Address:'#2f6fb5',Source:'#e2660f',SanctionsList:'#0f766e',Regulator:'#1d3f73',Jurisdiction:'#6c4fc0',Law:'#a86b1f',Article:'#c99a3a',RiskCategory:'#3d4657',Sector:'#8a94a6'};
+ const s=cytoscape({container:$('schema'),style:[{selector:'node',style:{'background-color':'data(c)','label':'data(id)','font-size':11,'text-outline-color':'#f7f9fb','text-outline-width':2,'text-valign':'bottom','text-margin-y':4,'width':30,'height':30}},{selector:'edge',style:{'width':'mapData(n,1,1200,1,6)','line-color':'#a9b4c3','target-arrow-shape':'triangle','target-arrow-color':'#a9b4c3','curve-style':'bezier','label':'data(t)','font-size':7.5,'color':'#5d6a7d','text-rotation':'autorotate','text-outline-color':'#f7f9fb','text-outline-width':2,'loop-direction':'-45deg','loop-sweep':'60deg'}}],
+  elements:[...new Set(rows.flatMap(r=>[r.a,r.b]))].map(id=>({data:{id,c:L[id]||'#888'}})).concat(rows.map((r,i)=>({data:{id:'e'+i,source:r.a,target:r.b,t:`${r.t} (${r.n})`,n:r.n}}))),layout:{name:'circle',padding:40,startAngle:-Math.PI/2},userZoomingEnabled:false});}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab]');if(t){nav(t.dataset.tab);return}
+ const a=e.target.closest('[data-act]');if(a){const act=ACTIONS.find(x=>x.id===a.dataset.act);$('menu')?.classList.remove('on');try{const n=act.run(a.dataset.id);if(typeof n==='number'&&act.id!=='expand')toast(n?`${act.name}: added ${n}`:`${act.name}: nothing new`)}catch(err){console.error(err);toast('This action did not run: '+err.message.split('\n')[0])}return}
+ const h=e.target.closest('[data-hide]');if(h){cy.getElementById(h.dataset.hide).remove();$('menu').classList.remove('on');counts();hist();return}
+ const sb=e.target.closest('[data-sub]');if(sb){APP.sub=sb.dataset.sub;nav('alerts');return}
+ const ev=e.target.closest('[data-ev]');if(ev){const x=EVENTS.find(z=>z.id===ev.dataset.ev);x.status='Opened';VZ.elements=null;VZ.cur={name:`Alert ${x.id}: ${x.title}`};nav('viz');x.open();runBadge();toast(`Opened ${x.id} on a new canvas`);return}
+ const pl=e.target.closest('[data-pl]');if(pl){$('pldet').innerHTML=window.__pl[+pl.dataset.pl];return}
+ const o=e.target.closest('[data-open]');if(o){const v=VZ.saved[+o.dataset.open];VZ.elements=v.elements;VZ.cur={name:v.name};nav('viz');return}});
+function runBadge(){const n=EVENTS.filter(e=>e.status==='New').length;$('abadge').hidden=!n;$('abadge').textContent=n}
+addEventListener('resize',()=>{if(cy)hist()});
+
+(async()=>{try{D=await (await fetch('data/crypto.json')).json();const relate=await import(new URL('vendor/relate/relate.js',location.href).href);await relate.default();db=new relate.RelateDb();
+ const t0=performance.now();for(const s of D.schema)db.execute(s);for(const s of D.load){const r=JSON.parse(db.execute(s,JSON.stringify(D.params)));if(r.error)throw new Error(r.error)}
+ const n=q('MATCH (n) RETURN count(n) AS n')[0].n;$('eng').innerHTML=`<b>Relate</b> · ${fmt(n)} nodes · ${(performance.now()-t0).toFixed(0)} ms · data as of ${esc(D.as_of)}`;
+ try{VZ.saved=JSON.parse(localStorage.getItem('cf-ws-saved')||'[]')}catch(e){VZ.saved=[]}
+ runAlerts();window.__pl=pipelines().map(pl);
+ const start=location.hash.slice(1);nav(TABS[start]?start:'viz');
+ if(!start||start==='viz'){const g=search('Garantex').find(d=>kindOf(d)==='Listed'&&/^EU:/.test(d.id))||search('Garantex')[0];if(g){addRows([{a:g}]);expand(g.id);cy.getElementById(g.id).select();inspect(g.id)}}
+ }catch(e){console.error(e);$('eng').textContent='Relate could not start';$('page').innerHTML=`<div class="pad"><div class="card">The graph could not start in this browser: ${esc(e.message)}</div></div>`}})();
+</script>
+</body>
+</html>
