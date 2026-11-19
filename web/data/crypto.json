@@ -5,6 +5,7 @@
   "CREATE CONSTRAINT sector_id IF NOT EXISTS FOR (n:Sector) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT regulator_id IF NOT EXISTS FOR (n:Regulator) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT law_id IF NOT EXISTS FOR (n:Law) REQUIRE n.id IS UNIQUE",
+  "CREATE CONSTRAINT article_id IF NOT EXISTS FOR (n:Article) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT source_id IF NOT EXISTS FOR (n:Source) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT entity_id IF NOT EXISTS FOR (n:Entity) REQUIRE n.id IS UNIQUE",
   "CREATE CONSTRAINT sanctions_list_id IF NOT EXISTS FOR (n:SanctionsList) REQUIRE n.id IS UNIQUE",
@@ -25,9 +26,13 @@
   "UNWIND $j AS j\nMERGE (x:Jurisdiction {code: j.code}) SET x.name = j.name, x.wave = j.wave, x.regime = j.regime, x.travel_rule = j.travel_rule, x.verify = j.verify\nMERGE (s:Sector {id: j.sector}) SET s.name = 'crypto-asset service providers', s.group = 'crypto'\nMERGE (s)-[:IN_JURISDICTION]->(x)",
   "UNWIND $j AS j UNWIND j.regulators AS r\nMATCH (s:Sector {id: j.sector})\nMERGE (g:Regulator {id: r.id}) SET g.short = r.short, g.name = r.name, g.url = r.url\nMERGE (g)-[v:SUPERVISES]->(s) SET v.role = r.role, v.aml = r.aml",
   "UNWIND $j AS j UNWIND j.laws AS l\nMATCH (s:Sector {id: j.sector})\nMERGE (w:Law {id: l.id}) SET w.short = l.short, w.title = l.title, w.url = l.url\nMERGE (s)-[:SUBJECT_TO]->(w)",
-  "UNWIND $c AS c\nMERGE (k:Source {id: c.id}) SET k.kind = 'case', k.title = c.title, k.party = c.party, k.date = c.date, k.measure = c.measure,\n  k.amount = CASE WHEN c.amount IS NULL THEN null ELSE toFloat(c.amount) END, k.currency = c.currency, k.amount_note = c.amount_note,\n  k.summary = c.summary, k.chain = c.chain, k.url = c.url, k.verify = c.verify,\n  k.published = c.published, k.status = c.status, k.period = c.period, k.decision = c.decision\nMERGE (e:Entity {id: 'ENTITY:' + coalesce(c.group, toLower(c.party))}) SET e.name = coalesce(e.name, c.party), e.group = c.group\nMERGE (k)-[:AGAINST]->(e)\nWITH k, c MATCH (x:Jurisdiction {code: c.jurisdiction}) MERGE (k)-[:IN_JURISDICTION]->(x)",
+  "UNWIND $c AS c\nMERGE (k:Source {id: c.id}) SET k.kind = 'case', k.title = c.title, k.party = c.party, k.date = c.date, k.measure = c.measure,\n  k.amount = CASE WHEN c.amount IS NULL THEN null ELSE toFloat(c.amount) END, k.currency = c.currency, k.amount_note = c.amount_note,\n  k.summary = c.summary, k.chain = c.chain, k.url = c.url, k.verify = c.verify,\n  k.published = c.published, k.status = c.status, k.period = c.period, k.decision = c.decision, k.note = c.note, k.violated_from = c.violated_from\nMERGE (e:Entity {id: 'ENTITY:' + coalesce(c.group, toLower(c.party))}) SET e.name = coalesce(e.name, c.party), e.group = c.group\nMERGE (k)-[:AGAINST]->(e)\nWITH k, c MATCH (x:Jurisdiction {code: c.jurisdiction}) MERGE (k)-[:IN_JURISDICTION]->(x)",
   "UNWIND $c AS c UNWIND c.authorities AS a\nMATCH (k:Source {id: c.id})\nMATCH (x:Jurisdiction {code: c.jurisdiction})<-[:IN_JURISDICTION]-(:Sector)<-[:SUPERVISES]-(g:Regulator {short: a})\nMERGE (k)-[:BY]->(g)",
-  "UNWIND $c AS c UNWIND c.violated AS v\nMATCH (k:Source {id: c.id}) MATCH (w:Law {id: v.law})\nMERGE (k)-[r:VIOLATED]->(w) SET r.art = v.art",
+  "UNWIND $c AS c UNWIND c.violated AS v\nMATCH (k:Source {id: c.id}) MATCH (w:Law {id: v.law})\nMERGE (k)-[r:VIOLATED {art: coalesce(v.art, '')}]->(w) SET r.lids = coalesce(v.lids, []), r.stated = coalesce(v.stated, false)",
+  "UNWIND [c IN $c WHERE c.power IS NOT NULL] AS c\nMATCH (k:Source {id: c.id}) MATCH (w:Law {id: c.power.law})\nMERGE (k)-[r:UNDER_POWER {art: c.power.art}]->(w) SET r.point = c.power.point",
+  "UNWIND $a AS a\nMATCH (w:Law {id: a.law})\nMERGE (x:Article {id: a.law + ':' + a.art}) SET x.law = a.law, x.law_short = w.short, x.art = a.art, x.heading = a.heading, x.duty = a.duty,\n  x.text = a.text, x.status = a.status, x.version = a.version, x.source_sha256 = a.sha256\nMERGE (w)-[:HAS_ARTICLE]->(x)",
+  "UNWIND $a AS a UNWIND a.replaced_by AS r\nMATCH (x:Article {id: a.law + ':' + a.art}) MATCH (y:Article {id: r})\nMERGE (x)-[:REPLACED_BY]->(y)",
+  "UNWIND $c AS c UNWIND c.violated AS v\nMATCH (k:Source {id: c.id}) MATCH (x:Article {id: v.law + ':' + coalesce(v.art, '')})\nMERGE (k)-[r:VIOLATED_ARTICLE]->(x) SET r.lids = coalesce(v.lids, []), r.stated = coalesce(v.stated, false)",
   "UNWIND $l AS l\nMERGE (x:SanctionsList {id: l.id}) SET x.name = l.name, x.url = l.url, x.refresh = l.refresh, x.imported = l.imported\nWITH x, l OPTIONAL MATCH (g:Regulator {id: l.owner}) FOREACH (_ IN CASE WHEN g IS NULL THEN [] ELSE [1] END | MERGE (x)-[:PUBLISHED_BY]->(g))"
  ],
  "params": {
@@ -796,11 +801,20 @@
     "violated": [
      {
       "law": "NL:wwft",
-      "art": "23b"
+      "art": "23b",
+      "lids": [
+       "1",
+       "2"
+      ],
+      "stated": true
      },
      {
       "law": "NL:wwft",
-      "art": "23c"
+      "art": "23c",
+      "lids": [
+       "3"
+      ],
+      "stated": true
      }
     ],
     "period": "2020-05-21 to 2021-12-01",
@@ -809,7 +823,8 @@
     "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2022/boete-voor-binance-holdings-ltd-vanwege-het-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten/",
     "decision": "https://www.dnb.nl/media/0jxfaxck/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-binance-gelakte-versie-pdf.pdf",
     "verify": false,
-    "group": "binance"
+    "group": "binance",
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 25 April 2022"
    },
    {
     "id": "CASE:dnb-coinbase-2023",
@@ -822,13 +837,26 @@
     "amount": 3325000,
     "currency": "EUR",
     "party": "Coinbase Europe Limited",
-    "date": "2023-01-26",
+    "date": "2023-01-18",
     "title": "DNB: fine Coinbase Europe Limited, crypto services without registration",
     "summary": "Crypto services in the Netherlands from November 2020 without the DNB registration the Wwft then required; registered 22 September 2022.",
     "violated": [
      {
       "law": "NL:wwft",
-      "art": null
+      "art": "23b",
+      "lids": [
+       "1",
+       "2"
+      ],
+      "stated": true
+     },
+     {
+      "law": "NL:wwft",
+      "art": "23c",
+      "lids": [
+       "3"
+      ],
+      "stated": true
      }
     ],
     "chain": null,
@@ -836,8 +864,14 @@
     "verify": false,
     "published": "2023-01-26",
     "status": "final",
-    "period": "2020-11-15 to 2022-09-22",
-    "group": "coinbase"
+    "period": "2020-11-15 to at least 2022-08-24",
+    "group": "coinbase",
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 18 January 2023",
+    "power": {
+     "law": "NL:wwft",
+     "art": "30"
+    },
+    "decision": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf"
    },
    {
     "id": "CASE:dnb-kraken-2023",
@@ -857,11 +891,20 @@
     "violated": [
      {
       "law": "NL:wwft",
-      "art": "23b"
+      "art": "23b",
+      "lids": [
+       "1",
+       "2"
+      ],
+      "stated": true
      },
      {
       "law": "NL:wwft",
-      "art": "23c"
+      "art": "23c",
+      "lids": [
+       "3"
+      ],
+      "stated": true
      }
     ],
     "status": "objection unfounded",
@@ -869,7 +912,13 @@
     "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2024/last-onder-dwangsom-voor-payward-international-markets-limited-vanwege-het-zonder-registratie-aanbieden-van-cryptodiensten-in-nederland/",
     "decision": "https://www.dnb.nl/media/1hbfnaou/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-payward-international-markets-limited.pdf",
     "verify": false,
-    "group": "kraken"
+    "group": "kraken",
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 14 July 2023",
+    "power": {
+     "law": "NL:wwft",
+     "art": "29",
+     "point": "a"
+    }
    },
    {
     "id": "CASE:dnb-unnamed-casp-2023",
@@ -889,13 +938,35 @@
     "violated": [
      {
       "law": "NL:wwft",
-      "art": null
+      "art": "23b",
+      "lids": [
+       "1",
+       "2"
+      ],
+      "stated": true
+     },
+     {
+      "law": "NL:wwft",
+      "art": "23c",
+      "lids": [
+       "3"
+      ],
+      "stated": true
      }
     ],
-    "status": "reduced by the court",
+    "status": "reduced by the Rotterdam court; DNB appealed on 29 January 2026",
     "chain": null,
     "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2026/boete-voor-cryptodienstaanbieder-vanwege-het-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
-    "verify": false
+    "verify": false,
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the anonymised decision",
+    "power": {
+     "law": "NL:wwft",
+     "art": "30",
+     "point": "a"
+    },
+    "decision": "https://www.dnb.nl/media/sq2itqhg/bestuurlijke-boete-cryptodienstaanbieder.pdf",
+    "note": "Likely the same decision as DNB's earlier named publication on Foris DAX MT Limited (Crypto.com): same date (2 October 2023), amount (EUR 2,850,000) and publication date (13 March 2024), and the same articles. DNB now publishes it without a name; not confirmed, so not linked to Crypto.com.",
+    "related": "https://www.dnb.nl/en/sector-news/enforcement-measures-2024/fine-for-foris-dax-mt-limited-crypto-com-for-providing-crypto-services-without-the-required-registration"
    },
    {
     "id": "CASE:dnb-kucoin-2024",
@@ -922,7 +993,9 @@
     "chain": null,
     "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/last-onder-dwangsom-voor-peken-global-limited-vanwege-het-zonder-registratie-aanbieden-van-cryptodiensten-in-nederland/",
     "verify": false,
-    "group": "kucoin"
+    "group": "kucoin",
+    "decision": "https://www.dnb.nl/media/hxfl10uk/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-aan-peken-global-limited.pdf",
+    "violated_from": "article to read from the decision"
    },
    {
     "id": "CASE:dnb-bybit-2024",
@@ -941,7 +1014,20 @@
     "violated": [
      {
       "law": "NL:wwft",
-      "art": null
+      "art": "23b",
+      "lids": [
+       "1",
+       "2"
+      ],
+      "stated": true
+     },
+     {
+      "law": "NL:wwft",
+      "art": "23c",
+      "lids": [
+       "3"
+      ],
+      "stated": true
      }
     ],
     "period": "to 2023-09",
@@ -949,7 +1035,14 @@
     "chain": null,
     "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2024/boete-voor-bybit-fintech-limited-vanwege-het-tot-september-2023-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
     "verify": false,
-    "group": "bybit"
+    "group": "bybit",
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 22 October 2024",
+    "power": {
+     "law": "NL:wwft",
+     "art": "30",
+     "point": "a"
+    },
+    "decision": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf"
    },
    {
     "id": "CASE:dnb-okx-2025",
@@ -968,15 +1061,34 @@
     "violated": [
      {
       "law": "NL:wwft",
-      "art": null
+      "art": "23b",
+      "lids": [
+       "1",
+       "2"
+      ],
+      "stated": true
+     },
+     {
+      "law": "NL:wwft",
+      "art": "23c",
+      "lids": [
+       "3"
+      ],
+      "stated": true
      }
     ],
-    "period": "2023-07 to 2024-08",
+    "period": "at least 2023-07-07 to 2024-08-15",
     "status": "published",
     "chain": null,
     "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/boete-voor-aux-cayes-fintech-co-ltd-vanwege-het-van-juli-2023-tot-augustus-2024-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
     "verify": false,
-    "group": "okx"
+    "group": "okx",
+    "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 27 May 2025",
+    "power": {
+     "law": "NL:wwft",
+     "art": "30"
+    },
+    "decision": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf"
    },
    {
     "id": "CASE:afm-mexc-2025",
@@ -1275,10 +1387,258 @@
     "imported": false,
     "verify": true
    }
+  ],
+  "a": [
+   {
+    "law": "NL:wwft",
+    "art": "23b",
+    "heading": null,
+    "duty": "registration of crypto service providers with DNB (exchange between virtual and fiat currency, custodian wallets)",
+    "replaced_by": [
+     "NL:mica:59"
+    ],
+    "text": null,
+    "status": "vervallen",
+    "version": "2026-07-01",
+    "sha256": "b6ee6fad70c3cd114920b696bce35d1c7b6e74dd933e0b9c02b06bf248a4ef95"
+   },
+   {
+    "law": "NL:wwft",
+    "art": "23c",
+    "heading": null,
+    "duty": "crypto services only when registered with DNB",
+    "replaced_by": [
+     "NL:mica:59"
+    ],
+    "text": null,
+    "status": "vervallen",
+    "version": "2026-07-01",
+    "sha256": "b6ee6fad70c3cd114920b696bce35d1c7b6e74dd933e0b9c02b06bf248a4ef95"
+   },
+   {
+    "law": "NL:wwft",
+    "art": "29",
+    "heading": null,
+    "duty": "power of the supervisor to impose a last onder dwangsom",
+    "replaced_by": [],
+    "text": "De toezichthoudende autoriteit kan een last onder dwangsom opleggen ter zake van: a. overtreding van de bij of krachtens de artikelen 1e, 1f, 2, 2a, 2b, 2c, 2d, 2e, eerste en tweede lid, 2f, eerste, tweede en vierde lid, 3, eerste tot en met negende en elfde lid, 3a, eerste en tweede lid, 4, eerste lid, tweede lid, tweede volzin, en derde lid, 5, eerste, derde en vijfde lid, 6, 7, tweede lid, 8, 9, 10, tweede lid, 10c, eerste lid, 11, 16, 17, tweede lid, 17a, vijfde lid, 20a, 20b, 23, eerste, tweede en vierde lid, 23a, 33, 34, 35, 35a en 38 van deze wet gestelde regels; b. overtreding van artikel 1a, zesde lid, voor zover de overtreding betrekking heeft op de regels die bij of krachtens de in onderdeel a genoemde artikelen zijn gesteld; c. overtreding van de bij of krachtens de artikelen 4 tot en met 24 en artikel 26, eerste lid, van de verordening betreffende bij geldovermakingen en overdrachten van cryptoactiva te voegen informatie gestelde regels; d. overtreding van de bij of krachtens de verordening inzake de veiling van broeikasgasemissierechten gestelde regels; e. overtreding van de bij of krachtens een bij algemene maatregel van bestuur aangewezen verordening als bedoeld in artikel 1d, vierde lid, gestelde regels; f. het geen gevolg geven dan wel niet tijdig of onvolledig gevolg geven aan een aanwijzing als bedoeld in artikel 28.",
+    "status": "in force",
+    "version": "2026-07-01",
+    "sha256": "b6ee6fad70c3cd114920b696bce35d1c7b6e74dd933e0b9c02b06bf248a4ef95"
+   },
+   {
+    "law": "NL:wwft",
+    "art": "30",
+    "heading": null,
+    "duty": "power of the supervisor to impose an administrative fine",
+    "replaced_by": [],
+    "text": "De toezichthoudende autoriteit kan een bestuurlijke boete opleggen ter zake van: a. overtreding van de bij of krachtens de artikelen 1e, 1f, 2, 2a, 2b, 2c, 2d, 2e, eerste en tweede lid, 2f, eerste, tweede en vierde lid, 3, eerste tot en met negende en elfde lid, 3a, eerste en tweede lid, 4, eerste lid, tweede lid, tweede volzin, en derde lid, 5, eerste, derde en vijfde lid, 6, 7, tweede lid, 8, 9, 10, tweede lid, 10c, eerste lid, 11, 16, 17, tweede lid, 17a, vijfde lid, 20a, 20b, 23, eerste, tweede en vierde lid, 23a, 33, 34, 35, 35a en 38 van deze wet gestelde regels; b. overtreding van artikel 1a, zesde lid, voor zover de overtreding betrekking heeft op de regels die bij of krachtens de in onderdeel a genoemde artikelen zijn gesteld; c. overtreding van de bij of krachtens de artikelen 4 tot en met 24 en artikel 26, eerste lid van de verordening betreffende bij geldovermakingen en overdrachten van cryptoactiva te voegen informatie gestelde regels; d. overtreding van de bij of krachtens de verordening inzake de veiling van broeikasgasemissierechten gestelde regels; e. overtreding van de bij of krachtens een bij algemene maatregel van bestuur aangewezen verordening als bedoeld in artikel 1d, vierde lid, gestelde regels; f. overtreding van artikel 5:20, eerste lid, van de Algemene wet bestuursrecht; en g. het geen gevolg geven dan wel niet tijdig of onvolledig gevolg geven aan een aanwijzing als bedoeld in artikel 28.",
+    "status": "in force",
+    "version": "2026-07-01",
+    "sha256": "b6ee6fad70c3cd114920b696bce35d1c7b6e74dd933e0b9c02b06bf248a4ef95"
+   },
+   {
+    "law": "NL:mica",
+    "art": "59",
+    "heading": "Vergunningverlening",
+    "duty": "no crypto-asset services in the Union without authorisation as a CASP (or a notification under art. 60)",
+    "replaced_by": [],
+    "text": "Vergunningverlening 1. Een persoon mag binnen de Unie geen cryptoactivadiensten aanbieden, tenzij die persoon: a. een rechtspersoon of andere onderneming is die overeenkomstig artikel 63 een vergunning als aanbieder van crypto­ activadiensten heeft gekregen, of b. een kredietinstelling, een centrale effectenbewaarinstelling, een beleggingsonderneming, een marktexploitant, een instelling voor elektronisch geld, een icbe-beheermaatschappij of een abi-beheerder die overeenkomstig artikel 60 cryptoactivadiensten mag aanbieden. 9.6.2023 2. Aanbieders van cryptoactivadiensten die overeenkomstig artikel 63 een vergunning hebben gekregen, hebben een statutaire zetel in een lidstaat waar zij ten minste een deel van hun cryptoactivadiensten verrichten. Zij hebben hun plaats van werkelijke leiding in de Unie en ten minste één van de directeuren is woonachtig in de Unie. 3. Voor de toepassing van lid 1, punt a), mogen andere ondernemingen die geen rechtspersoon zijn alleen crypto­ activadiensten aanbieden indien hun rechtsvorm een niveau van bescherming van de belangen van derden waarborgt dat gelijkwaardig is aan het door rechtspersonen geboden beschermingsniveau en indien zij onderworpen zijn aan een gelijkwaardig prudentieel toezicht dat aan hun rechtsvorm is aangepast. 4. Aanbieders van cryptoactivadiensten die overeenkomstig artikel 63 een vergunning hebben gekregen, voldoen te allen tijde aan de voorwaarden voor hun vergunning. 5. Een persoon die geen aanbieder van cryptoactivadien",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "60",
+    "heading": "Aanbieding van cryptoactivadiensten door bepaalde financiële entiteiten",
+    "duty": "credit institutions and other financial entities may offer crypto-asset services after a notification",
+    "replaced_by": [],
+    "text": "Aanbieding van cryptoactivadiensten door bepaalde financiële entiteiten 1. Een kredietinstelling mag cryptoactivadiensten aanbieden indien zij de bevoegde autoriteit van haar lidstaat van herkomst ten minste 40 werkdagen voordat zij die diensten voor het eerst aanbiedt in kennis stelt van de in lid 7 bedoelde informatie. 2. Een centrale effectenbewaarinstelling die op grond van Verordening (EU) nr. 909/2014 van het Europees Parlement en de Raad (45) een vergunning heeft gekregen, mag slechts cryptoactiva namens cliënten bewaren en beheren indien zij de bevoegde autoriteit van de lidstaat van herkomst ten minste 40 werkdagen voordat zij die dienst voor het eerst aanbiedt in kennis stelt van de in lid 7 van dit artikel bedoelde informatie. Voor de toepassing van de eerste alinea van dit lid wordt het bewaren en beheren van cryptoactiva namens cliënten geacht gelijkwaardig te zijn aan het aanbieden, aanhouden of exploiteren van effectenrekeningen in verband met de afwikkelingsdienst als bedoeld in afdeling B, punt 3, van de bijlage bij Verordening (EU) nr. 909/2014. 3. Een beleggingsonderneming mag cryptoactivadiensten in de Unie aanbieden die gelijkwaardig zijn aan de beleg­ gingsdiensten en -activiteiten waarvoor zij op grond van Richtlijn 2014/65/EU over een specifieke vergunning beschikt, indien zij de bevoegde autoriteit van de lidstaat van herkomst ten minste 40 werkdagen voordat zij deze diensten voor het eerst aanbiedt, in kennis stelt van de in lid 7 van dit artikel bed",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "61",
+    "heading": "Verlening van cryptoactivadiensten uitsluitend op initiatief van de cliënt",
+    "duty": "reverse solicitation",
+    "replaced_by": [],
+    "text": "Verlening van cryptoactivadiensten uitsluitend op initiatief van de cliënt 1. Indien een cliënt die in de Unie is gevestigd of gesitueerd, uitsluitend op eigen initiatief om de verrichting van een cryptoactivadienst of -activiteit door een onderneming uit een derde land verzoekt, is het vergunningsvereiste uit hoofde van artikel 59 niet van toepassing op de verrichting van die cryptoactivadienst of -activiteit door de onderneming uit een derde land voor die cliënt, noch op een betrekking die specifiek verband houdt met het verrichten van die crypto­ activadienst of -activiteit. Zonder afbreuk te doen aan intragroepbetrekkingen wordt de dienst niet geacht uitsluitend op eigen initiatief van de cliënt te worden verleend indien een onderneming uit een derde land, onder meer via een entiteit die namens haar handelt of nauwe banden heeft met een dergelijke onderneming uit het derde land of een andere namens een dergelijke entiteit handelende persoon, cliënten of potentiële cliënten in de Unie benadert, ongeacht het communicatiemiddel dat wordt gebruikt voor het benaderen, promoten of reclame maken in de Unie. De tweede alinea geldt niettegenstaande een eventuele contractuele clausule of disclaimer waarin anderszins wordt bepaald, zoals een clausule of disclaimer volgens dewelke de verlening van diensten door een onderneming van een derde land wordt beschouwd als een dienst die uitsluitend op eigen initiatief van de cliënt wordt verleend. 2. Een initiatief dat uitsluitend op eigen ",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "62",
+    "heading": "Aanvraag van een vergunning als aanbieder van cryptoactivadiensten",
+    "duty": "application for authorisation",
+    "replaced_by": [],
+    "text": "Aanvraag van een vergunning als aanbieder van cryptoactivadiensten 1. Rechtspersonen of andere ondernemingen die voornemens zijn cryptoactivadiensten aan te bieden, dienen hun aanvraag voor een vergunning als aanbieder van cryptoactivadiensten in bij de bevoegde autoriteit van hun lidstaat van herkomst. 2. De in lid 1 bedoelde aanvraag omvat alle volgende informatie: a. de naam, met inbegrip van de officiële naam en enige andere gebruikte handelsnaam, de identificatiecode voor juridische entiteiten van de aanvragende aanbieder van cryptoactivadiensten, de door die aanbieder gebruikte web­ site, een e-mailadres, een telefoonnummer van een contactpersoon en zijn fysieke adres; 9.6.2023 b. de rechtsvorm van de aanvragende aanbieder van cryptoactivadiensten; c. de statuten van de aanvragende aanbieder van cryptoactivadiensten, indien van toepassing; d. een programma van werkzaamheden met de soorten cryptoactivadiensten die de aanvragende aanbieder van crypto­ activadiensten voornemens is aan te bieden, met inbegrip van waar en hoe die diensten op de markt zullen worden gebracht; e. het bewijs dat de aanvragende aanbieder van cryptoactivadiensten aan de in artikel 67 uiteengezette vereisten voor prudentiële waarborgen voldoet; f) een beschrijving van de governanceregelingen van de aanvragende aanbieder van cryptoactivadiensten; g. het bewijs dat de leden van het leidinggevende orgaan van de aanvragende aanbieder van cryptoactivadiensten een voldoende goede reputatie hebben en over",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "63",
+    "heading": "Beoordeling van de vergunningsaanvraag en toekenning of weigering van een vergunning",
+    "duty": "assessment and grant or refusal of authorisation",
+    "replaced_by": [],
+    "text": "Beoordeling van de vergunningsaanvraag en toekenning of weigering van een vergunning 1. De bevoegde autoriteiten zenden onverwijld, en hoe dan ook binnen vijf werkdagen na ontvangst van een aan­ vraag uit hoofde van artikel 62, lid 1, een schriftelijke ontvangstbevestiging aan de aanvragende aanbieder van crypto­ activadiensten. 2. De bevoegde autoriteiten beoordelen binnen 25 werkdagen na ontvangst van een aanvraag op grond van arti­ kel 62, lid 1, of die aanvraag volledig is door na te gaan of de in artikel 62, lid 2, genoemde informatie is verstrekt. Indien de aanvraag onvolledig is, stellen de bevoegde autoriteiten een termijn vast waarbinnen de aanvragende aanbieder van cryptoactivadiensten ontbrekende informatie moet verstrekken. 3. De bevoegde autoriteiten kunnen weigeren aanvragen te beoordelen indien dergelijke aanvragen onvolledig blijven nadat de overeenkomstig lid 2, tweede alinea, door hen gestelde termijn is verstreken. 4. Zodra een aanvraag volledig is, stellen de bevoegde autoriteiten de aanvragende aanbieder van cryptoactivadiensten daarvan onverwijld in kennis. 5. Voordat de bevoegde autoriteiten een vergunning als aanbieder van cryptoactivadiensten toekennen of weigeren, raadplegen zij de bevoegde autoriteiten van een andere lidstaat indien de aanvragende aanbieder van cryptoactivadien­ sten in een van de volgende posities verkeert in zijn relatie tot een kredietinstelling, een centrale effectenbewaarinstelling, een beleggingsonderneming, een marktexploitan",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "67",
+    "heading": "Prudentiële vereisten",
+    "duty": "prudential requirements",
+    "replaced_by": [],
+    "text": "Prudentiële vereisten 1. Aanbieders van cryptoactivadiensten beschikken te allen tijde over prudentiële waarborgen die gelijk zijn aan ten minste het hogere bedrag van de volgende twee bedragen: a. het in bijlage IV vermelde bedrag aan permanente minimumkapitaalvereisten, afhankelijk van het type aangeboden cryptoactivadiensten; b. een kwart van de vaste kosten van het voorgaande jaar, jaarlijks te herzien. 2. Aanbieders van cryptoactivadiensten die sinds de datum waarop zij diensten zijn beginnen aan te bieden, nog geen jaar actief zijn, gebruiken, ten behoeve van de in lid 1, punt b), bedoelde berekening, de verwachte vaste kosten uit hun prognoses voor de eerste twaalf maanden dat zij diensten aanbieden, zoals die samen met hun vergunningsaanvraag zijn ingediend. 3. Voor de toepassing van lid 1, punt b), berekenen de aanbieders van cryptoactivadiensten hun vaste kosten over het voorgaande jaar aan de hand van cijfers die resulteren uit het toepasselijke kader voor financiële verslaggeving, door de volgende bestanddelen in mindering te brengen op de totale kosten na winstuitkeringen aan aandeelhouders of leden in hun recentste gecontroleerde jaarrekeningen of, indien geen gecontroleerde jaarrekeningen beschikbaar zijn, in de door de nationale toezichthouders gevalideerde jaarrekeningen: a. personeelsbonussen en andere beloningen, voor zover deze bonussen en beloningen van de nettowinst van de aanbieders van cryptoactivadiensten in het desbetreffende jaar afhangen; b. winstd",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "68",
+    "heading": "Governanceregelingen",
+    "duty": "governance",
+    "replaced_by": [],
+    "text": "Governanceregelingen 1. Leden van het leidinggevende orgaan van aanbieders van cryptoactivadiensten hebben een voldoende goede reputatie en beschikken zowel individueel als collectief over de passende kennis, vaardigheden en ervaring om hun taken te kunnen uitvoeren. In het bijzonder mogen leden van het leidinggevende orgaan van aanbieders van crypto­ activadiensten niet veroordeeld zijn voor strafbare feiten die verband houden met het witwassen van geld, terrorisme­ financiering of voor andere strafbare feiten die hun goede reputatie zouden aantasten. Zij tonen ook aan dat zij voldoende tijd aan de daadwerkelijke uitvoering van hun taken kunnen besteden. 2. Aandeelhouders en leden die, direct of indirect, een gekwalificeerde deelneming in aanbieders van cryptoactiva­ diensten hebben, hebben een voldoende goede reputatie en zijn met name niet veroordeeld voor strafbare feiten die verband houden met het witwassen van geld of terrorismefinanciering of voor andere strafbare feiten die hun goede reputatie zouden aantasten. 3. Indien de invloed die wordt uitgeoefend door de aandeelhouders of leden die, direct of indirect, een gekwalificeerde deelneming in een aanbieder van cryptoactivadiensten hebben, naar verwachting nadelig zal zijn voor de gedegen en prudente bedrijfsvoering van die aanbieder van cryptoactivadiensten, nemen de bevoegde autoriteiten passende maat­ regelen om die risico’s het hoofd te bieden. Dergelijke maatregelen kunnen betrekking hebben op het aanvragen van re",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "70",
+    "heading": "Bewaring van cryptoactiva en geldmiddelen van cliënten",
+    "duty": "safekeeping of clients' crypto-assets and funds",
+    "replaced_by": [],
+    "text": "Bewaring van cryptoactiva en geldmiddelen van cliënten 1. Aanbieders van cryptoactivadiensten die aan cliënten toebehorende cryptoactiva of de toegangsmiddelen tot dergelijke cryptoactiva houden, treffen adequate regelingen om de eigendomsrechten van cliënten veilig te stellen, met name in het geval van de insolventie van de aanbieder van cryptoactivadiensten, en om te voorkomen dat cryptoactiva van cliënten voor hun eigen rekening worden gebruikt. 2. Indien hun bedrijfsmodellen of de cryptoactivadiensten vereisen dat andere geldmiddelen van cliënten dan emoneytokens worden aangehouden, beschikken aanbieders van cryptoactivadiensten over adequate regelingen om de eigendomsrechten van cliënten veilig te stellen en om te voorkomen dat geldmiddelen van cliënten voor hun eigen rekening worden gebruikt. 3. Uiterlijk aan het einde van de werkdag volgend op de dag waarop andere geldmiddelen van cliënten dan emoneytokens zijn ontvangen, storten aanbieders van cryptoactivadiensten die geldmiddelen van cliënten bij een krediet­ instelling of een centrale bank. Aanbieders van cryptoactivadiensten nemen alle noodzakelijke maatregelen om ervoor te zorgen dat bij een krediet­ instelling of een centrale bank aangehouden andere geldmiddelen van cliënten dan e-moneytokens worden aangehouden op een rekening die afzonderlijk identificeerbaar is van rekeningen die worden gebruikt om aan de aanbieders van cryptoactivadiensten toebehorende geldmiddelen aan te houden. 4. Aanbieders van cryptoactiva",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "75",
+    "heading": "Bewaring en beheer van cryptoactiva namens cliënten",
+    "duty": "custody and administration on behalf of clients",
+    "replaced_by": [],
+    "text": "Bewaring en beheer van cryptoactiva namens cliënten 1. Aanbieders van cryptoactivadiensten die namens cliënten instaan voor de bewaring en het beheer van cryptoactiva, sluiten met hun cliënten een overeenkomst waarin hun taken en verantwoordelijkheden nader zijn bepaald. Een dergelijke overeenkomst bevat ten minste de volgende elementen: a. de identiteit van de partijen bij de overeenkomst; b. de aard van de aangeboden cryptoactivadienst en een beschrijving van die dienst; c. het bewaringsbeleid; d. de middelen voor de communicatie tussen de aanbieder van cryptoactivadiensten en de cliënt, waaronder het authenticatiesysteem van de cliënt; e. een beschrijving van de door de aanbieder van cryptoactivadiensten gebruikte beveiligingssystemen; 9.6.2023 f. de door de aanbieder van cryptoactivadiensten berekende vergoedingen, kosten en lasten; g. het toepasselijke recht. 2. Aanbieders van cryptoactivadiensten die namens cliënten instaan voor de bewaring en het beheer van cryptoactiva, houden een register bij van de namens elke cliënt geopende posities die overeenstemmen met de rechten van elke cliënt op de cryptoactiva. In voorkomend geval leggen aanbieders van cryptoactivadiensten in dat register zo snel mogelijk alle bewegingen vast volgens de instructies van hun cliënten. In dergelijke gevallen zorgen hun interne procedures ervoor dat bewegingen die op de registratie van de cryptoactiva van invloed zijn, blijken uit een regelmatig in het positieregister van de cliënt geregistreer",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "76",
+    "heading": "Exploitatie van een cryptoactivahandelsplatform",
+    "duty": "operation of a trading platform",
+    "replaced_by": [],
+    "text": "Exploitatie van een cryptoactivahandelsplatform 1. Aanbieders van cryptoactivadiensten die een cryptoactivahandelsplatform exploiteren, stellen voor de exploitatie van het handelsplatform duidelijke en transparante regels vast, handhaven deze regels en voeren deze uit. In die exploitatieregels worden ten minste: a. de goedkeuringsprocedures vastgesteld, met inbegrip van vereisten ten aanzien van het cliëntonderzoek die in ver­ houding staan tot het risico op het witwassen van geld of terrorismefinanciering dat de aanvrager volgens Richtlijn (EU) 2015/849 met zich meebrengt, die worden toegepast voordat cryptoactiva tot het handelsplatform worden toegelaten; b. eventuele uitsluitingscategorieën bepaald wat betreft de typen cryptoactiva die niet tot de handel worden toegelaten; c. de beleidslijnen, de procedures en de hoogte van eventuele vergoedingen vastgesteld voor de toelating tot de handel; d. objectieve, niet-discriminerende regels en evenredige criteria voor de deelname aan handelsactiviteiten bepaald, die een eerlijke en open toegang tot het handelsplatform bevorderen voor cliënten die bereid zijn te handelen; e. niet-discretionaire regels en procedures bepaald die ervoor moeten zorgen dat er eerlijk en ordelijk wordt gehandeld, alsook objectieve criteria voor de efficiënte uitvoering van orders; f. voorwaarden voor cryptoactiva bepaald om voor handel beschikbaar te blijven, met inbegrip van drempelwaarden inzake liquiditeit en voorwaarden inzake periodieke openbaarmaki",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "94",
+    "heading": "Bevoegdheden van de bevoegde autoriteiten",
+    "duty": "powers of the competent authorities",
+    "replaced_by": [],
+    "text": "Bevoegdheden van de bevoegde autoriteiten 1. Ter vervulling van hun taken krachtens de titels II tot en met VI van deze verordening beschikken de bevoegde autoriteiten overeenkomstig het nationale recht ten minste over de volgende toezichthoudende en onderzoeksbevoegd­ heden: a) zij kunnen van personen verlangen dat zij informatie en documenten verstrekken waarvan de bevoegde autori­ teiten van oordeel zijn dat ze van belang kunnen zijn voor de uitoefening van hun taken; b) zij kunnen het aanbieden van cryptoactivadiensten telkens voor maximaal 30 opeenvolgende werkdagen op­ schorten of van aanbieders van cryptoactivadiensten verlangen dat zij dit doen, indien er redelijke gronden zijn om te vermoeden dat inbreuk is gemaakt op deze verordening; c) zij kunnen het aanbieden van cryptoactivadiensten verbieden, indien zij vaststellen dat inbreuk is gemaakt op deze verordening; d) zij kunnen alle essentiële informatie die gevolgen kan hebben voor het aanbieden van cryptoactivadiensten, openbaar maken of van aanbieders van de betreffende cryptoactivadiensten verlangen dat zij dit doen, om de bescherming van de belangen van cliënten, en met name individuele houders, of de vlotte werking van de markt te garanderen; e) zij kunnen openbaar maken dat aanbieders van cryptoactivadiensten hun verplichtingen niet nakomen; f) zij kunnen het aanbieden van cryptoactivadiensten opschorten of van aanbieders van cryptoactivadiensten ver­ langen dat zij dit doen, indien zij van oordeel zijn dat de",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "111",
+    "heading": "Administratieve sancties en andere administratieve maatregelen",
+    "duty": "administrative penalties and measures",
+    "replaced_by": [],
+    "text": "Administratieve sancties en andere administratieve maatregelen 1. Onverminderd strafrechtelijke sancties en onverminderd de in artikel 94 vermelde toezichthoudende en onder­ zoeksbevoegdheden van de bevoegde autoriteiten, zorgen de lidstaten er overeenkomstig het nationale recht voor dat de bevoegde autoriteiten de bevoegdheid hebben om passende administratieve sancties en andere administratieve maat­ regelen te nemen met betrekking tot ten minste de volgende inbreuken: a. inbreuken op de artikelen 4 tot en met 14; b. inbreuken op de artikelen 16, 17, 19, 22, 23 en 25, de artikelen 27 tot en met 41 en de artikelen 46 en 47; c. inbreuken op de artikelen 48 tot en met 51 en de artikelen 53, 54 en 55; d. inbreuken op de artikelen 59, 60 en 64 en de artikelen 65 tot en met 83; e. inbreuken op de artikelen 88 tot en met 92; f. weigeringen om mee te werken aan of gevolg te geven aan een onderzoek of een inspectie of een verzoek als bedoeld in artikel 94, lid 3. De lidstaten kunnen tot 30 juni 2024 besluiten niet te voorzien in voorschriften inzake administratieve sancties indien op de in de eerste alinea, punt a), b), c), d) of e), bedoelde inbreuken reeds uit hoofde van hun nationale recht strafrechtelijke sancties staan. Indien zij een dergelijk besluit nemen, stellen de lidstaten de Commissie, de ESMA en de EBA in detail in kennis van de toepasselijke delen van hun strafrecht. 9.6.2023 Uiterlijk op 30 juni 2024 stellen de lidstaten de Commissie, de ESMA en de EBA in detail van d",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:mica",
+    "art": "143",
+    "heading": "Overgangsmaatregelen",
+    "duty": "transitional measures (national transition for existing providers)",
+    "replaced_by": [],
+    "text": "Overgangsmaatregelen 1. De artikelen 4 tot en met 15 zijn niet van toepassing op aanbiedingen aan het publiek van cryptoactiva die vóór 30 december 2024 zijn afgelopen. 2. In afwijking van titel II zijn op andere cryptoactiva dan activagerelateerde tokens en e-moneytokens die vóór 30 december 2024 tot de handel zijn toegelaten, alleen de volgende vereisten van toepassing: a. de artikelen 7 en 9 zijn van toepassing op reclame-uitingen die na 30 december 2024 worden gepubliceerd; b. exploitanten van handelsplatformen zorgen ervoor dat er in de gevallen waarin dit conform deze verordening vereist is, uiterlijk op 31 december 2027 een cryptoactivawitboek wordt opgesteld, aangemeld en gepubliceerd, overeen­ komstig de artikelen 6, 8 en 9, en dat dit witboek overeenkomstig artikel 12 wordt bijgewerkt. 3. Aanbieders van cryptoactivadiensten die vóór 30 december 2024 hun diensten overeenkomstig het toepasselijke recht aanboden, mogen dit blijven doen tot 1 juli 2026, of totdat hun overeenkomstig artikel 63 een vergunning is verleend of geweigerd, naargelang wat zich het eerst voordoet. De lidstaten kunnen beslissen de in de eerste alinea bedoelde overgangsregeling voor aanbieders van cryptoactivadien­ sten niet toe te passen of de duur ervan te beperken wanneer zij van oordeel zijn dat hun nationale regelgevingskader dat vóór 30 december 2024 van toepassing was, minder streng is dan deze verordening. 9.6.2023 Uiterlijk op 30 juni 2024 laten de lidstaten de Commissie en de ESMA weten ",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "d70b575c98463e00ce012b91883931f6decb323767630ae471ee11ca7416c059"
+   },
+   {
+    "law": "NL:tfr",
+    "art": "14",
+    "heading": "Bij overdrachten van cryptoactiva te voegen informatie",
+    "duty": "travel rule: information that accompanies a transfer of crypto-assets (originator's CASP)",
+    "replaced_by": [],
+    "text": "Bij overdrachten van cryptoactiva te voegen informatie 1. De aanbieder van cryptoactivadiensten van de initiator zorgt ervoor dat bij overdrachten van cryptoactiva de volgende informatie over de initiator wordt gevoegd: a. de naam van de initiator; b. het distributed-ledger-adres van de initiator, in gevallen waarin een overdracht van cryptoactiva is geregistreerd op een netwerk dat gebruikmaakt van DLT of een vergelijkbare technologie, en het cryptoactivarekeningnummer van de initiator indien een dergelijke rekening bestaat en wordt gebruikt om de transactie te verwerken; c. het cryptoactivarekeningnummer van de initiator, in gevallen waarin een overdracht van cryptoactiva niet is geregis­ treerd op een netwerk dat gebruik maakt van DLT of een vergelijkbare technologie; d. het adres van de initiator, met inbegrip van de naam van het land, het nummer van diens officieel persoonlijk document en cliëntenidentificatienummer, of anders geboorteplaats en -datum van de initiator, en e. op voorwaarde dat het benodigde veld bestaat in het format voor betalingsberichten, en de initiator deze informatie aan zijn aanbieder van cryptoactivadiensten heeft verstrekt, de huidige LEI of, bij gebrek daaraan, een andere beschikbare officiële gelijkwaardige identificatiecode van de initiator. 9.6.2023 2. De aanbieder van cryptoactivadiensten van de initiator zorgt ervoor dat bij overdrachten van cryptoactiva de volgende informatie over de begunstigde wordt gevoegd: a. de naam van de begunstigde",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "93161f24d9c332030534d9569d41016c3e9cddfc94a4599dc5af0c68bbcf6dd1"
+   },
+   {
+    "law": "NL:tfr",
+    "art": "16",
+    "heading": "Opsporing van ontbrekende informatie over de initiator of de begunstigde",
+    "duty": "detect missing information (beneficiary's CASP)",
+    "replaced_by": [],
+    "text": "Opsporing van ontbrekende informatie over de initiator of de begunstigde 1. De aanbieder van cryptoactivadiensten van de begunstigde voert doeltreffende procedures uit — indien nodig ook monitoring na of tijdens overdrachten — om op te sporen of de in artikel 14, leden 1 en 2, bedoelde informatie over de initiator en de begunstigde is opgenomen in of volgt op de overdracht of de blokoverdracht van cryptoactiva. 2. In het geval van een overdracht van cryptoactiva vanuit een zelfgehost adres, verzamelt en bewaart de aanbieder van cryptoactivadiensten van de begunstigde de in artikel 14, leden 1 en 2, bedoelde informatie en zorgt deze ervoor dat de overdracht van cryptoactiva individueel kan worden geïdentificeerd. Onverminderd de overeenkomstig artikel 19 ter van Richtlijn (EU) 2015/849 genomen specifieke risicobeperkende maatregelen, neemt de aanbieder van cryptoactivadiensten van de begunstigde, in het geval van een overdracht ten bedrage van meer dan 1 000 EUR vanuit een zelfgehost adres, passende maatregelen om te beoordelen of dat adres eigendom is van of onder zeggenschap staat van de begunstigde. 3. Alvorens cryptoactiva over te maken aan de begunstigde, verifieert diens aanbieder van cryptoactivadiensten de juistheid van de in artikel 14, lid 2, bedoelde informatie over de begunstigde op basis van documenten, data of informatie uit een betrouwbare en onafhankelijke bron. 4. De verificatie als bedoeld in de leden 2 en 3 van dit artikel wordt geacht te zijn verricht indie",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "93161f24d9c332030534d9569d41016c3e9cddfc94a4599dc5af0c68bbcf6dd1"
+   },
+   {
+    "law": "NL:tfr",
+    "art": "17",
+    "heading": "Overmakingen van cryptoactiva met ontbrekende of onvolledige informatie over de initiator of de begunstigde",
+    "duty": "transfers with missing or incomplete information",
+    "replaced_by": [],
+    "text": "Overmakingen van cryptoactiva met ontbrekende of onvolledige informatie over de initiator of de begunstigde 1. De aanbieder van cryptoactivadiensten van de begunstigde voert doeltreffende, op risicobeoordeling gebaseerde procedures uit, met inbegrip van procedures op basis van de risicogevoeligheid als bedoeld in artikel 13 van Richtlijn (EU) 2015/849, om te beslissen of een overdracht van cryptoactiva waarvoor de vereiste volledige informatie over de initiator en de begunstigde ontbreekt, moet worden uitgevoerd, geweigerd, teruggezonden of opgeschort, en om te bepalen wat het passende vervolg moet zijn. 9.6.2023 Ingeval de aanbieder van cryptoactivadiensten van de begunstigde constateert dat de in artikel 14, lid 1, of lid 2, of in artikel 15 bedoelde informatie ontbreekt of onvolledig is, neemt die aanbieder van cryptoactivadiensten, op basis van een analyse van de risicogevoeligheid en onverwijld, een van de volgende maatregelen: a. het weigeren van de overdracht of het terugzenden van de overgemaakte cryptoactiva naar de cryptoactivarekening van de initiator, of b. het verzoeken om de vereiste informatie over de initiator en de begunstigde vóór het ter beschikking stellen van de cryptoactiva van de begunstigde. 2. Indien een aanbieder van cryptoactivadiensten herhaaldelijk verzuimt de vereiste informatie over de initiator of de begunstigde te verstrekken, gaat de aanbieder van cryptoactivadiensten van de begunstigde over tot: a. het nemen van maatregelen, die aanvankelijk",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "93161f24d9c332030534d9569d41016c3e9cddfc94a4599dc5af0c68bbcf6dd1"
+   },
+   {
+    "law": "NL:tfr",
+    "art": "19",
+    "heading": "Het bewaren van informatie over de initiator en de begunstigde die bij de overdracht is gevoegd",
+    "duty": "keep the information that accompanies the transfer",
+    "replaced_by": [],
+    "text": "Het bewaren van informatie over de initiator en de begunstigde die bij de overdracht is gevoegd Aanbieders van intermediaire cryptoactivadiensten zien erop toe dat alle ontvangen informatie over de initiator en de begunstigde die bij een overdracht van cryptoactiva is gevoegd, samen met de overdracht wordt doorgegeven, en dat registers met deze informatie worden bewaard en op verzoek ter beschikking worden gesteld van de bevoegde auto­ riteiten.",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "93161f24d9c332030534d9569d41016c3e9cddfc94a4599dc5af0c68bbcf6dd1"
+   },
+   {
+    "law": "NL:tfr",
+    "art": "23",
+    "heading": "Interne beleidsregels, procedures en controles ter bewaking van de uitvoering van de beperkende maatregelen",
+    "duty": "policies and controls to implement restrictive measures (sanctions)",
+    "replaced_by": [],
+    "text": "Interne beleidsregels, procedures en controles ter bewaking van de uitvoering van de beperkende maatregelen Wanneer aanbieders van betalingsdiensten en van cryptoactivadiensten overmakingen van geld, respectievelijk over­ drachten van cryptoactiva verrichten uit hoofde van deze verordening, beschikken zij over interne beleidsregels, pro­ cedures en controles ter waarborging van de uitvoering van de beperkende maatregelen van de Unie en van de lidstaten. De Europese Bankautoriteit (EBA) legt uiterlijk op 30 december 2024 richtsnoeren vast ter bepaling van de maatregelen die krachtens dit artikel moeten worden genomen. 9.6.2023 HOOFDSTUK V Informatie, gegevensbescherming en bewaren van informatie",
+    "status": "in force",
+    "version": "2024-12-30",
+    "sha256": "93161f24d9c332030534d9569d41016c3e9cddfc94a4599dc5af0c68bbcf6dd1"
+   }
   ]
  },
  "queue": [
-  "NL: read the DNB decision PDFs for the exact Wwft articles of each case (Binance and Kraken: art. 23b(1)(2) and 23c(3), from the decision)",
+  "NL: KuCoin 2024: read the exact Wwft articles from the decision (the six other DNB decisions: art. 23b(1)(2) and 23c(3), read)",
   "NL: the Rotterdam court rulings on these decisions (ECLI) and the Knaken bankruptcy ruling",
   "AFM: MiCAR enforcement after 30 June 2025 (warnings, orders, fines) and ESMA's register of non-compliant entities",
   "EU national supervisors (BaFin, AMF, CONSOB, CNMV ...)",
@@ -1286,10 +1646,11 @@
  ],
  "queries": {
   "01_register": "// Who supervises crypto, in which role, under which laws? Per jurisdiction; wave 1 = the Netherlands.\n// from: - | yields: Jurisdiction\nMATCH (x:Jurisdiction)<-[:IN_JURISDICTION]-(s:Sector)<-[v:SUPERVISES]-(g:Regulator)\nOPTIONAL MATCH (s)-[:SUBJECT_TO]->(w:Law)\nRETURN x.wave AS wave, x.code AS code, x.name AS jurisdiction, x.regime AS regime,\n       collect(DISTINCT g.short + ' (' + v.role + ')') AS supervisors, collect(DISTINCT w.short) AS laws, x.verify AS verify\nORDER BY wave, jurisdiction\n",
-  "02_cases": "// Every public crypto enforcement case: who, by whom, how much, which law, and the source. The Netherlands first, newest first.\n// from: - | yields: Source\nMATCH (k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nOPTIONAL MATCH (k)-[r:VIOLATED]->(w:Law)\nRETURN x.code AS country, k.date AS date, k.party AS party, collect(DISTINCT g.short) AS authorities, k.measure AS measure,\n       k.amount AS amount, k.currency AS currency, k.amount_note AS amount_note, collect(DISTINCT w.short) AS laws, k.status AS status, k.url AS source, k.decision AS decision, k.verify AS verify, k.id AS id\nORDER BY CASE x.code WHEN 'NL' THEN 0 ELSE 1 END, date DESC\n",
+  "02_cases": "// Every public crypto enforcement case: who, by whom, how much, which law, and the source. The Netherlands first, newest first.\n// from: - | yields: Source\nMATCH (k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nOPTIONAL MATCH (k)-[r:VIOLATED]->(w:Law)\nRETURN x.code AS country, k.date AS date, k.party AS party, collect(DISTINCT g.short) AS authorities, k.measure AS measure,\n       k.amount AS amount, k.currency AS currency, k.amount_note AS amount_note, collect(DISTINCT w.short + CASE WHEN r.art IS NULL OR r.art = '' THEN '' ELSE ' art. ' + r.art + CASE WHEN size(coalesce(r.lids, [])) > 0 THEN '(' + reduce(t = '', l IN r.lids | t + CASE t WHEN '' THEN '' ELSE ')(' END + l) + ')' ELSE '' END END) AS laws, k.status AS status, k.url AS source, k.decision AS decision, k.verify AS verify, k.id AS id\nORDER BY CASE x.code WHEN 'NL' THEN 0 ELSE 1 END, date DESC\n",
   "03_cases_by_law": "// Where did the same law go wrong before? Per law: the cases that violated it, and the total published amount per currency.\n// from: - | yields: Law\nMATCH (k:Source {kind: 'case'})-[:VIOLATED]->(w:Law)\nRETURN w.short AS law, w.title AS title, count(k) AS cases, collect(k.party) AS parties,\n       sum(CASE WHEN k.currency = 'USD' THEN coalesce(k.amount, 0.0) ELSE 0.0 END) AS usd,\n       sum(CASE WHEN k.currency = 'EUR' THEN coalesce(k.amount, 0.0) ELSE 0.0 END) AS eur\nORDER BY cases DESC, law\n",
   "04_sanctions_lists": "// The sanctions lists a crypto screening checks against, who publishes them and whether they are imported yet.\n// from: - | yields: SanctionsList\nMATCH (l:SanctionsList)\nOPTIONAL MATCH (l)-[:PUBLISHED_BY]->(g:Regulator)\nRETURN l.name AS list, g.short AS publisher, l.refresh AS refresh, l.imported AS imported, l.url AS source\nORDER BY list\n",
   "05_search_cases": "// Search the cases in full text (title, summary, what happened on chain, party). param: q (e.g. sanctions, registratie, ransomware)\n// from: - | yields: Source\nMATCH (k:Source {kind: 'case'}) SEARCH k IN (FULLTEXT INDEX crypto_case_text FOR $q LIMIT 10) SCORE AS relevance\nRETURN k.party AS party, k.date AS date, k.title AS title, k.url AS source, relevance\nORDER BY relevance DESC\n",
-  "06_same_party_elsewhere": "// The same company, sanctioned by more than one authority or in more than one country: where else did it go wrong?\n// from: - | yields: Entity\nMATCH (e:Entity)<-[:AGAINST]-(k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nWITH e, k, x, collect(g.short) AS by\nORDER BY k.date\nWITH e, collect(x.code + ' ' + k.date + ' ' + k.measure + ' (' + reduce(s = '', a IN by | s + CASE s WHEN '' THEN '' ELSE ', ' END + a) + ')') AS cases, count(DISTINCT x) AS countries\nWHERE size(cases) > 1\nRETURN e.group AS group, e.name AS party, countries, cases\nORDER BY countries DESC, size(cases) DESC\n"
+  "06_same_party_elsewhere": "// The same company, sanctioned by more than one authority or in more than one country: where else did it go wrong?\n// from: - | yields: Entity\nMATCH (e:Entity)<-[:AGAINST]-(k:Source {kind: 'case'})-[:IN_JURISDICTION]->(x:Jurisdiction)\nOPTIONAL MATCH (k)-[:BY]->(g:Regulator)\nWITH e, k, x, collect(g.short) AS by\nORDER BY k.date\nWITH e, collect(x.code + ' ' + k.date + ' ' + k.measure + ' (' + reduce(s = '', a IN by | s + CASE s WHEN '' THEN '' ELSE ', ' END + a) + ')') AS cases, count(DISTINCT x) AS countries\nWHERE size(cases) > 1\nRETURN e.group AS group, e.name AS party, countries, cases\nORDER BY countries DESC, size(cases) DESC\n",
+  "07_articles": "// Per article: the duty, how often it was violated in the cases (with the total of the fines in EUR, as published), and the article that replaced it.\n// from: - | yields: Article\nMATCH (x:Article)\nOPTIONAL MATCH (k:Source {kind: 'case'})-[:VIOLATED_ARTICLE]->(x)\nOPTIONAL MATCH (x)-[:REPLACED_BY]->(y:Article)\nWITH x, y, collect(k) AS ks\nRETURN x.law_short + ' art. ' + x.art AS article, x.heading AS heading, x.duty AS duty, x.status AS status, size(ks) AS cases,\n       [k IN ks | k.party] AS parties,\n       reduce(t = 0.0, k IN ks | t + CASE WHEN k.currency = 'EUR' AND k.measure ENDS WITH 'fine' THEN coalesce(k.amount, 0.0) ELSE 0.0 END) AS fines_eur,\n       CASE WHEN y IS NULL THEN null ELSE y.law_short + ' art. ' + y.art END AS replaced_by\nORDER BY cases DESC, x.law_short, size(x.art), x.art\n"
  }
 }

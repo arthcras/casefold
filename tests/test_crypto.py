@@ -21,6 +21,8 @@ j, c, l = build_crypto.data()
 errors = build_crypto.check(j, c, l)
 ok(not errors, 'data: every case has an https source, a date, a known jurisdiction, authority and law' + ('' if not errors else ': ' + '; '.join(errors)))
 ok(j[0]['code'] == 'NL' and j[0]['wave'] == 1, 'wave 1 is the Netherlands')
+arts_in = build_crypto.articles()
+ok(all(a['status'] != 'text not read in' for a in arts_in), f'{len(arts_in)} key articles, each found in a law file under laws/ (MiCA, TFR, Wwft)')
 nl = {r['id'] for r in j[0]['regulators']}
 ok({'NL:afm', 'NL:dnb', 'NL:fiu-nl'} <= nl, 'NL supervisors use the ids of the Casefold register (NL:afm, NL:dnb, NL:fiu-nl)')
 known = {x['id'] for x in json.load(open(os.path.join(HERE, 'data', 'rules', 'laws.json'), encoding='utf-8'))['laws']}
@@ -28,7 +30,7 @@ ok({'NL:mica', 'NL:tfr', 'NL:wwft', 'NL:sw1977'} <= known & {w['id'] for w in j[
 src = {x['id']: x for x in json.load(open(os.path.join(HERE, 'data', 'sources', 'index.json'), encoding='utf-8'))['cases']}
 for k in c['cases']:
     if k['id'] in src:
-        ok(k['url'] == src[k['id']]['url'] and k['date'] == src[k['id']]['date'], f"{k['id']}: same source and date as data/sources/index.json")
+        ok(k['url'] == src[k['id']]['url'] and src[k['id']]['date'] in (k['date'], k.get('published')), f"{k['id']}: same source as data/sources/index.json, and its date (imposed or published)")
 ok(all(k['verify'] or k['amount'] is not None or not k['measure'].endswith('fine') for k in c['cases']), 'a fine without an amount is marked verify')
 nl_cases = [k for k in c['cases'] if k['jurisdiction'] == 'NL']
 ok(len(nl_cases) >= 9 and all(k['url'].startswith(('https://www.dnb.nl', 'https://www.afm.nl', 'https://www.om.nl')) for k in nl_cases), f'{len(nl_cases)} Dutch cases, each from the DNB, AFM or OM site itself')
@@ -61,6 +63,11 @@ else:
 
     same = {r['group']: r for r in run(rel, db, {}, command=q['06_same_party_elsewhere'], read=True)}
     ok({'binance', 'okx', 'kucoin'} <= set(same) and all(same[g]['countries'] == 2 for g in ('binance', 'okx', 'kucoin')), '06 same party: Binance, OKX and KuCoin went wrong in the Netherlands and in the US')
+
+    arts = {r['article']: r for r in run(rel, db, {}, command=q['07_articles'], read=True)}
+    ok(arts.get('Wwft art. 23b', {}).get('cases') == 6 and arts.get('Wwft art. 23c', {}).get('cases') == 6, '07 articles: six Dutch decisions on Wwft art. 23b and 23c, read from the decisions')
+    ok(arts['Wwft art. 23b']['replaced_by'] == 'MiCAR art. 59' and arts['Wwft art. 23b']['status'] == 'vervallen', '07 articles: Wwft art. 23b has lapsed and is replaced by MiCAR art. 59')
+    ok(arts.get('MiCAR art. 59', {}).get('status') == 'in force' and arts.get('TFR art. 14', {}).get('status') == 'in force', '07 articles: MiCAR art. 59 and TFR art. 14 read in from EUR-Lex')
 
 print(f'crypto: {"all pass" if not failed else str(failed) + " failed"}')
 sys.exit(1 if failed else 0)

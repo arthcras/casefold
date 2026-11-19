@@ -2,7 +2,7 @@
  "note": "Public crypto enforcement cases. Amounts as published by the authority; amount null = not yet confirmed from the decision. verify: true = the decision itself is still to be linked.",
  "as_of": "2026-11-19",
  "queue": [
-  "NL: read the DNB decision PDFs for the exact Wwft articles of each case (Binance and Kraken: art. 23b(1)(2) and 23c(3), from the decision)",
+  "NL: KuCoin 2024: read the exact Wwft articles from the decision (the six other DNB decisions: art. 23b(1)(2) and 23c(3), read)",
   "NL: the Rotterdam court rulings on these decisions (ECLI) and the Knaken bankruptcy ruling",
   "AFM: MiCAR enforcement after 30 June 2025 (warnings, orders, fines) and ESMA's register of non-compliant entities",
   "EU national supervisors (BaFin, AMF, CONSOB, CNMV ...)",
@@ -26,11 +26,20 @@
    "violated": [
     {
      "law": "NL:wwft",
-     "art": "23b"
+     "art": "23b",
+     "lids": [
+      "1",
+      "2"
+     ],
+     "stated": true
     },
     {
      "law": "NL:wwft",
-     "art": "23c"
+     "art": "23c",
+     "lids": [
+      "3"
+     ],
+     "stated": true
     }
    ],
    "period": "2020-05-21 to 2021-12-01",
@@ -39,7 +48,8 @@
    "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2022/boete-voor-binance-holdings-ltd-vanwege-het-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten/",
    "decision": "https://www.dnb.nl/media/0jxfaxck/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-binance-gelakte-versie-pdf.pdf",
    "verify": false,
-   "group": "binance"
+   "group": "binance",
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 25 April 2022"
   },
   {
    "id": "CASE:dnb-coinbase-2023",
@@ -52,13 +62,26 @@
    "amount": 3325000,
    "currency": "EUR",
    "party": "Coinbase Europe Limited",
-   "date": "2023-01-26",
+   "date": "2023-01-18",
    "title": "DNB: fine Coinbase Europe Limited, crypto services without registration",
    "summary": "Crypto services in the Netherlands from November 2020 without the DNB registration the Wwft then required; registered 22 September 2022.",
    "violated": [
     {
      "law": "NL:wwft",
-     "art": null
+     "art": "23b",
+     "lids": [
+      "1",
+      "2"
+     ],
+     "stated": true
+    },
+    {
+     "law": "NL:wwft",
+     "art": "23c",
+     "lids": [
+      "3"
+     ],
+     "stated": true
     }
    ],
    "chain": null,
@@ -66,8 +89,14 @@
    "verify": false,
    "published": "2023-01-26",
    "status": "final",
-   "period": "2020-11-15 to 2022-09-22",
-   "group": "coinbase"
+   "period": "2020-11-15 to at least 2022-08-24",
+   "group": "coinbase",
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 18 January 2023",
+   "power": {
+    "law": "NL:wwft",
+    "art": "30"
+   },
+   "decision": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf"
   },
   {
    "id": "CASE:dnb-kraken-2023",
@@ -87,11 +116,20 @@
    "violated": [
     {
      "law": "NL:wwft",
-     "art": "23b"
+     "art": "23b",
+     "lids": [
+      "1",
+      "2"
+     ],
+     "stated": true
     },
     {
      "law": "NL:wwft",
-     "art": "23c"
+     "art": "23c",
+     "lids": [
+      "3"
+     ],
+     "stated": true
     }
    ],
    "status": "objection unfounded",
@@ -99,7 +137,13 @@
    "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2024/last-onder-dwangsom-voor-payward-international-markets-limited-vanwege-het-zonder-registratie-aanbieden-van-cryptodiensten-in-nederland/",
    "decision": "https://www.dnb.nl/media/1hbfnaou/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-payward-international-markets-limited.pdf",
    "verify": false,
-   "group": "kraken"
+   "group": "kraken",
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 14 July 2023",
+   "power": {
+    "law": "NL:wwft",
+    "art": "29",
+    "point": "a"
+   }
   },
   {
    "id": "CASE:dnb-unnamed-casp-2023",
@@ -119,13 +163,35 @@
    "violated": [
     {
      "law": "NL:wwft",
-     "art": null
+     "art": "23b",
+     "lids": [
+      "1",
+      "2"
+     ],
+     "stated": true
+    },
+    {
+     "law": "NL:wwft",
+     "art": "23c",
+     "lids": [
+      "3"
+     ],
+     "stated": true
     }
    ],
-   "status": "reduced by the court",
+   "status": "reduced by the Rotterdam court; DNB appealed on 29 January 2026",
    "chain": null,
    "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2026/boete-voor-cryptodienstaanbieder-vanwege-het-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
-   "verify": false
+   "verify": false,
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the anonymised decision",
+   "power": {
+    "law": "NL:wwft",
+    "art": "30",
+    "point": "a"
+   },
+   "decision": "https://www.dnb.nl/media/sq2itqhg/bestuurlijke-boete-cryptodienstaanbieder.pdf",
+   "note": "Likely the same decision as DNB's earlier named publication on Foris DAX MT Limited (Crypto.com): same date (2 October 2023), amount (EUR 2,850,000) and publication date (13 March 2024), and the same articles. DNB now publishes it without a name; not confirmed, so not linked to Crypto.com.",
+   "related": "https://www.dnb.nl/en/sector-news/enforcement-measures-2024/fine-for-foris-dax-mt-limited-crypto-com-for-providing-crypto-services-without-the-required-registration"
   },
   {
    "id": "CASE:dnb-kucoin-2024",
@@ -152,7 +218,9 @@
    "chain": null,
    "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/last-onder-dwangsom-voor-peken-global-limited-vanwege-het-zonder-registratie-aanbieden-van-cryptodiensten-in-nederland/",
    "verify": false,
-   "group": "kucoin"
+   "group": "kucoin",
+   "decision": "https://www.dnb.nl/media/hxfl10uk/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-aan-peken-global-limited.pdf",
+   "violated_from": "article to read from the decision"
   },
   {
    "id": "CASE:dnb-bybit-2024",
@@ -171,7 +239,20 @@
    "violated": [
     {
      "law": "NL:wwft",
-     "art": null
+     "art": "23b",
+     "lids": [
+      "1",
+      "2"
+     ],
+     "stated": true
+    },
+    {
+     "law": "NL:wwft",
+     "art": "23c",
+     "lids": [
+      "3"
+     ],
+     "stated": true
     }
    ],
    "period": "to 2023-09",
@@ -179,7 +260,14 @@
    "chain": null,
    "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2024/boete-voor-bybit-fintech-limited-vanwege-het-tot-september-2023-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
    "verify": false,
-   "group": "bybit"
+   "group": "bybit",
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 22 October 2024",
+   "power": {
+    "law": "NL:wwft",
+    "art": "30",
+    "point": "a"
+   },
+   "decision": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf"
   },
   {
    "id": "CASE:dnb-okx-2025",
@@ -198,15 +286,34 @@
    "violated": [
     {
      "law": "NL:wwft",
-     "art": null
+     "art": "23b",
+     "lids": [
+      "1",
+      "2"
+     ],
+     "stated": true
+    },
+    {
+     "law": "NL:wwft",
+     "art": "23c",
+     "lids": [
+      "3"
+     ],
+     "stated": true
     }
    ],
-   "period": "2023-07 to 2024-08",
+   "period": "at least 2023-07-07 to 2024-08-15",
    "status": "published",
    "chain": null,
    "url": "https://www.dnb.nl/algemeen-nieuws/handhavingsmaatregel-2025/boete-voor-aux-cayes-fintech-co-ltd-vanwege-het-van-juli-2023-tot-augustus-2024-zonder-de-wettelijk-vereiste-registratie-aanbieden-van-cryptodiensten-in-nederland/",
    "verify": false,
-   "group": "okx"
+   "group": "okx",
+   "violated_from": "art. 23b(1)(2) and 23c(3) Wwft, from the decision of 27 May 2025",
+   "power": {
+    "law": "NL:wwft",
+    "art": "30"
+   },
+   "decision": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf"
   },
   {
    "id": "CASE:afm-mexc-2025",

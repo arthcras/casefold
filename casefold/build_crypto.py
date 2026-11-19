@@ -40,7 +40,7 @@ MERGE (s)-[:SUBJECT_TO]->(w)""",
 MERGE (k:Source {id: c.id}) SET k.kind = 'case', k.title = c.title, k.party = c.party, k.date = c.date, k.measure = c.measure,
   k.amount = CASE WHEN c.amount IS NULL THEN null ELSE toFloat(c.amount) END, k.currency = c.currency, k.amount_note = c.amount_note,
   k.summary = c.summary, k.chain = c.chain, k.url = c.url, k.verify = c.verify,
-  k.published = c.published, k.status = c.status, k.period = c.period, k.decision = c.decision
+  k.published = c.published, k.status = c.status, k.period = c.period, k.decision = c.decision, k.note = c.note, k.violated_from = c.violated_from
 MERGE (e:Entity {id: 'ENTITY:' + coalesce(c.group, toLower(c.party))}) SET e.name = coalesce(e.name, c.party), e.group = c.group
 MERGE (k)-[:AGAINST]->(e)
 WITH k, c MATCH (x:Jurisdiction {code: c.jurisdiction}) MERGE (k)-[:IN_JURISDICTION]->(x)""",
@@ -50,7 +50,23 @@ MATCH (x:Jurisdiction {code: c.jurisdiction})<-[:IN_JURISDICTION]-(:Sector)<-[:S
 MERGE (k)-[:BY]->(g)""",
     """UNWIND $c AS c UNWIND c.violated AS v
 MATCH (k:Source {id: c.id}) MATCH (w:Law {id: v.law})
-MERGE (k)-[r:VIOLATED]->(w) SET r.art = v.art""",
+MERGE (k)-[r:VIOLATED {art: coalesce(v.art, '')}]->(w) SET r.lids = coalesce(v.lids, []), r.stated = coalesce(v.stated, false)""",
+    # the article that gives the authority its power (art. 30 Wwft for a fine, art. 29 for a last onder dwangsom)
+    """UNWIND [c IN $c WHERE c.power IS NOT NULL] AS c
+MATCH (k:Source {id: c.id}) MATCH (w:Law {id: c.power.law})
+MERGE (k)-[r:UNDER_POWER {art: c.power.art}]->(w) SET r.point = c.power.point""",
+    # key articles with their text from the law files, the cases that violated them, and what replaced them
+    """UNWIND $a AS a
+MATCH (w:Law {id: a.law})
+MERGE (x:Article {id: a.law + ':' + a.art}) SET x.law = a.law, x.law_short = w.short, x.art = a.art, x.heading = a.heading, x.duty = a.duty,
+  x.text = a.text, x.status = a.status, x.version = a.version, x.source_sha256 = a.sha256
+MERGE (w)-[:HAS_ARTICLE]->(x)""",
+    """UNWIND $a AS a UNWIND a.replaced_by AS r
+MATCH (x:Article {id: a.law + ':' + a.art}) MATCH (y:Article {id: r})
+MERGE (x)-[:REPLACED_BY]->(y)""",
+    """UNWIND $c AS c UNWIND c.violated AS v
+MATCH (k:Source {id: c.id}) MATCH (x:Article {id: v.law + ':' + coalesce(v.art, '')})
+MERGE (k)-[r:VIOLATED_ARTICLE]->(x) SET r.lids = coalesce(v.lids, []), r.stated = coalesce(v.stated, false)""",
     # sanctions lists (the entries come with the daily import)
     """UNWIND $l AS l
 MERGE (x:SanctionsList {id: l.id}) SET x.name = l.name, x.url = l.url, x.refresh = l.refresh, x.imported = l.imported
@@ -64,6 +80,24 @@ def data():
     c = json.load(open(os.path.join(d, 'cases.json'), encoding='utf-8'))
     l = json.load(open(os.path.join(d, 'sanctions_lists.json'), encoding='utf-8'))['lists']
     return j, c, l
+
+
+def articles():
+    """The key articles, each with its text from the newest Dutch law file under laws/ (where it is read in)."""
+    out, laws = [], {}
+    for f in sorted(os.listdir(os.path.join(HERE, 'laws'))):
+        if f.endswith('-nl.json'):
+            v = json.load(open(os.path.join(HERE, 'laws', f), encoding='utf-8'))
+            if v.get('law') and (v['law'] not in laws or v['version'] > laws[v['law']]['version']):
+                laws[v['law']] = v
+    for a in json.load(open(os.path.join(HERE, 'data', 'crypto', 'articles.json'), encoding='utf-8'))['articles']:
+        v = laws.get(a['law']); t = None
+        if v:
+            t = next((x['text'] for x in v['article_list'] if x['number'] == a['art']), None)
+        status = 'vervallen' if (t or '').strip().lower().startswith('vervallen') else ('in force' if t else 'text not read in')
+        out.append({**a, 'text': (t or '')[:1500] if status == 'in force' else None, 'status': status,
+                    'version': v['version'] if v else None, 'sha256': v.get('sha256') if v else None})
+    return out
 
 
 def check(j, c, l):
@@ -97,7 +131,7 @@ def export(j, c, l):
     out = os.path.join(HERE, 'web', 'data', 'crypto.json')
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
-    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l},
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles()},
                'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return out
 
@@ -117,7 +151,7 @@ def main():
     if os.path.exists(db):
         os.remove(db)
     run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
-    run(rel, db, {'j': j, 'c': c['cases'], 'l': l}, script=';\n'.join(LOAD) + ';')
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': l, 'a': articles()}, script=';\n'.join(LOAD) + ';')
     print(f'crypto: {os.path.relpath(db, HERE)}')
 
 
