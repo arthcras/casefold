@@ -1,0 +1,48 @@
+# Fetch the sources behind Casefold Crypto Intelligence on a runner with internet: the DNB decision documents of the
+# Dutch crypto cases (which articles each one cites) and MiCA, the TFR and DAC8 from EUR-Lex, read in article by article.
+# The results are uploaded as an artifact to review and commit; nothing is pushed from here. No secrets are used.
+name: crypto-sources
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [crypto-intelligence]
+    paths: [data/crypto/decisions.json, casefold/fetch_crypto_sources.py, .github/workflows/crypto-sources.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Relate and pdftotext
+        run: |
+          curl -sSfL https://relatedb.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-nld
+      - name: Fetch and read the decisions and the laws
+        run: python3 casefold/fetch_crypto_sources.py
+      - name: Summary
+        run: |
+          python3 - <<'PY'
+          import json
+          d = json.load(open('data/crypto/decision_citations.json'))
+          for x in d['decisions']:
+              print(x['case'], x.get('error') or '', [(c['law'], c['art'], c['lids'], c['count']) for c in x.get('citations', [])[:8]])
+          PY
+          ls -la laws/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crypto-sources
+          path: |
+            data/crypto/decision_citations.json
+            laws/*mica*
+            laws/*tfr*
+            laws/*dac8*
+          if-no-files-found: warn
