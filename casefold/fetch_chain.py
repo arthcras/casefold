@@ -6,6 +6,7 @@ transfers (hop 1), and for the largest counterparties their own latest transfers
   bitcoin   mempool.space            /api/address/<a>/txs
   ethereum  eth.blockscout.com       /api/v2/addresses/<a>/token-transfers and /transactions
   tron      api.trongrid.io          /v1/accounts/<a>/transactions/trc20 and /transactions
+An asset marked * is a token that only carries the name (not the known USDT or USDC contract): kept, but not counted.
 Writes data/crypto/chain/<entity>.json: the transfers (chain, tx, time, from, to, amount, asset, api) and per address a
 summary. A transfer is a fact from the chain; who controls an address that is not on a list is not known here.
 """
@@ -13,6 +14,9 @@ import datetime, json, os, sys, time, urllib.request
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# token contracts taken as the real asset; any other token with the same symbol is a copy (spam or a lookalike)
+KNOWN = {'0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'USDC',
+         'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t': 'USDT', 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8': 'USDC'}
 OUT = os.path.join(HERE, 'data', 'crypto', 'chain')
 
 
@@ -61,7 +65,8 @@ def eth(addr, n):
         except Exception:
             continue
         ts = x.get('timestamp'); when = int(datetime.datetime.fromisoformat(ts.replace('Z', '+00:00')).timestamp()) if ts else None
-        out.append(('ethereum', x.get('transaction_hash'), when, (x.get('from') or {}).get('hash'), (x.get('to') or {}).get('hash'), amt, tok.get('symbol') or '?', 'blockscout'))
+        c = (tok.get('address_hash') or tok.get('address') or '').lower()
+        out.append(('ethereum', x.get('transaction_hash'), when, (x.get('from') or {}).get('hash'), (x.get('to') or {}).get('hash'), amt, KNOWN.get(c) or (tok.get('symbol') or '?') + '*', 'blockscout'))
     tx = get(f'https://eth.blockscout.com/api/v2/addresses/{addr}/transactions') or {}
     for x in (tx.get('items') or [])[:n]:
         v = int(x.get('value') or 0) / 1e18
@@ -83,7 +88,7 @@ def trx(addr, n):
             amt = int(x.get('value') or 0) / 10 ** int(ti.get('decimals') or 6)
         except Exception:
             continue
-        out.append(('tron', x.get('transaction_id'), (x.get('block_timestamp') or 0) // 1000, x.get('from'), x.get('to'), amt, ti.get('symbol') or '?', 'trongrid'))
+        out.append(('tron', x.get('transaction_id'), (x.get('block_timestamp') or 0) // 1000, x.get('from'), x.get('to'), amt, KNOWN.get(ti.get('address') or '') or (ti.get('symbol') or '?') + '*', 'trongrid'))
     time.sleep(1.2)   # trongrid without a key: keep under its rate limit
     s = get(f'https://api.trongrid.io/v1/accounts/{addr}') or {}
     d = (s.get('data') or [{}])
@@ -117,6 +122,8 @@ def main():
         # hop 2: the counterparties that moved the most value (per asset count), their own latest transfers
         vol = defaultdict(float)
         for x in transfers:
+            if x[7].endswith('*'):
+                continue
             for side in (x[4], x[5]):
                 if side and side not in seen:
                     vol[(x[1], side)] += x[6]
