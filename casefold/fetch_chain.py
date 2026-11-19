@@ -20,14 +20,14 @@ KNOWN = {'0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT', '0xa0b86991c6218b
 OUT = os.path.join(HERE, 'data', 'crypto', 'chain')
 
 
-def get(url, tries=4):
+def get(url, tries=4, headers=None):
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'casefold-chain/1.0', 'Accept': 'application/json'})
+            req = urllib.request.Request(url, headers={'User-Agent': 'casefold-chain/1.0', 'Accept': 'application/json', **(headers or {})})
             with urllib.request.urlopen(req, timeout=60) as r:
                 return json.loads(r.read())
         except Exception as e:
-            if i == tries - 1:
+            if getattr(e, 'code', None) in (401, 403, 404) or i == tries - 1:
                 print(f'  failed {url}: {e}', file=sys.stderr); return None
             time.sleep(2 + 3 * i)
 
@@ -180,7 +180,10 @@ def labels():
             src = 'blockscout'
             extra = {'is_contract': r.get('is_contract'), 'is_scam': r.get('is_scam')}
         elif chain == 'tron':
-            r = get(f'https://apilist.tronscanapi.com/api/accountv2?address={a}', tries=2) or {}
+            key = os.environ.get('TRONSCAN_API_KEY')
+            if not key:      # Tronscan now asks for a (free) API key: without it, tron addresses stay unlabelled
+                continue
+            r = get(f'https://apilist.tronscanapi.com/api/accountv2?address={a}', tries=2, headers={'TRON-PRO-API-KEY': key}) or {}
             keep = {k: r.get(k) for k in r if any(w in k.lower() for w in ('tag', 'risk', 'label'))}
             tags = tags_of(keep); src = 'tronscan'
             extra = {k: v for k, v in keep.items() if isinstance(v, (bool, int)) and v}
@@ -190,13 +193,15 @@ def labels():
         tags = [(k, v) for k, v in tags if v and v.lower() not in ('none', 'null')]
         if tags or any(extra.values()):
             out[f'{chain}:{a}'] = {'source': src, 'tags': [{'field': k, 'text': v} for k, v in tags][:8], **{k: v for k, v in extra.items() if v}}
-    json.dump({'note': 'Address labels as given by public explorers (Blockscout for ethereum, Tronscan for tron), fetched with the traces. A label is the explorer\'s attribution, not ours; it is shown with its source.',
+    tron_key = bool(os.environ.get('TRONSCAN_API_KEY'))
+    json.dump({'tron_labels': 'tronscan' if tron_key else 'not fetched: set TRONSCAN_API_KEY', 'note': 'Address labels as given by public explorers (Blockscout for ethereum, Tronscan for tron), fetched with the traces. A label is the explorer\'s attribution, not ours; it is shown with its source.',
                'fetched': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'checked': len(addrs), 'labels': dict(sorted(out.items()))},
               open(os.path.join(OUT, 'labels.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f'labels: {len(out)} of {len(addrs)} addresses labelled')
 
 
 if __name__ == '__main__':
-    if '--labels' not in sys.argv:
+    if '--labels-only' not in sys.argv:
         main()
-    labels()
+    if '--labels' in sys.argv or '--labels-only' in sys.argv:
+        labels()

@@ -15,14 +15,16 @@ permissions:
 jobs:
   trace:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Trace
-        run: python3 casefold/fetch_chain.py --labels
+      - name: Labels for the traced addresses (the traces themselves: run casefold/fetch_chain.py --labels)
+        env:
+          TRONSCAN_API_KEY: ${{ secrets.TRONSCAN_API_KEY }}
+        run: python3 casefold/fetch_chain.py --labels-only
       - name: Put the traces on the branch chain-out
         run: |
           git config user.name "chain workflow"
