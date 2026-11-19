@@ -27,11 +27,16 @@ ONE = re.compile(r'(?:artikel(?:en)?\s+|(?:en|of)\s+(?:artikel\s+)?)(' + NUM + r
 ORD = {'eerste': '1', 'tweede': '2', 'derde': '3', 'vierde': '4', 'vijfde': '5', 'zesde': '6', 'zevende': '7', 'achtste': '8', 'negende': '9', 'tiende': '10'}
 
 
-def get(url, path):
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (casefold-crypto-sources)'})
-    with urllib.request.urlopen(req, timeout=180) as r, open(path, 'wb') as f:
+def get(url, path, accept=None, lang=None):
+    h = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) casefold-crypto-sources', 'Accept': accept or '*/*'}
+    if lang:
+        h['Accept-Language'] = lang
+    with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=180) as r, open(path, 'wb') as f:
         f.write(r.read())
-    return hashlib.sha256(open(path, 'rb').read()).hexdigest()
+    data = open(path, 'rb').read()
+    if len(data) < 2000 or not data.startswith(b'%PDF'):
+        raise ValueError(f'not a PDF ({len(data)} bytes: {data[:60]!r})')
+    return hashlib.sha256(data).hexdigest()
 
 
 def pages(pdf):
@@ -84,18 +89,25 @@ def decisions(cfg):
 
 
 def laws(cfg):
+    """EUR-Lex first; then the Publications Office (Cellar), which serves the same official PDF by content negotiation."""
     os.makedirs(SRC, exist_ok=True)
     for l in cfg['laws']:
         for lang in ('nl', 'en'):
             path = os.path.join(SRC, f"{l['stem']}-{lang}.pdf")
-            url = f"https://eur-lex.europa.eu/legal-content/{lang.upper()}/TXT/PDF/?uri=CELEX:{l['celex']}"
-            try:
-                h = get(url, path)
-            except Exception as e:
-                print(f"{l['law']} ({lang}): could not download ({e})", file=sys.stderr); continue
-            print(f"{l['law']} ({lang}): sha256 {h[:12]}")
-            subprocess.run([sys.executable, os.path.join(HERE, 'casefold', 'law_ingest.py'), path, '--law', l['law'], '--version', l['version'], '--lang', lang,
-                            '--title', l['title'][lang], '--url', l['url']], check=True)
+            tries = [(f"https://eur-lex.europa.eu/legal-content/{lang.upper()}/TXT/PDF/?uri=CELEX:{l['celex']}", 'application/pdf', None)]
+            for t in ('application/pdf;type=pdfa2a', 'application/pdf;type=pdfa1a', 'application/pdf;type=pdf1x', 'application/pdf'):
+                tries.append((f"https://publications.europa.eu/resource/celex/{l['celex']}", t, {'nl': 'nld', 'en': 'eng'}[lang]))
+            h = None
+            for url, acc, lg in tries:
+                try:
+                    h = get(url, path, acc, lg)
+                    print(f"{l['law']} ({lang}): {url} [{acc}] sha256 {h[:12]}")
+                    break
+                except Exception as e:
+                    print(f"{l['law']} ({lang}): {url} [{acc}] failed: {e}", file=sys.stderr)
+            if h:
+                subprocess.run([sys.executable, os.path.join(HERE, 'casefold', 'law_ingest.py'), path, '--law', l['law'], '--version', l['version'], '--lang', lang,
+                                '--title', l['title'][lang], '--url', l['url']], check=True)
 
 
 if __name__ == '__main__':

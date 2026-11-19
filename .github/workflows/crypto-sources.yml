@@ -27,12 +27,14 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-nld
       - name: Fetch and read the decisions and the laws
-        run: python3 casefold/fetch_crypto_sources.py
+        run: python3 casefold/fetch_crypto_sources.py --laws
       - name: Summary
         run: |
           python3 - <<'PY'
           import json
-          d = json.load(open('data/crypto/decision_citations.json'))
+          import os
+          if not os.path.exists("data/crypto/decision_citations.json"): raise SystemExit(0)
+          d = json.load(open("data/crypto/decision_citations.json"))
           for x in d['decisions']:
               print(x['case'], x.get('error') or '', [(c['law'], c['art'], c['lids'], c['count']) for c in x.get('citations', [])[:8]])
           PY
