@@ -11,6 +11,10 @@ on:
       address: {description: 'wallet address', required: true}
       hops: {description: 'hops (1-4)', required: false, default: '2'}
       direction: {description: 'out | in | both', required: false, default: out}
+  # a change to the crawler runs the tests and one live trace of a listed wallet (Garantex, Tron) as a check
+  push:
+    branches: [crypto-intelligence]
+    paths: ['casefold/crawler/**', .github/workflows/crawler.yml, tests/test_crawler.py]
 
 permissions:
   contents: write
@@ -30,10 +34,10 @@ jobs:
       - name: Trace the wallet
         env:
           TRONGRID_API_KEY: ${{ secrets.TRONGRID_API_KEY }}
-          CHAIN: ${{ inputs.chain }}
-          ADDRESS: ${{ inputs.address }}
-          HOPS: ${{ inputs.hops }}
-          DIRECTION: ${{ inputs.direction }}
+          CHAIN: ${{ inputs.chain || 'tron' }}
+          ADDRESS: ${{ inputs.address || 'TNDjh6WGLYyWmkh8vfu42bXVHUqFNQ3rDq' }}
+          HOPS: ${{ inputs.hops || '2' }}
+          DIRECTION: ${{ inputs.direction || 'out' }}
         run: python3 -m casefold.crawler "$CHAIN" "$ADDRESS" --hops "$HOPS" --direction "$DIRECTION" --out data/crypto/chain
       - name: Put the trace on the branch crawler-out
         run: |
