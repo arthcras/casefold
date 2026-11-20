@@ -1,0 +1,184 @@
+{
+ "note": "Crypto instruments: how each one moves (transaction model) and what that means for screening and tracing. kind and model are definitions; freeze and sanction facts carry their source.",
+ "as_of": "2026-11-20",
+ "instruments": [
+  {
+   "id": "bitcoin:BTC",
+   "symbol": "BTC",
+   "name": "Bitcoin",
+   "chain": "bitcoin",
+   "model": "UTXO",
+   "standard": "native coin",
+   "kind": "native coin",
+   "issuer": null,
+   "contract": null,
+   "freeze": false,
+   "traceable": "yes: public ledger; one transaction spends inputs and creates outputs, so change outputs and peeling chains appear",
+   "risk": "Clustering of addresses and change detection matter; mixers (CoinJoin) break the trail.",
+   "guidance": [
+    "G:fatf-rf-2020"
+   ]
+  },
+  {
+   "id": "ethereum:ETH",
+   "symbol": "ETH",
+   "name": "Ether",
+   "chain": "ethereum",
+   "model": "account",
+   "standard": "native coin",
+   "kind": "native coin",
+   "issuer": null,
+   "contract": null,
+   "freeze": false,
+   "traceable": "yes: public ledger; balances per account, transfers also inside smart contracts (internal transactions)",
+   "risk": "Swaps and bridges run through contracts; a transfer to a contract is not a transfer to a person.",
+   "guidance": [
+    "G:fatf-rf-2020"
+   ]
+  },
+  {
+   "id": "tron:TRX",
+   "symbol": "TRX",
+   "name": "Tron",
+   "chain": "tron",
+   "model": "account",
+   "standard": "native coin",
+   "kind": "native coin",
+   "issuer": null,
+   "contract": null,
+   "freeze": false,
+   "traceable": "yes: public ledger",
+   "risk": "Mostly used to pay fees for TRC-20 transfers.",
+   "guidance": []
+  },
+  {
+   "id": "ethereum:USDT",
+   "symbol": "USDT",
+   "name": "Tether USD (ERC-20)",
+   "chain": "ethereum",
+   "model": "account (token)",
+   "standard": "ERC-20",
+   "kind": "stablecoin (USD)",
+   "issuer": "Tether",
+   "contract": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+   "freeze": true,
+   "freeze_basis": "the token contract has a blacklist function the issuer controls",
+   "traceable": "yes: token transfers are events of the contract",
+   "risk": "Issuer-controlled: addresses can be frozen. Misuse of stablecoins by illicit actors keeps increasing (FATF 2026).",
+   "guidance": [
+    "G:fatf-tu-2026",
+    "G:fatf-rba-2021"
+   ]
+  },
+  {
+   "id": "tron:USDT",
+   "symbol": "USDT",
+   "name": "Tether USD (TRC-20)",
+   "chain": "tron",
+   "model": "account (token)",
+   "standard": "TRC-20",
+   "kind": "stablecoin (USD)",
+   "issuer": "Tether",
+   "contract": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+   "freeze": true,
+   "freeze_basis": "the token contract has a blacklist function the issuer controls",
+   "traceable": "yes",
+   "risk": "The most used rail for USD stablecoin transfers in the traced cases (Garantex, Grinex).",
+   "guidance": [
+    "G:fatf-tu-2026",
+    "G:fatf-rba-2021"
+   ]
+  },
+  {
+   "id": "ethereum:USDC",
+   "symbol": "USDC",
+   "name": "USD Coin (ERC-20)",
+   "chain": "ethereum",
+   "model": "account (token)",
+   "standard": "ERC-20",
+   "kind": "stablecoin (USD)",
+   "issuer": "Circle",
+   "contract": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+   "freeze": true,
+   "freeze_basis": "the token contract has a blacklist function the issuer controls",
+   "traceable": "yes",
+   "risk": "Issuer-controlled; an e-money token under MiCA in the EU.",
+   "guidance": [
+    "G:fatf-tu-2026"
+   ]
+  },
+  {
+   "id": "tron:USDC",
+   "symbol": "USDC",
+   "name": "USD Coin (TRC-20)",
+   "chain": "tron",
+   "model": "account (token)",
+   "standard": "TRC-20",
+   "kind": "stablecoin (USD)",
+   "issuer": "Circle",
+   "contract": null,
+   "freeze": null,
+   "traceable": "yes",
+   "risk": "Small in the traces.",
+   "guidance": [],
+   "verify": true
+  },
+  {
+   "id": "tron:A7A5",
+   "symbol": "A7A5",
+   "name": "A7A5 (rouble-pegged token)",
+   "chain": "tron",
+   "model": "account (token)",
+   "standard": "TRC-20",
+   "kind": "stablecoin (RUB)",
+   "issuer": "Old Vector (A7 network)",
+   "contract": null,
+   "freeze": null,
+   "traceable": "yes",
+   "sanctioned": {
+    "by": "EU",
+    "from": "2025-11-25",
+    "what": "transaction ban on A7A5 in the 19th sanctions package (announced 2025-10-23)",
+    "source": "https://www.elliptic.co/insights/eu-sanctions-against-a7a5-and-payeer-come-into-effect/"
+   },
+   "risk": "Issuer and main trading venue (Grinex) are on the OFAC and EU lists. In the traces it shows as an unverified token: its contract is still to be matched.",
+   "guidance": [
+    "G:dnb-sanctions-crypto-2022"
+   ],
+   "verify": true
+  },
+  {
+   "id": "monero:XMR",
+   "symbol": "XMR",
+   "name": "Monero",
+   "chain": "monero",
+   "model": "UTXO with ring signatures",
+   "standard": "native coin",
+   "kind": "privacy coin",
+   "issuer": null,
+   "contract": null,
+   "freeze": false,
+   "traceable": "no: amounts and parties are hidden on chain",
+   "risk": "An anonymity-enhanced coin: FATF names conversion into privacy coins a red flag. Casefold can recognise the address, not trace it.",
+   "guidance": [
+    "G:fatf-rf-2020",
+    "G:eba-gl-2024-01"
+   ]
+  },
+  {
+   "id": "litecoin:LTC",
+   "symbol": "LTC",
+   "name": "Litecoin",
+   "chain": "litecoin",
+   "model": "UTXO",
+   "standard": "native coin",
+   "kind": "native coin",
+   "issuer": null,
+   "contract": null,
+   "freeze": false,
+   "traceable": "yes (not yet traced by Casefold)",
+   "risk": "Has an optional privacy extension (MWEB).",
+   "guidance": []
+  }
+ ]
+}

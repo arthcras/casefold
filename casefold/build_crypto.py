@@ -15,6 +15,8 @@ so the page and the file cannot drift apart.
   python3 casefold/build_crypto.py --export   only web/data/crypto.json (no relate needed)
 """
 import json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import typologies
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(HERE, 'casefold'))
@@ -107,7 +109,7 @@ MERGE (a)-[r:IN_CATEGORY]->(c) SET r.by = 'label: ' + x.label""",
     """UNWIND $m AS m
 MATCH (a:Entity {id: m.case_entity}) MATCH (b:Entity {id: m.listed})
 MERGE (a)-[r:POSSIBLY_SAME]->(b) SET r.by = m.by""",
-]
+] + typologies.LOAD
 
 
 def data():
@@ -278,6 +280,14 @@ def address_labels():
     return sorted({x['key']: x for x in out}.values(), key=lambda x: x['key'])
 
 
+def typo_params(ents):
+    """Transaction typologies, guidance and instruments (casefold/typologies.py) for the graph."""
+    listed = {a['chain'] + ':' + a['address'] for e in ents for a in e.get('addresses', [])}
+    labels = {x['key']: x['category'] for x in address_labels() if x.get('category')}
+    sev = {c['id']: c['severity'] for c in json.load(open(os.path.join(HERE, 'data', 'crypto', 'risk_categories.json'), encoding='utf-8'))['categories']}
+    return typologies.params(listed, labels, sev)
+
+
 def names_index(l):
     """Every listed name and alias, for name screening in the viewer: [id, name, aliases, list, type]."""
     d = os.path.join(HERE, 'data', 'crypto', 'sanctions'); rows = []
@@ -301,7 +311,7 @@ def export(j, c, l):
     json.dump(names_index(l), open(os.path.join(HERE, 'web', 'data', 'sanctions_names.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]
-    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1], 'al': address_labels()},
+    json.dump({'as_of': c.get('as_of'), 'schema': [s for s in schema if s], 'load': LOAD, 'params': {'j': j, 'c': c['cases'], 'l': l, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1], 'al': address_labels(), **typo_params(ents)},
                'queue': c.get('queue', []), 'queries': queries()}, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return out
 
@@ -322,7 +332,7 @@ def main():
         os.remove(db)
     run(rel, db, {}, script=open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read())
     ls, ents = sanctions(l)
-    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1], 'al': address_labels()}, script=';\n'.join(LOAD) + ';')
+    run(rel, db, {'j': j, 'c': c['cases'], 'l': ls, 'a': articles(), 's': ents, 'm': name_matches(c['cases'], ents), 't': chain()[0], 'ts': chain()[1], 'rc': risk(ents)[0], 'ec': risk(ents)[1], 'al': address_labels(), **typo_params(ents)}, script=';\n'.join(LOAD) + ';')
     print(f'crypto: {os.path.relpath(db, HERE)}')
 
 

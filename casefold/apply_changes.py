@@ -22,7 +22,10 @@ KINDS = {'case': ('cases.json', 'cases', lambda r: r['id']),
          'category': ('risk_categories.json', 'categories', lambda r: r['id']),
          'list': ('sanctions_lists.json', 'lists', lambda r: r['id']),
          'label': ('labels_analyst.json', 'labels', lambda r: r['key']),
-         'trace': ('chain_seeds.json', 'entities', None)}
+         'trace': ('chain_seeds.json', 'entities', None),
+         'txtypology': ('tx_typologies.json', 'typologies', lambda r: r['id']),
+         'guidance': ('guidance.json', 'guidance', lambda r: r['id']),
+         'instrument': ('instruments.json', 'instruments', lambda r: r['id'])}
 NESTED = {'regulator', 'law'}
 
 
