@@ -1,7 +1,7 @@
 # Casefold on the Hetzner server via Coolify ("Docker Compose" build pack), deployed from the GitHub branch `live`.
 # In Coolify: repository arthcras/casefold, branch live, base directory /, compose file /deploy/coolify/docker-compose.yml.
 # Build contexts are relative to the base directory (the repository root), as Coolify runs compose there.
-# Give the service `web` the domains https://casefoldcrypto.com,https://app.casefoldcrypto.com; the crawler is only reachable through web.
+# Give the service `web` the domains https://casefoldcrypto.com and https://app.casefoldcrypto.com, port 80; the crawler is only reachable through web.
 # Environment variables are set in Coolify (never in this file or in git): CRAWLER_TOKEN, and later NEO4J_* and TRONGRID_API_KEY.
 services:
   web:
@@ -9,6 +9,7 @@ services:
       context: .
       dockerfile: deploy/web/Dockerfile
     restart: unless-stopped
+    expose: ["80"]
     depends_on: [crawler]
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
