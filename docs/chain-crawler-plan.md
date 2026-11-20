@@ -1,6 +1,11 @@
 # Plan: Casefold chain crawler (trace any wallet, on demand)
 
-Status: plan, 2026-11-20. Nothing runs on a server until Arthur approves the server step.
+Status 2026-11-20: phase 1 built (`casefold/crawler/`, tests in `tests/test_crawler.py`, live run via the workflow
+`crawler.yml` to the branch `crawler-out`, server files in `deploy/crawler/`). Nothing runs on a server until Arthur
+approves the server step.
+
+Use now: `python3 -m casefold.crawler tron <address> --hops 2 --out data/crypto/chain` (needs internet), or run the
+workflow "crawler" in GitHub Actions. A trace file in `data/crypto/chain/` is picked up by `build_crypto.py`.
 
 ## Goal
 

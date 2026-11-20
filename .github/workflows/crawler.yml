@@ -1,0 +1,45 @@
+# Trace one wallet live with the crawler (casefold/crawler), as the server will. The trace goes to the branch
+# crawler-out for review (data/crypto/chain/trace-<chain>-<address>.json); it reaches the code only by a commit a person
+# or Claude makes after checking it. Also runs the crawler tests. Uses only the workflow's token and, for Tron, the
+# TRONGRID_API_KEY secret if it is set.
+name: crawler
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain: {description: 'bitcoin | ethereum | tron', required: true, default: tron}
+      address: {description: 'wallet address', required: true}
+      hops: {description: 'hops (1-4)', required: false, default: '2'}
+      direction: {description: 'out | in | both', required: false, default: out}
+
+permissions:
+  contents: write
+
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r deploy/crawler/requirements.txt
+      - name: Crawler tests (no internet)
+        run: python3 tests/test_crawler.py
+      - name: Trace the wallet
+        env:
+          TRONGRID_API_KEY: ${{ secrets.TRONGRID_API_KEY }}
+          CHAIN: ${{ inputs.chain }}
+          ADDRESS: ${{ inputs.address }}
+          HOPS: ${{ inputs.hops }}
+          DIRECTION: ${{ inputs.direction }}
+        run: python3 -m casefold.crawler "$CHAIN" "$ADDRESS" --hops "$HOPS" --direction "$DIRECTION" --out data/crypto/chain
+      - name: Put the trace on the branch crawler-out
+        run: |
+          git config user.name "crawler workflow"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -B crawler-out
+          git add -f data/crypto/chain/trace-*.json
+          git commit -m "crawler trace $(date -u +%F)" || echo "nothing new"
+          git push -f origin crawler-out

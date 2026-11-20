@@ -45,13 +45,13 @@ def raw_transfers():
     return out
 
 
-def detect(listed_keys, labels, categories):
+def detect(listed_keys, labels, categories, transfers=None):
     """listed_keys: set of address keys on a sanctions list; labels: {key: category id}; categories: {id: severity}."""
     cfg = json.load(open(os.path.join(HERE, 'data', 'crypto', 'tx_typologies.json'), encoding='utf-8'))
     P = {t['id']: t.get('params', {}) for t in cfg['typologies']}
     ins = json.load(open(os.path.join(HERE, 'data', 'crypto', 'instruments.json'), encoding='utf-8'))['instruments']
     banned = {(i['chain'], i['symbol']): i['sanctioned'] for i in ins if i.get('sanctioned')}
-    T = raw_transfers()
+    T = raw_transfers() if transfers is None else [{**t, 'fk': t['chain'] + ':' + t['from'], 'tk': t['chain'] + ':' + t['to'], 'ts': _t(t.get('time'))} for t in transfers if t.get('from') and t.get('to') and 0 < t['amount'] < 1e12]
     clean = [t for t in T if not t['asset'].endswith('*')]
     wl = defaultdict(lambda: {'n': 0, 'first': None, 'last': None, 'evidence': ''})     # (key, typology, asset) -> label
     el = defaultdict(set)                                                                 # (from, to, asset) -> typologies
@@ -198,13 +198,13 @@ def detect(listed_keys, labels, categories):
     nxt = defaultdict(set)
     for t in clean:
         nxt[(t['fk'], t['asset'])].add(t['tk'])
-    for (a, asset), bs in list(nxt.items()):
-        for b in bs:
+    for (a, asset), bs in sorted(nxt.items()):
+        for b in sorted(bs):
             if a in nxt.get((b, asset), ()):
                 el[(a, b, asset)].add('TT-ROUND'); el[(b, a, asset)].add('TT-ROUND')
                 wlabel(a, 'TT-ROUND', asset, f"sent {asset} to {b.split(':')[-1][:10]}… and received {asset} back")
             elif P['TT-ROUND'].get('hops', 3) >= 3:
-                for c in nxt.get((b, asset), ()):
+                for c in sorted(nxt.get((b, asset), ())):
                     if c != a and a in nxt.get((c, asset), ()):
                         for e in ((a, b), (b, c), (c, a)):
                             el[(e[0], e[1], asset)].add('TT-ROUND')
