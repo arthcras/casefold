@@ -213,6 +213,27 @@ def chain():
     return sorted(flows.values(), key=lambda x: (x['from_key'], x['to_key'], x['asset'])), sorted({x['key']: x for x in sums}.values(), key=lambda x: x['key'])
 
 
+def tx_index():
+    """Every transfer the traces hold, by transaction hash (lower case, without 0x): what a case report's hash points to.
+    Same filter as chain(). web/data/txindex.json, loaded by the app only when a text names a hash."""
+    d = os.path.join(HERE, 'data', 'crypto', 'chain')
+    out = {}
+    if not os.path.isdir(d):
+        return out
+    for f in sorted(os.listdir(d)):
+        if f.startswith('labels') or not f.endswith('.json'):
+            continue
+        for t in json.load(open(os.path.join(d, f), encoding='utf-8')).get('transfers', []):
+            if not t.get('tx') or t['asset'].endswith('*') or not (0 < t['amount'] < 1e12):
+                continue
+            k = t['tx'].lower().removeprefix('0x')
+            out.setdefault(k, [])
+            row = [t['chain'], t['from'], t['to'], t['asset'], t['amount'], t['time'], t['api']]
+            if row not in out[k]:
+                out[k].append(row)
+    return dict(sorted(out.items()))
+
+
 def risk(ents):
     """The risk categories, and per listed entity its categories: 'sanctions' always, plus what its programmes map to."""
     r = json.load(open(os.path.join(HERE, 'data', 'crypto', 'risk_categories.json'), encoding='utf-8'))
@@ -272,6 +293,7 @@ def queries():
 def export(j, c, l):
     out = os.path.join(HERE, 'web', 'data', 'crypto.json')
     l, ents = sanctions(l)
+    json.dump(tx_index(), open(os.path.join(HERE, 'web', 'data', 'txindex.json'), 'w', encoding='utf-8'), separators=(',', ':'))
     json.dump(names_index(l), open(os.path.join(HERE, 'web', 'data', 'sanctions_names.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     schema = [s.strip() for s in open(os.path.join(HERE, 'schema', 'crypto.cypher'), encoding='utf-8').read().split(';')]
     schema = [re.sub(r'(?m)^//.*\n?', '', s).strip() for s in schema]

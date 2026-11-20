@@ -240,7 +240,7 @@ footer a{color:#b9c3d1;text-decoration:none}footer a:hover{color:var(--fg)}
  <div class="wrap">
   <div class="eyebrow"><b>01</b>How an investigation runs</div>
   <div class="head2"><h2>One question at a time, <span class="sig">each answer with its source.</span></h2>
-   <p>Start from a wallet or a name. See whether it is listed, where its funds came from and went to, which kind of counterparty sits at each hop, and which rules were enforced against firms like it. Try it: everything below runs on live data in this page.</p></div>
+   <p>Start from your own data: a wallet, a name, a transaction or the whole case report. See whether it is listed, where its funds came from and went to, which kind of counterparty sits at each hop, and which rules were enforced against firms like it. Try it: everything below runs on live data in this page.</p></div>
   <div class="card flow">
    <div>
     <div class="tabs" role="tablist" id="tabs">
@@ -447,7 +447,7 @@ function mods(v){const nl=q("MATCH (c:Source {kind:'case'})-[:IN_JURISDICTION]->
   ['law','Regulation per country','Live · NL first','Supervisors and laws per country; article texts for MiCA, the Transfer of Funds Regulation and the Wwft. Other countries mapped, to verify.',`<b>${v.jur}</b> jurisdictions · <b>${regs}</b> supervisors · <b>${arts}</b> articles`,'crypto.html#register'],
   ['gavel','Enforcement case library','Live','Fines, orders and prosecutions, with the article broken and the same company across countries.',`<b>${nl.n}</b> Dutch cases · EUR <b>${compact(nl.eur||0)}</b> in fines and forfeited penalty payments`,'crypto.html#cases'],
   ['seal','Evidence report','Live','Each fact with its source and date, sealed with SHA-256, with lines for preparer and reviewer. Download it from any party, wallet or case.','Printable; the sealed JSON travels with it','crypto.html#sanctions'],
-  ['ws','My investigations','Live','Build your own case: add wallets, parties, cases and articles as you work, ask plain questions (who sent money here, where did it go), give each item your verdict and note, have a colleague sign off, and download one sealed report. The wallets in it are re-checked on every data update.',`Kept in your browser today; on our servers for your team next`,'crypto.html#inv']];
+  ['ws','My investigations','Live','Start with your own data: one wallet, a list, a transaction hash or the whole case report. Casefold reads the wallets, transactions, names, amounts and dates in it, checks reported transactions against the chain, and follows the money hop by hop, across swaps, to listed and labelled wallets. Give each item your verdict and note, have a colleague sign off, and download one sealed report with your data, the flows and the sources. The wallets are re-checked on every data update.',`Kept in your browser today; on our servers for your team next`,'crypto.html#inv']];
  $('mods').innerHTML=M.map((m,i)=>`<a class="card mod ${i===6?'wide':''}" href="${m[5]}"><div class="top"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">${IC[m[0]]}</svg></span><span class="tag ${m[2].startsWith('Live')?'ok':''}">${esc(m[2])}</span></div><h3>${esc(m[1])}</h3><p>${esc(m[3])}</p><div class="n">${m[4]}</div></a>`).join('')}
 
 /* ---------- case library: timeline and latest ---------- */
