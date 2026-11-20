@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
 <style>
 /* Casefold Crypto Intelligence, public site. Every number and every picture on this page is computed live by Relate
-   (the embedded graph database by Neo4j) in the visitor's browser, from the same data as the workspace. */
+   (the embedded graph database by Neo4j) in the visitor's browser, from the same data as the app. */
 :root{--bg:#0a0e15;--bg2:#0d121b;--panel:#111824;--panel2:#151e2c;--line:#1e2939;--line2:#2a374a;--fg:#ecf0f5;--muted:#8d99ab;--dim:#5f6b7e;
  --sig:#ff7a2f;--sig2:#ffb27f;--in:#ff7a2f;--out:#5b9cf0;--ok:#3ccf91;--bad:#ef5d78;--warn:#f2b54a;
  --f:Inter,system-ui,-apple-system,Segoe UI,sans-serif;--h:'Space Grotesk',Inter,system-ui,sans-serif;--m:'JetBrains Mono',ui-monospace,Menlo,monospace}
@@ -202,7 +202,7 @@ footer a{color:#b9c3d1;text-decoration:none}footer a:hover{color:var(--fg)}
    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13.5" fill="none" stroke="#2a374a"/><circle cx="15" cy="15" r="8.5" fill="none" stroke="#2a374a"/><path d="M15 15 L15 1.5 A13.5 13.5 0 0 1 27.4 9.6 Z" fill="#ff7a2f" opacity=".35"/><circle cx="15" cy="15" r="3" fill="#ff7a2f"/><circle cx="22" cy="8" r="1.8" fill="#5b9cf0"/></svg>
    Casefold <span>Crypto Intelligence</span></a>
   <div class="links"><a href="#how">How it works</a><a href="#modules">Modules</a><a href="#library">Case library</a><a href="#regulation">Regulation</a><a href="#plans">Plans</a></div>
-  <div class="right"><span class="engine" id="engine">starting Relate…</span><a class="btn p" href="crypto.html" style="padding:10px 16px">Open the workspace →</a></div>
+  <div class="right"><span class="engine" id="engine">starting Relate…</span><a class="btn p" href="crypto.html" style="padding:10px 16px">Open the app →</a></div>
  </div>
 </nav>
 
@@ -311,7 +311,7 @@ footer a{color:#b9c3d1;text-decoration:none}footer a:hover{color:var(--fg)}
    </ul></div>
   <div class="card" style="display:flex;flex-direction:column;gap:16px"><div class="chip">How it is built</div>
    <h3 style="font-size:26px">One graph, two engines, the same queries</h3>
-   <p style="color:#b9c3d1;margin:0">The public pages run on <b>Relate</b>, the embedded graph database by Neo4j, right in your browser: nothing to install, nothing sent to us. The investigator workspace runs on Relate today; its server version, on <b>Neo4j Community</b> with your cases, notes and team, is being built. Both speak openCypher, so a question asked here is the same question asked there.</p>
+   <p style="color:#b9c3d1;margin:0">The public pages run on <b>Relate</b>, the embedded graph database by Neo4j, right in your browser: nothing to install, nothing sent to us. Your investigations are kept in your browser today; for teams they will be kept on our servers, on <b>Neo4j Community</b>, separated per organisation. Both speak openCypher, so a question asked here is the same question asked there.</p>
    <div class="seal" id="enginebox"><span>Relate in this page</span><span>starting…</span></div>
   </div>
  </div>
@@ -322,8 +322,8 @@ footer a{color:#b9c3d1;text-decoration:none}footer a:hover{color:var(--fg)}
   <div class="eyebrow"><b>06</b>Plans</div>
   <div class="head2"><h2>Start free. <span class="sig">Scale to the team.</span></h2><p>Prices are agreed per organisation for now.</p></div>
   <div class="plans">
-   <div class="card plan"><h3>Public</h3><div class="pr">Free</div><ul><li>Case library and articles</li><li>Regulation per country</li><li>Screening of a name or a wallet</li><li>Batch screening, up to 1,000 at a time, with CSV export</li><li>Radar of listed entities</li><li>Evidence report sealed with SHA-256</li></ul><a class="btn" href="crypto.html">Open now</a></div>
-   <div class="card plan hi"><h3>Professional</h3><div class="pr">On request <small>per seat</small></div><ul><li>Investigator workspace: canvas, alerts, actions</li><li>Coming: cases, notes and team</li><li>Coming: monitoring and alerts on your own wallets</li><li>Coming: deeper traces and clustering</li><li>Coming: review and sign-off in the workspace</li></ul><a class="btn p" href="mailto:?subject=Casefold%20Crypto%20Intelligence">Talk to us</a></div>
+   <div class="card plan"><h3>Public</h3><div class="pr">Free</div><ul><li>Case library and articles</li><li>Regulation per country</li><li>Screening of a name or a wallet</li><li>Batch screening, up to 1,000 at a time, with CSV export</li><li>Radar of listed entities</li><li>Evidence report sealed with SHA-256</li><li>My investigations, with review and sign-off (in your browser)</li></ul><a class="btn" href="crypto.html">Open now</a></div>
+   <div class="card plan hi"><h3>Professional</h3><div class="pr">On request <small>per seat</small></div><ul><li>Coming: investigations on our servers, shared with your team</li><li>Coming: monitoring with e-mail alerts</li><li>Coming: deeper traces and clustering</li><li>Coming: API for screening from your own systems</li></ul><a class="btn p" href="mailto:?subject=Casefold%20Crypto%20Intelligence">Talk to us</a></div>
    <div class="card plan"><h3>Institution</h3><div class="pr">On request</div><ul><li>Coming: own Neo4j instance, on premises if needed</li><li>Coming: API and agent tools</li><li>Coming: your own lists, labels and cases</li></ul><a class="btn" href="mailto:?subject=Casefold%20for%20institutions">Talk to us</a></div>
   </div>
  </div>
@@ -434,7 +434,7 @@ function screen(s){s=(s||'').trim();const out=$('sres');if(!out)return;if(s.leng
   else if(r.lists.length)html=`<div class="r"><span><b>${esc(r.owners.join(', ')||'Listed address')}</b><div class="s">${esc(r.chain)} · ${esc(r.lists.map(x=>x.replace('LIST:','').toUpperCase()).join(', '))}</div></span><span class="tag bad">listed</span></div>`;
   else html=`<div class="r"><span><b>Not listed itself</b><div class="s">${esc(r.chain)} · traded directly with ${esc(r.near.join(', ')||'a listed address')}: ${fmt(r.v)} in total</div></span><span class="tag sig">1 hop from a listed party</span></div>`}
  else{const rows=q('MATCH (e:Entity) WHERE toLower(e.name) CONTAINS toLower($s) OPTIONAL MATCH (l:SanctionsList)-[:LISTS]->(e) OPTIONAL MATCH (e)-[:CONTROLS]->(a:Address) OPTIONAL MATCH (c:Source {kind:\'case\'})-[:AGAINST]->(:Entity)-[:POSSIBLY_SAME]-(e) RETURN e.name AS n, e.type AS t, collect(DISTINCT l.id) AS lists, count(DISTINCT a) AS a, collect(DISTINCT c.title) AS cases ORDER BY a DESC LIMIT 6',{s});
-  html=rows.length?rows.map(r=>`<div class="r"><span><b>${esc(r.n)}</b><div class="s">${esc(r.t||'')}${r.a?` · ${fmt(r.a)} crypto addresses`:''}${r.cases.length?` · also in: ${esc(r.cases[0])}`:''}</div></span><span style="display:flex;gap:5px">${r.lists.map(x=>`<span class="tag bad">${esc(x.replace('LIST:','').toUpperCase())}</span>`).join('')||'<span class="tag">party in a case</span>'}</span></div>`).join(''):`<div class="r"><span>No name with crypto addresses matches.<div class="s">The workspace also screens all ${fmt(33294)} listed names.</div></span><span class="tag ok">no hit</span></div>`}
+  html=rows.length?rows.map(r=>`<div class="r"><span><b>${esc(r.n)}</b><div class="s">${esc(r.t||'')}${r.a?` · ${fmt(r.a)} crypto addresses`:''}${r.cases.length?` · also in: ${esc(r.cases[0])}`:''}</div></span><span style="display:flex;gap:5px">${r.lists.map(x=>`<span class="tag bad">${esc(x.replace('LIST:','').toUpperCase())}</span>`).join('')||'<span class="tag">party in a case</span>'}</span></div>`).join(''):`<div class="r"><span>No name with crypto addresses matches.<div class="s">The app also screens all ${fmt(33294)} listed names.</div></span><span class="tag ok">no hit</span></div>`}
  out.innerHTML=html}
 
 /* ---------- modules ---------- */
@@ -447,7 +447,7 @@ function mods(v){const nl=q("MATCH (c:Source {kind:'case'})-[:IN_JURISDICTION]->
   ['law','Regulation per country','Live · NL first','Supervisors and laws per country; article texts for MiCA, the Transfer of Funds Regulation and the Wwft. Other countries mapped, to verify.',`<b>${v.jur}</b> jurisdictions · <b>${regs}</b> supervisors · <b>${arts}</b> articles`,'crypto.html#register'],
   ['gavel','Enforcement case library','Live','Fines, orders and prosecutions, with the article broken and the same company across countries.',`<b>${nl.n}</b> Dutch cases · EUR <b>${compact(nl.eur||0)}</b> in fines and forfeited penalty payments`,'crypto.html#cases'],
   ['seal','Evidence report','Live','Each fact with its source and date, sealed with SHA-256, with lines for preparer and reviewer. Download it from any party, wallet or case.','Printable; the sealed JSON travels with it','crypto.html#sanctions'],
-  ['ws','Investigator workspace','Prototype','Canvas, alerts, perspectives and pipelines, running on Relate. Coming: your cases, notes and team on Neo4j Community.',`<b>${fmt(ents)}</b> listed entities with crypto addresses in the graph`,'workspace.html']];
+  ['ws','My investigations','Live','Build your own case: add wallets, parties, cases and articles as you work, ask plain questions (who sent money here, where did it go), give each item your verdict and note, have a colleague sign off, and download one sealed report. The wallets in it are re-checked on every data update.',`Kept in your browser today; on our servers for your team next`,'crypto.html#inv']];
  $('mods').innerHTML=M.map((m,i)=>`<a class="card mod ${i===6?'wide':''}" href="${m[5]}"><div class="top"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">${IC[m[0]]}</svg></span><span class="tag ${m[2].startsWith('Live')?'ok':''}">${esc(m[2])}</span></div><h3>${esc(m[1])}</h3><p>${esc(m[3])}</p><div class="n">${m[4]}</div></a>`).join('')}
 
 /* ---------- case library: timeline and latest ---------- */
@@ -512,7 +512,7 @@ function study(id){const c=q("MATCH (c:Source {id:$id}) OPTIONAL MATCH (c)-[:IN_
     <a class="card" href="crypto.html#sanctions"><span class="k">02 / SCREEN</span><h3>${listed?'Listed: see the sanctions entry':'Screen the party'}</h3><p>${listed?`Possibly the same as an entry on ${esc([...new Set(ent.flatMap(e=>e.lists))].map(x=>x.replace('LIST:','').toUpperCase()).join(', '))}.`:'Not on an imported sanctions list under this name. Screen its wallets.'}</p></a>
     <a class="card" href="crypto.html#trace"><span class="k">03 / TRACE</span><h3>${hasAddr?'Follow its funds on chain':'Trace a related wallet'}</h3><p>${hasAddr?`${fmt(ent.reduce((a,e)=>a+e.addrs,0))} listed addresses to trace on the radar.`:'No addresses are published for this party; start from a wallet you hold.'}</p></a>
     <a class="card" href="crypto.html#cases"><span class="k">04 / COMPARE</span><h3>${others.length?`Same company: ${others.length} more ${others.length===1?'case':'cases'}`:'Compare with other cases'}</h3><p>${others.length?others.map(o=>`${esc(o.j)} ${esc(o.d.slice(0,4))}: ${esc(o.m)}`).join(' · '):'Every case under the same article, with the fines.'}</p></a></div>
-   <div class="cta"><div><div class="eyebrow" style="font-size:11px">Casefold workspace</div><div style="font:600 19px var(--h);margin-top:6px">Check your own customers and counterparties against this pattern.</div></div><a class="btn p" href="crypto.html">Open the workspace →</a></div></div>
+   <div class="cta"><div><div class="eyebrow" style="font-size:11px">My investigations</div><div style="font:600 19px var(--h);margin-top:6px">Check your own customers and counterparties against this pattern.</div></div><a class="btn p" href="crypto.html#inv">Start an investigation →</a></div></div>
  </div></div>`;
  document.title=`${p.party}: case study · Casefold Crypto Intelligence`}
 function route(){const m=location.hash.match(/^#case\/(.+)$/);if(m){document.body.classList.add('study');study(decodeURIComponent(m[1]));scrollTo(0,0)}else{const was=document.body.classList.contains('study');document.body.classList.remove('study');document.title='Casefold Crypto Intelligence: screen the wallet, trace the funds, cite the rule';if(was&&location.hash){const el=document.querySelector(location.hash);if(el)el.scrollIntoView()}}}
@@ -526,7 +526,7 @@ let RN=[];
  document.addEventListener('input',e=>{if(e.target.id==='sq')screen(e.target.value)});
  document.addEventListener('click',e=>{const a=e.target.closest('a[data-s]');if(a){e.preventDefault();document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'})}});
  addEventListener('hashchange',route);route();
- }catch(e){console.error(e);$('engine').textContent='Relate could not start';$('stage').innerHTML=`<p class="load">The live graph could not start in this browser (${esc(e.message)}). The <a href="crypto.html">workspace</a> needs a browser with WebAssembly.</p>`}})();
+ }catch(e){console.error(e);$('engine').textContent='Relate could not start';$('stage').innerHTML=`<p class="load">The live graph could not start in this browser (${esc(e.message)}). The <a href="crypto.html">app</a> needs a browser with WebAssembly.</p>`}})();
 </script>
 </body>
 </html>
