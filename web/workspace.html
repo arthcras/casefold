@@ -231,6 +231,9 @@ orchestra(){const P=pipelines();
  <div id="pldet">${pl(P[0])}</div></div>`}};
 function pl(p){return `<div class="card"><h2>${esc(p.name)}</h2><div class="wf">${p.steps.map((s,i)=>`<div><span class="mono" style="font-size:11px;color:var(--dim)">${String(i+1).padStart(2,'0')}</span><b>${esc(s)}</b></div>`).join('')}</div><p style="color:var(--muted);font-size:13px;margin:12px 0 0">Source: ${esc(p.src)} · ${esc(p.sched)} · code: <span class="mono">${esc(p.code)}</span></p></div>`}
 
+/* ---------- saving a file: the artifact viewer's downloads capability, else a plain browser download ---------- */
+async function saveFile(filename,data,type){try{if(window.claude&&window.claude.use){const dl=await window.claude.use('downloads');if(dl){try{await dl.save({filename,data});return 'saved'}catch(e){if(e&&e.code==='declined')return 'declined';if(e&&!['unavailable','not_granted','capability_disabled','capability_removed'].includes(e.code))throw e}}}}catch(e){console.warn(e)}
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);return 'saved'}
 /* ---------- evidence report: facts with sources, sealed with SHA-256 ---------- */
 async function evidence(id){const n=q('MATCH (n) WHERE coalesce(n.id, n.code, n.key) = $id RETURN labels(n)[0] AS t, coalesce(n.name, n.party, n.address, n.title) AS name',{id})[0];if(!n)return;
  const facts=[];const add=(fact,source,url,date)=>facts.push({fact,source,url:url||'',date:date||''});
@@ -251,7 +254,7 @@ async function evidence(id){const n=q('MATCH (n) WHERE coalesce(n.id, n.code, n.
  <p style="font-size:12.5px;color:#5d6a7d">A list match or an explorer label is a lead, not a finding. Transfers are the latest ones the public explorers return. Not legal advice.</p>
  <div class="sig"><div>Prepared by (name, date)</div><div>Reviewed and signed off by (name, date)</div></div>
  <details style="margin-top:20px"><summary>JSON that was sealed</summary><pre class="m">${esc(body)}</pre></details><p><button onclick="print()">Print or save as PDF</button></p></body></html>`;
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`evidence-${String(n.name).replace(/[^a-z0-9]+/gi,'-').slice(0,40)}-${D.as_of}.html`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+ const st=await saveFile(`evidence-${String(n.name).replace(/[^a-z0-9]+/gi,'-').slice(0,40)}-${D.as_of}.html`,html,'text/html');if(st==='declined')return;
  toast(`Evidence report downloaded: ${facts.length} facts, SHA-256 ${hash.slice(0,12)}…`)}
 
 /* ---------- canvas wiring ---------- */
