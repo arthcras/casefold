@@ -7,7 +7,7 @@ on Arthur's word "zet live" the commit goes to the branch `live` → Coolify see
 
 | Service | Image | Reachable |
 |---|---|---|
-| `web` | `deploy/web/Dockerfile` (nginx): website at `/`, app at `/crypto.html`, data, Relate | the domain Coolify gives it |
+| `web` | `deploy/web/Dockerfile` (nginx): website at `/`, app at `/crypto.html`, data, Relate | casefoldcrypto.com; app.casefoldcrypto.com opens the app at `/` |
 | `crawler` | `deploy/crawler/Dockerfile` (FastAPI) | only through `web` at `/api/crawler/` |
 
 Left out of the public image on purpose: the back office (`workspace.html`), the platform console and other internal pages.
@@ -17,7 +17,9 @@ Neo4j (casefold-community) is a later step.
 
 1. Coolify → Projects → New resource → **Public/Private Repository (GitHub App)** → `arthcras/casefold`.
 2. Branch: **`live`**. Build pack: **Docker Compose**. Compose file: **`deploy/coolify/docker-compose.yml`**.
-3. Service `web` → Domains: for now the address Coolify generates (sslip.io); later your own domain.
+3. Service `web` → Domains: `https://casefoldcrypto.com,https://app.casefoldcrypto.com`.
+   DNS in Cloudflare (casefoldcrypto.com): A records `@`, `app` and later `office` → the server's IP, proxy off (grey) until
+   Coolify has its certificates; then proxy on and SSL/TLS mode Full (strict).
 4. Environment variables (Coolify, not git):
    - `CRAWLER_TOKEN`: a long random string (for example from a password manager).
    - optional `TRONGRID_API_KEY`.
