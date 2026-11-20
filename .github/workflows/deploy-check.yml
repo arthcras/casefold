@@ -20,10 +20,10 @@ jobs:
       - name: Build and start the stack
         env:
           CRAWLER_TOKEN: check-only
-        run: docker compose -f deploy/coolify/docker-compose.yml up -d --build --wait
+        run: docker compose --project-directory . -f deploy/coolify/docker-compose.yml up -d --build --wait
       - name: The site, the app, the data and the crawler answer through nginx
         run: |
-          IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker compose -f deploy/coolify/docker-compose.yml ps -q web))
+          IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker compose --project-directory . -f deploy/coolify/docker-compose.yml ps -q web))
           curl -fsS "http://$IP/" | grep -q "Casefold"
           curl -fsS "http://$IP/crypto.html" | grep -q "Casefold Crypto Intelligence"
           curl -fsS -H "Host: app.casefoldcrypto.com" "http://$IP/" | grep -q "Casefold Crypto Intelligence"
@@ -34,4 +34,4 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' "http://$IP/workspace.html")" = 404
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://$IP/api/crawler/trace" -H 'Content-Type: application/json' -d '{"chain":"tron","address":"x"}')" = 401
       - if: always()
-        run: docker compose -f deploy/coolify/docker-compose.yml logs --tail 50
+        run: docker compose --project-directory . -f deploy/coolify/docker-compose.yml logs --tail 50
