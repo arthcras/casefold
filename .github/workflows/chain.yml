@@ -21,10 +21,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Labels for the traced addresses (for new traces run fetch_chain.py with --labels)
+      - name: Trace new seed entities and label the traced addresses
         env:
           TRONSCAN_API_KEY: ${{ secrets.TRONSCAN_API_KEY }}
-        run: python3 casefold/fetch_chain.py --labels-only
+        run: python3 casefold/fetch_chain.py --labels
       - name: Put the traces on the branch chain-out
         run: |
           git config user.name "chain workflow"

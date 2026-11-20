@@ -115,7 +115,10 @@ def main():
         if not e:
             print(f'{eid}: not on an imported list', file=sys.stderr); continue
         transfers, summaries, seen = [], {}, set()
-        seeds = [(a['chain'], a['address']) for a in e['addresses'] if a['chain'] in FETCH]
+        out = os.path.join(OUT, eid.replace(':', '-') + '.json')
+        if os.path.exists(out) and '--refresh' not in sys.argv:
+            print(f'{eid}: already traced, skipped (use --refresh to trace again)'); continue
+        seeds = [(a['chain'], a['address']) for a in e['addresses'] if a['chain'] in FETCH][:cfg.get('max_seed_addresses', 15)]
         for chain, a in seeds:
             t, s = FETCH[chain](a, n); transfers += [(1,) + x for x in t]; summaries[f'{chain}:{a}'] = {**s, 'hop': 0}; seen.add(a)
             print(f'{eid} {chain}:{a}: {len(t)} transfers')
