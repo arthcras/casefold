@@ -271,6 +271,10 @@ def address_labels():
             continue
         cat = 'scam' if v.get('is_scam') else next((c for pat, c in m if re.search(pat, ' '.join(texts), re.I)), None)
         out.append({'key': key, 'label': label or 'flagged as scam', 'source': v.get('source'), 'is_scam': bool(v.get('is_scam')), 'category': cat})
+    an = os.path.join(HERE, 'data', 'crypto', 'labels_analyst.json')      # analysts' labels (back office, four eyes) win
+    if os.path.exists(an):
+        for x in json.load(open(an, encoding='utf-8'))['labels']:
+            out.append({'key': case.get(x['key'].lower(), x['key']), 'label': x['label'], 'source': 'Casefold analyst', 'is_scam': x.get('category') == 'scam', 'category': x.get('category') or None})
     return sorted({x['key']: x for x in out}.values(), key=lambda x: x['key'])
 
 
