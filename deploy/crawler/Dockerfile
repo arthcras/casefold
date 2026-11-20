@@ -2,7 +2,7 @@
 FROM python:3.12-slim
 WORKDIR /app
 COPY deploy/crawler/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt && useradd -r -u 10001 crawler
+RUN pip install --no-cache-dir -r requirements.txt && useradd -r -u 10001 crawler && mkdir -p /data && chown crawler /data
 COPY casefold/ casefold/
 COPY data/crypto/ data/crypto/
 COPY schema/ schema/
