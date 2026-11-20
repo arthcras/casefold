@@ -4,7 +4,7 @@
   EvmSource    Ethereum and other EVM chains via Blockscout             /api/v2/addresses/<a>/token-transfers, /transactions
   TronSource   Tron via TronGrid                                        /v1/accounts/<a>/transactions/trc20, /transactions
 
-Each returns transfers as dicts: chain, tx, time (ISO, UTC), block, from, to, amount, asset, api. A token whose contract
+Each returns transfers as dicts: chain, tx, time (ISO, UTC), block, from, to, amount, asset, contract (tokens), api. A token whose contract
 is not the known USDT/USDC contract keeps its symbol with a * (a lookalike or spam token), as in fetch_chain.py.
 Keys come from the environment (TRONGRID_API_KEY, ETHERSCAN_API_KEY): never from code, never from git.
 """
@@ -114,7 +114,7 @@ class EvmSource:
             c = (tok.get('address_hash') or tok.get('address') or '').lower()
             out.append({'chain': self.chain, 'tx': x.get('transaction_hash'), 'time': iso(x.get('timestamp')), 'block': x.get('block_number'),
                         'from': (x.get('from') or {}).get('hash'), 'to': (x.get('to') or {}).get('hash'), 'amount': round(amt, 8),
-                        'asset': self.known.get(c) or (tok.get('symbol') or '?') + '*', 'api': self.base})
+                        'asset': self.known.get(c) or (tok.get('symbol') or '?') + '*', 'contract': c or None, 'api': self.base})
         for x in self._pages(f'/addresses/{addr}/transactions', limit):
             v = int(x.get('value') or 0) / 1e18
             if v:
@@ -154,7 +154,7 @@ class TronSource:
                 continue
             out.append({'chain': self.chain, 'tx': x.get('transaction_id'), 'time': iso((x.get('block_timestamp') or 0) // 1000 or None), 'block': None,
                         'from': x.get('from'), 'to': x.get('to'), 'amount': round(amt, 8),
-                        'asset': KNOWN.get(ti.get('address') or '') or (ti.get('symbol') or '?') + '*', 'api': self.base})
+                        'asset': KNOWN.get(ti.get('address') or '') or (ti.get('symbol') or '?') + '*', 'contract': ti.get('address'), 'api': self.base})
         return out
 
 

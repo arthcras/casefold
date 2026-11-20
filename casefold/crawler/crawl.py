@@ -66,4 +66,5 @@ def as_chain_file(result, name=None):
     """The trace in the format of data/crypto/chain/<entity>.json, so the static build (build_crypto.py) can use it too."""
     return {'entity': f"TRACE:{result['chain']}:{result['start']}", 'name': name or f"Trace of {result['start']}", 'fetched': result['fetched_at'],
             'seeds': [f"{result['chain']}:{result['start']}"], 'summaries': {a['key']: {'hop': a['hop']} for a in result['addresses']},
-            'transfers': [{k: t[k] for k in ('hop', 'chain', 'tx', 'time', 'from', 'to', 'amount', 'asset', 'api')} for t in result['transfers']]}
+            'transfers': [{**{k: t[k] for k in ('hop', 'chain', 'tx', 'time', 'from', 'to', 'amount', 'asset', 'api')}, **({'contract': t['contract']} if t.get('contract') else {})}
+                          for t in result['transfers']]}

@@ -7,7 +7,7 @@ import datetime, sqlite3
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS fetched (chain TEXT, address TEXT, at TEXT, n INTEGER, PRIMARY KEY (chain, address));
-CREATE TABLE IF NOT EXISTS transfer (chain TEXT, tx TEXT, time TEXT, block INTEGER, sender TEXT, receiver TEXT, amount REAL, asset TEXT, api TEXT,
+CREATE TABLE IF NOT EXISTS transfer (chain TEXT, tx TEXT, time TEXT, block INTEGER, sender TEXT, receiver TEXT, amount REAL, asset TEXT, api TEXT, contract TEXT,
   PRIMARY KEY (chain, tx, sender, receiver, asset, amount));
 CREATE INDEX IF NOT EXISTS t_from ON transfer (chain, sender);
 CREATE INDEX IF NOT EXISTS t_to ON transfer (chain, receiver);
@@ -33,15 +33,15 @@ class Store:
         return age.total_seconds() < max_age_hours * 3600
 
     def save(self, chain, address, transfers):
-        self.db.executemany('INSERT OR IGNORE INTO transfer VALUES (?,?,?,?,?,?,?,?,?)',
-                            [(t['chain'], t['tx'], t['time'], t.get('block'), t['from'], t['to'], t['amount'], t['asset'], t['api']) for t in transfers if t.get('from') and t.get('to')])
+        self.db.executemany('INSERT OR IGNORE INTO transfer VALUES (?,?,?,?,?,?,?,?,?,?)',
+                            [(t['chain'], t['tx'], t['time'], t.get('block'), t['from'], t['to'], t['amount'], t['asset'], t['api'], t.get('contract')) for t in transfers if t.get('from') and t.get('to')])
         self.db.execute('INSERT OR REPLACE INTO fetched VALUES (?,?,?,?)', (chain, address, now(), len(transfers)))
         self.db.commit()
 
     def of(self, chain, address):
         rows = self.db.execute('SELECT * FROM transfer WHERE chain=? AND (sender=? OR receiver=?)', (chain, address, address)).fetchall()
         return [{'chain': r['chain'], 'tx': r['tx'], 'time': r['time'], 'block': r['block'], 'from': r['sender'], 'to': r['receiver'],
-                 'amount': r['amount'], 'asset': r['asset'], 'api': r['api']} for r in rows]
+                 'amount': r['amount'], 'asset': r['asset'], 'api': r['api'], 'contract': r['contract']} for r in rows]
 
     def stats(self):
         return {'addresses': self.db.execute('SELECT count(*) FROM fetched').fetchone()[0], 'transfers': self.db.execute('SELECT count(*) FROM transfer').fetchone()[0]}

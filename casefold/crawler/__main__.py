@@ -19,6 +19,11 @@ r = trace(sources()[a.chain], Store(a.db), a.address, a.hops, a.top, a.direction
 assets = {}
 for t in r['transfers']:
     assets[t['asset']] = assets.get(t['asset'], 0) + 1
+tokens = {}
+for t in r['transfers']:
+    if t['asset'].endswith('*') and t.get('contract'):
+        tokens.setdefault(t['asset'], set()).add(t['contract'])
+print(json.dumps({'unverified_tokens': {k: sorted(v) for k, v in tokens.items()}}, indent=1))
 print(json.dumps({'start': r['start'], 'addresses': len(r['addresses']), 'transfers': len(r['transfers']), 'api_calls': r['api_calls'],
                   'assets': dict(sorted(assets.items(), key=lambda kv: -kv[1])[:8])}, indent=1))
 if a.out:
