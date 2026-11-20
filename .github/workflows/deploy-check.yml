@@ -28,7 +28,11 @@ jobs:
           curl -fsS "http://$IP/crypto.html" | grep -q "Casefold Crypto Intelligence"
           curl -fsS -H "Host: app.casefoldcrypto.com" "http://$IP/" | grep -q "Casefold Crypto Intelligence"
           curl -fsS -H "Host: casefoldcrypto.com" "http://$IP/" | grep -q "How it works"
-          curl -fsSI "http://$IP/vendor/relate/relate_bg.wasm" | grep -qi "application/wasm"
+          curl -fsSI "http://$IP/vendor/relate/relate_bg.wasm" | grep -qi "content-type: application/wasm"
+          curl -fsSI "http://$IP/" | grep -qi "content-type: text/html"
+          curl -fsSI "http://$IP/crypto.html" | grep -qi "content-type: text/html"
+          curl -fsSI "http://$IP/vendor/relate/relate.js" | grep -qi "content-type: application/javascript"
+          curl -fsSI "http://$IP/data/crypto.json" | grep -qi "content-type: application/json"
           curl -fsS "http://$IP/data/crypto.json" | head -c 100
           curl -fsS "http://$IP/api/crawler/health"
           test "$(curl -s -o /dev/null -w '%{http_code}' "http://$IP/workspace.html")" = 404
