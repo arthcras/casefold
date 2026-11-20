@@ -1,0 +1,38 @@
+# Casefold on the Hetzner server via Coolify ("Docker Compose" build pack), deployed from the GitHub branch `live`.
+# In Coolify: repository arthcras/casefold, branch live, compose file deploy/coolify/docker-compose.yml.
+# Give the service `web` the domain (for now the address Coolify generates); the crawler is only reachable through web.
+# Environment variables are set in Coolify (never in this file or in git): CRAWLER_TOKEN, and later NEO4J_* and TRONGRID_API_KEY.
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/web/Dockerfile
+    restart: unless-stopped
+    depends_on: [crawler]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  crawler:
+    build:
+      context: ../..
+      dockerfile: deploy/crawler/Dockerfile
+    restart: unless-stopped
+    environment:
+      CRAWLER_TOKEN: ${CRAWLER_TOKEN}
+      TRONGRID_API_KEY: ${TRONGRID_API_KEY:-}
+      NEO4J_URI: ${NEO4J_URI:-}
+      NEO4J_USER: ${NEO4J_USER:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-}
+    volumes:
+      - crawler-data:/data
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8090/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  crawler-data:
