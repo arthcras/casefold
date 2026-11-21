@@ -78,6 +78,9 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
         store.db.commit()
 
     team, aud = os.environ.get('CF_ACCESS_TEAM', '').strip(), os.environ.get('CF_ACCESS_AUD', '').strip()
+    team = re.sub(r'^https?://', '', team).strip('/')
+    if team and '.' not in team:      # the team name alone: 'casefold' -> 'casefold.cloudflareaccess.com'
+        team += '.cloudflareaccess.com'
     jwks = {}
 
     @app.get('/access/verify')

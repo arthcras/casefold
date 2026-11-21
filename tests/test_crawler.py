@@ -127,7 +127,7 @@ def test_access_jwt():
     from fastapi.testclient import TestClient
     from casefold.crawler import api as A
     k = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    os.environ['CF_ACCESS_TEAM'], os.environ['CF_ACCESS_AUD'] = 'team.cloudflareaccess.com', 'aud123'
+    os.environ['CF_ACCESS_TEAM'], os.environ['CF_ACCESS_AUD'] = 'team', 'aud123'   # the team name alone is completed
     try:
         app = A.make_app(store=Store(), srcs={}, writer=None, token='t', out_dir='')
     finally:
