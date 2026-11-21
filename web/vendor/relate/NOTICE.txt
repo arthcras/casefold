@@ -1,0 +1,1 @@
+Relate by Neo4j, @relate/relate-wasm 1.1.0, Apache License 2.0. https://github.com/relatedb/relate

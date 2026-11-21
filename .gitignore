@@ -8,3 +8,6 @@ tests/cases/
 tests/offices/
 laws/sources/
 handover/
+exports/hume/
+web/suite.html
+web/shots/

@@ -1,0 +1,238 @@
+{
+ "note": "Casefold's transaction typologies: fixed rules over the traced transfers that label wallets and transfers in the graph ((:Address)-[:SHOWS]->(:TxTypology), SENT.typologies). A label is a lead for review, never proof. params are the thresholds the rules use; guidance links each typology to the source that names the pattern.",
+ "as_of": "2026-11-20",
+ "typologies": [
+  {
+   "id": "TT-LISTED",
+   "name": "Transfer with a listed party",
+   "severity": "severe",
+   "level": "transfer",
+   "rule": "Sender or receiver is a wallet the sanctions lists give for a listed party.",
+   "params": {}
+  },
+  {
+   "id": "TT-SANCTIONED-ASSET",
+   "name": "Sanctioned instrument",
+   "severity": "severe",
+   "level": "transfer",
+   "rule": "The transfer is in an instrument that is itself under a transaction ban (for example A7A5 in the EU since 25 November 2025).",
+   "params": {}
+  },
+  {
+   "id": "TT-HIGHRISK",
+   "name": "High-risk counterparty",
+   "severity": "high",
+   "level": "transfer",
+   "rule": "Sender or receiver carries a label in a high-risk category (scam, mixer, darknet, ransomware, fraud).",
+   "params": {}
+  },
+  {
+   "id": "TT-SERVICE",
+   "name": "Exchange or service",
+   "severity": "low",
+   "level": "transfer",
+   "rule": "Sender or receiver carries the label of an exchange or other service: a deposit to or withdrawal from a provider.",
+   "params": {}
+  },
+  {
+   "id": "TT-FANOUT",
+   "name": "Fan-out (distribution)",
+   "severity": "medium",
+   "level": "wallet",
+   "rule": "A wallet sends one asset to at least {min} different wallets within {hours} hours.",
+   "params": {
+    "min": 10,
+    "hours": 72
+   }
+  },
+  {
+   "id": "TT-FANIN",
+   "name": "Fan-in (aggregation)",
+   "severity": "medium",
+   "level": "wallet",
+   "rule": "A wallet receives one asset from at least {min} different wallets within {hours} hours.",
+   "params": {
+    "min": 10,
+    "hours": 72
+   }
+  },
+  {
+   "id": "TT-PASS",
+   "name": "Pass-through (rapid in and out)",
+   "severity": "high",
+   "level": "wallet",
+   "rule": "Within {hours} hours of receiving an amount, a wallet sends on at least {ratio} of it in the same asset.",
+   "params": {
+    "hours": 24,
+    "ratio": 0.8
+   }
+  },
+  {
+   "id": "TT-STRUCT",
+   "name": "Structuring below a threshold",
+   "severity": "high",
+   "level": "wallet",
+   "rule": "At least {count} stablecoin transfers between the same two wallets within {days} days, each between {band} and 100% of a threshold ({thresholds}); USD stablecoins compared with EUR thresholds one to one, as an approximation.",
+   "params": {
+    "count": 3,
+    "days": 7,
+    "band": 0.85,
+    "thresholds": [
+     1000,
+     10000
+    ]
+   }
+  },
+  {
+   "id": "TT-PEEL",
+   "name": "Peeling chain",
+   "severity": "medium",
+   "level": "wallet",
+   "rule": "Bitcoin: at least {hops} transactions in a row where a wallet sends most ({share} or more) on to one new wallet and a small part elsewhere.",
+   "params": {
+    "hops": 3,
+    "share": 0.75
+   }
+  },
+  {
+   "id": "TT-SWAP",
+   "name": "Asset change (swap)",
+   "severity": "medium",
+   "level": "wallet",
+   "rule": "A wallet receives one asset and sends another within {days} days (for example USDT in, ETH out).",
+   "params": {
+    "days": 7
+   }
+  },
+  {
+   "id": "TT-ROUND",
+   "name": "Round trip",
+   "severity": "medium",
+   "level": "transfer",
+   "rule": "Money in one asset returns to the wallet it left within {hops} hops.",
+   "params": {
+    "hops": 3
+   }
+  },
+  {
+   "id": "TT-LARGE",
+   "name": "Large stablecoin transfer",
+   "severity": "medium",
+   "level": "transfer",
+   "rule": "One stablecoin transfer of at least {usd} (USDT, USDC).",
+   "params": {
+    "usd": 100000
+   }
+  },
+  {
+   "id": "TT-LOOKALIKE",
+   "name": "Lookalike or spam tokens received",
+   "severity": "medium",
+   "level": "wallet",
+   "rule": "A wallet receives tokens that imitate a known asset or carry advertising in their name (address poisoning, scam tokens); at least {min} such transfers.",
+   "params": {
+    "min": 3
+   }
+  }
+ ],
+ "guidance": [
+  {
+   "typology": "TT-STRUCT",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to transactions",
+   "page": "6",
+   "says": "Transfers split into small amounts or kept below reporting thresholds."
+  },
+  {
+   "typology": "TT-PASS",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to transactions",
+   "page": "7",
+   "says": "Virtual assets deposited and withdrawn again at once, without further activity."
+  },
+  {
+   "typology": "TT-FANOUT",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to transactions",
+   "page": "6",
+   "says": "Virtual assets sent on at once to several wallets or providers, especially in places with little relation to the customer."
+  },
+  {
+   "typology": "TT-FANIN",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to transaction patterns",
+   "page": "9",
+   "says": "Many small amounts collected from unrelated wallets, then moved on or cashed out."
+  },
+  {
+   "typology": "TT-SWAP",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to transactions; transaction patterns",
+   "page": "7, 9",
+   "says": "Conversion between virtual assets, at a loss or with extra fees, without a business rationale."
+  },
+  {
+   "typology": "TT-HIGHRISK",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to anonymity; source of funds or wealth",
+   "page": "11, 16",
+   "says": "Funds to or from mixers, darknet markets, ransomware, fraud or theft addresses."
+  },
+  {
+   "typology": "TT-LISTED",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators in the source of funds or wealth",
+   "page": "16",
+   "says": "Transactions with addresses linked to sanctions or other illicit activity."
+  },
+  {
+   "typology": "TT-LISTED",
+   "guidance": "G:dnb-sanctions-crypto-2022",
+   "section": "Q&A",
+   "page": "",
+   "says": "Screen counterparties and beneficiaries of incoming and outgoing crypto transfers; act on a hit."
+  },
+  {
+   "typology": "TT-SANCTIONED-ASSET",
+   "guidance": "G:dnb-sanctions-crypto-2022",
+   "section": "Q&A",
+   "page": "",
+   "says": "Screening covers the transaction, not only the client; blockchain analysis before and after the transfer."
+  },
+  {
+   "typology": "TT-LARGE",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Red flag indicators related to transactions",
+   "page": "6",
+   "says": "Several high-value transfers in a short period, or staggered and then inactive."
+  },
+  {
+   "typology": "TT-SERVICE",
+   "guidance": "G:eba-gl-2024-11",
+   "section": "Travel rule",
+   "page": "",
+   "says": "Information on originator and beneficiary must accompany crypto-asset transfers between providers; missing information must be detected and handled."
+  },
+  {
+   "typology": "TT-SERVICE",
+   "guidance": "G:eba-gl-2024-01",
+   "section": "Risk factors for CASPs",
+   "page": "",
+   "says": "Transfers to or from providers not authorised in the EU, decentralised platforms or self-hosted addresses are risk factors."
+  },
+  {
+   "typology": "TT-PEEL",
+   "guidance": "G:fatf-rf-2020",
+   "section": "Case studies",
+   "page": "17-18",
+   "says": "The report does not name peeling chains; its closest example is a chain of automated transfers across many wallets and exchanges."
+  },
+  {
+   "typology": "TT-LOOKALIKE",
+   "guidance": "G:fatf-tu-2026",
+   "section": "Risks",
+   "page": "",
+   "says": "Scams and fraud involving virtual assets keep rising."
+  }
+ ]
+}

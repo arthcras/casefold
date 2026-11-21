@@ -1,0 +1,40 @@
+# Rebuild the committed viewer exports (web/data, tests/expected.json) with run.sh on a runner that has Relate, when the
+# laws under laws/ change (a law read in adds a file to the viewer). The result goes to the branch exports-out for review;
+# it reaches the code only by a commit that a person or Claude makes after checking it. Uses only the workflow's own token.
+name: rebuild-exports
+
+on:
+  push:
+    branches: [crypto-intelligence]
+    paths: ['laws/*.rl', '.github/workflows/rebuild-exports.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Relate, OCR and the structure-chart reader (as in tests.yml)
+        run: |
+          curl -sSfL https://relatedb.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          sudo apt-get update -qq && sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-nld poppler-utils
+          pip install --quiet pdfplumber
+      - name: run.sh
+        run: bash run.sh > /tmp/run.log 2>&1 || { tail -50 /tmp/run.log; exit 1; }
+      - name: What changed
+        run: git status --short -- web/data tests/expected.json | head -50
+      - name: Put the exports on the branch exports-out
+        run: |
+          git config user.name "rebuild-exports workflow"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -B exports-out
+          git add -A -- web/data tests/expected.json
+          git commit -m "exports rebuilt by run.sh ($(date -u +%F))" || echo "nothing new"
+          git push -f origin exports-out

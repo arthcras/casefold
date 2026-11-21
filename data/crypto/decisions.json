@@ -1,0 +1,18 @@
+{
+ "note": "The decision documents behind the Dutch crypto cases, as linked from the supervisor's own page. casefold/fetch_crypto_sources.py downloads them (on a machine or runner with internet), reads them with pdftotext and records which articles each decision cites, with the sha256 of the document. The decisions themselves are not committed.",
+ "decisions": [
+  {"case": "CASE:dnb-binance-2022", "url": "https://www.dnb.nl/media/0jxfaxck/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-binance-gelakte-versie-pdf.pdf"},
+  {"case": "CASE:dnb-coinbase-2023", "url": "https://www.dnb.nl/media/v4bd2ru0/besluit-tot-het-opleggen-van-een-bestuurlijke-boete-aan-coinbase.pdf"},
+  {"case": "CASE:dnb-kraken-2023", "url": "https://www.dnb.nl/media/1hbfnaou/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-payward-international-markets-limited.pdf"},
+  {"case": "CASE:dnb-unnamed-casp-2023", "url": "https://www.dnb.nl/media/sq2itqhg/bestuurlijke-boete-cryptodienstaanbieder.pdf"},
+  {"case": "CASE:dnb-kucoin-2024", "url": "https://www.dnb.nl/media/hxfl10uk/besluit-tot-het-opleggen-van-een-last-onder-dwangsom-aan-peken-global-limited.pdf"},
+  {"case": "CASE:dnb-bybit-2024", "url": "https://www.dnb.nl/media/x0ghjc3n/boete-en-openbaarmakingsbesluit-bybit-fintech-limited.pdf"},
+  {"case": "CASE:dnb-bybit-2024", "url": "https://www.dnb.nl/media/xxvkviuh/actuele-stand-van-zaken-bestuurlijke-boete-bybit-fintech-limited.pdf", "kind": "status update"},
+  {"case": "CASE:dnb-okx-2025", "url": "https://www.dnb.nl/media/sytoslmr/boetebesluit-aux-cayes.pdf"}
+ ],
+ "laws": [
+  {"law": "NL:mica", "celex": "32023R1114", "stem": "mica", "version": "2024-12-30", "title": {"nl": "Verordening (EU) 2023/1114 (MiCA)", "en": "Regulation (EU) 2023/1114 (MiCA)"}, "url": "https://eur-lex.europa.eu/eli/reg/2023/1114/oj"},
+  {"law": "NL:tfr", "celex": "32023R1113", "stem": "tfr", "version": "2024-12-30", "title": {"nl": "Verordening (EU) 2023/1113 (TFR)", "en": "Regulation (EU) 2023/1113 (TFR)"}, "url": "https://eur-lex.europa.eu/eli/reg/2023/1113/oj"},
+  {"law": "EU:dac8", "celex": "32023L2226", "stem": "dac8", "version": "2026-01-01", "title": {"nl": "Richtlijn (EU) 2023/2226 (DAC8)", "en": "Directive (EU) 2023/2226 (DAC8)"}, "url": "https://eur-lex.europa.eu/eli/dir/2023/2226/oj"}
+ ]
+}

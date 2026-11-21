@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casefold platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* The Casefold platform in one place: the websites (NeoArbiTrader today, the proposed Casefold site), the workspace
+   (Hume, the investigation back end), the console that manages every graph instance, and the public viewer. Each part
+   is its own page; this shell shows them one at a time under a single navigation. */
+:root{--bar:#101a2b;--bar2:#1a2840;--ink:#9fb0c8;--sig:#e2660f;--fg:#132033;--muted:#5d6a7d;--line:#dfe4ea;--bg:#eef1f5;--f:Inter,system-ui,sans-serif;--h:'Space Grotesk',Inter,sans-serif;--m:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{display:grid;grid-template-rows:52px 1fr;font:14px/1.5 var(--f);color:var(--fg);background:var(--bg);-webkit-font-smoothing:antialiased}
+header{background:var(--bar);display:flex;align-items:center;gap:6px;padding:0 14px;overflow-x:auto}
+.brand{display:flex;align-items:center;gap:9px;color:#fff;font:600 16px var(--h);margin-right:14px;white-space:nowrap;text-decoration:none;cursor:pointer}
+.brand span{color:var(--ink);font-weight:500}
+header button{background:none;border:0;color:var(--ink);font:500 13.5px var(--f);padding:8px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;position:relative}
+header button:hover{background:var(--bar2);color:#fff}
+header button[aria-current=true]{background:var(--bar2);color:#fff}
+header button[aria-current=true]::after{content:"";position:absolute;left:11px;right:11px;bottom:-8px;height:2px;background:var(--sig);border-radius:2px}
+header .grp{font:500 10px var(--m);letter-spacing:.12em;text-transform:uppercase;color:#5f7090;margin:0 4px 0 10px;white-space:nowrap}
+header .sp{flex:1}
+header a.ext{color:var(--ink);font-size:12.5px;text-decoration:none;white-space:nowrap}
+main{position:relative;min-height:0}
+iframe{border:0;width:100%;height:100%;display:block;background:#fff}
+.home{overflow:auto;height:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 26px 60px}
+h1{font:600 30px var(--h);margin:0 0 6px;letter-spacing:-.01em}.lead{color:var(--muted);max-width:860px;margin:0 0 22px;font-size:15px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.part{display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;font:inherit;color:inherit;border:1px solid var(--line);background:#fff;border-radius:14px;padding:18px;transition:border-color .15s,transform .15s}
+.part:hover{border-color:#1d3f73;transform:translateY(-2px)}
+.part .k{font:500 11px var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--sig)}
+.part b{font:600 18px var(--h)}.part p{margin:0;color:var(--muted);font-size:13.5px}
+.part .go{margin-top:auto;font-size:13px;color:#1d3f73;font-weight:600}
+@media(max-width:900px){.parts{grid-template-columns:1fr}}
+#arch{width:100%;height:auto;display:block}
+#arch text{font-family:Inter,sans-serif}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.gal figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.gal img{width:100%;display:block;border-bottom:1px solid var(--line)}
+.gal figcaption{padding:10px 14px;font-size:13px;color:var(--muted)}.gal figcaption b{color:var(--fg)}
+@media(max-width:900px){.gal{grid-template-columns:1fr}}
+.btn{display:inline-block;border:1px solid #c8d0da;background:#fff;border-radius:8px;padding:8px 13px;cursor:pointer;font:500 14px var(--f);color:var(--fg);text-decoration:none}
+.btn.p{background:#1d3f73;border-color:#1d3f73;color:#fff}
+</style>
+</head>
+<body>
+<header>
+ <a class="brand" data-go="home" role="button" tabindex="0"><svg width="26" height="26" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13.5" fill="none" stroke="#2c3d5a"/><circle cx="15" cy="15" r="8.5" fill="none" stroke="#2c3d5a"/><path d="M15 15 L15 1.5 A13.5 13.5 0 0 1 27.4 9.6 Z" fill="#e2660f" opacity=".5"/><circle cx="15" cy="15" r="3" fill="#e2660f"/></svg>Casefold <span>platform</span></a>
+ <span class="grp">Websites</span>
+ <button type="button" data-go="site">Proposed website</button>
+ <button type="button" data-go="current">NeoArbiTrader today</button>
+ <span class="grp">Product</span>
+ <button type="button" data-go="workspace">Back office</button>
+ <button type="button" data-go="console">Console</button>
+ <button type="button" data-go="viewer">Public viewer</button>
+ <span class="sp"></span>
+ <a class="ext" id="newtab" href="#" target="_blank" rel="noopener" hidden>Open in a new tab ↗</a>
+</header>
+<main id="main"></main>
+<script>
+const PAGES={site:'site.html',workspace:'workspace.html',console:'console.html',viewer:'crypto.html',suite:'suite.html'};
+const $=id=>document.getElementById(id);
+function home(){return `<div class="home"><div class="wrap">
+ <h1>Casefold platform</h1><p class="lead">Everything in one place. The websites bring people in. The workspace, our own Hume, is where investigators work. The console manages every graph instance underneath. Each part runs on the same graph, with data we collect ourselves.</p>
+ <div class="card"><svg id="arch" viewBox="0 0 1100 360" role="img" aria-label="Architecture: websites, workspace, console, graph instances and pipelines">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b96a6"/></marker></defs>
+  ${box(20,30,250,'Websites','NeoArbiTrader · Casefold site · viewer','#e2660f')}
+  ${box(420,30,260,'Workspace (Hume)','canvas · alerts · perspectives · Orchestra','#1d3f73')}
+  ${box(830,30,250,'Console','instances · status · query · back-ups','#0f766e')}
+  ${box(20,230,250,'Relate in the browser','casefold-crypto · public pages, no server','#2f6fb5')}
+  ${box(420,230,260,'Neo4j Community','our servers · investigations, users, audit','#2f6fb5')}
+  ${box(830,230,250,'Neo4j Aura / NeoArbiTrader','arbitrage graph · earlier instances','#2f6fb5')}
+  <rect x="300" y="146" width="500" height="44" rx="10" fill="#fdf1e8" stroke="#f3cdb3"/><text x="550" y="166" text-anchor="middle" font-size="13" font-weight="600" fill="#132033">Pipelines (Orchestra): our own data</text><text x="550" y="182" text-anchor="middle" font-size="11.5" fill="#5d6a7d">sanctions lists · chain traces · labels · decisions · laws</text>
+  ${arr(145,100,145,228)}${arr(550,100,550,228)}${arr(955,100,955,228)}${arr(272,65,418,65)}${arr(682,65,828,65)}${arr(550,190,550,228)}${arr(330,190,180,228)}
+  <text x="345" y="58" font-size="11" fill="#5d6a7d">sign in</text><text x="705" y="58" font-size="11" fill="#5d6a7d">manages</text>
+ </svg></div>
+ <div class="parts">
+  ${part('site','Website · proposed','Casefold Crypto Intelligence','The new public site: live radar, data points, the case library with case studies, plans. Computed by Relate in the visitor\'s browser.')}
+  ${part('current','Website · today','NeoArbiTrader','The current site and app: the Intelligence Suite menu, the features page, the arbitrage admin console, and the full product-suite prototype.')}
+  ${part('workspace','Product · back end','Workspace (Hume)','Search, canvas, actions per node, alerts as Cypher rules, perspectives and the Orchestra pipelines. Where investigators work.')}
+  ${part('console','Product · operations','Console','Every graph instance behind Casefold: Relate, Neo4j Community, Aura and NeoArbiTrader. Status, size, a query runner.')}
+  ${part('viewer','Product · public','Public viewer','Supervision per country, cases and fines, sanctions and screening, the radar, risk typologies, with sources.')}
+  ${part('suite','Website · today','Product-suite prototype','The earlier NeoArbiTrader product-suite prototype: one website, arbitrage first, the suite behind it.')}
+ </div></div></div>`}
+function box(x,y,w,t,s,c){return `<rect x="${x}" y="${y}" width="${w}" height="70" rx="12" fill="#fff" stroke="${c}" stroke-width="1.6"/><rect x="${x}" y="${y}" width="6" height="70" rx="3" fill="${c}"/><text x="${x+20}" y="${y+30}" font-size="15" font-weight="600" fill="#132033">${t}</text><text x="${x+20}" y="${y+52}" font-size="11.5" fill="#5d6a7d">${s}</text>`}
+function arr(x1,y1,x2,y2){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8b96a6" stroke-width="1.4" marker-end="url(#ar)"/>`}
+function part(go,k,t,p){return `<button class="part" type="button" data-go="${go}"><span class="k">${k}</span><b>${t}</b><p>${p}</p><span class="go">Open →</span></button>`}
+const NA=[['00-top','Home','A scanner sees a percentage. We see the path: the live venue graph and the open loops.'],['see','Open loops','The loops that are open right now, after every fee.'],['search','Start coin','Every loop that comes back to the coin you start with.'],['remember','History','Every loop that came back larger is kept.'],['catalog','Pairs','Every pair read: 35,307 pairs on 521 venues, with price, spread, volume and age.'],['honest',"What we don't say",'What the numbers do not claim.'],['pricing','Pricing','Two plans.'],['guide','Guide','How path finding works.']];
+function current(){return `<div class="home"><div class="wrap"><h1>NeoArbiTrader today</h1><p class="lead">The current crypto-arbitrage website and app, as they are now. They stay as they are while Casefold Crypto Intelligence is built next to them.</p>
+ <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px"><div style="flex:1;min-width:280px"><b>neoarbitrader.com: arbitrage intelligence</b><div style="color:var(--muted);font-size:13.5px">Each section of the live marketing site, rendered from the neoarbi-site repo (new/html). Live prices are empty in these pictures because the feeds only run on the server.</div></div><a class="btn p" href="https://neoarbitrader.com" target="_blank" rel="noopener">Open the live site ↗</a><a class="btn" href="https://app.neoarbitrader.com" target="_blank" rel="noopener">Open the app ↗</a></div>
+ <div class="gal">${NA.map(x=>`<figure><img src="shots/na/${x[0]}.jpg" alt="${x[1]}" loading="lazy"><figcaption><b>${x[1]}.</b> ${x[2]}</figcaption></figure>`).join('')}
+  <figure><img src="shots/na/app-index.jpg" alt="NeoArbiTrader app: start coin and open loops" loading="lazy"><figcaption><b>App (app.neoarbitrader.com).</b> Start coin, filters, open loops and the walk step by step.</figcaption></figure>
+  <figure><img src="shots/na/app-login.jpg" alt="NeoArbiTrader app login" loading="lazy"><figcaption><b>App login.</b></figcaption></figure></div>
+ <h1 style="font-size:22px;margin-top:30px">Earlier: the Intelligence Suite</h1><p class="lead">The suite version of the site and the arbitrage admin console in the workspace.</p>
+ <div class="gal">
+  <figure><img src="shots/intel-features.jpg" alt="NeoArbiTrader home: NeoArbi Intelligence Suite, source intelligence cards"><figcaption><b>Home and Intelligence Suite.</b> Crypto, arbitrage, blockchain and regulatory intelligence as sources.</figcaption></figure>
+  <figure><img src="shots/intel-menu.jpg" alt="NeoArbiTrader Intelligence Suite menu"><figcaption><b>Intelligence Suite menu.</b> Source intelligence, connected capabilities, compliance and organisation.</figcaption></figure>
+  <figure style="grid-column:1/-1"><img src="shots/admin-console.jpg" alt="NeoArbiTrader arbitrage admin console in the knowledge-graph workspace"><figcaption><b>Arbitrage admin console.</b> The arbitrage graph in the workspace: collect, detect, remember, decide.</figcaption></figure>
+ </div>
+ <div class="card" style="margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="flex:1;min-width:260px"><b>Product-suite prototype</b><div style="color:var(--muted);font-size:13.5px">All suite pages in one prototype: the original app, neoarbi.ai, Crypto Intelligence, endpoints and progress.</div></div><button class="btn p" type="button" data-go="suite">Open the suite prototype</button></div>
+ </div></div>`}
+function go(p){if(!PAGES[p]&&p!=='current')p='home';document.querySelectorAll('header [data-go]').forEach(b=>b.setAttribute('aria-current',b.dataset.go===p));
+ const nt=$('newtab');if(PAGES[p]){$('main').innerHTML=`<iframe title="${p}" src="${PAGES[p]}"></iframe>`;nt.href=PAGES[p];nt.hidden=false}else{$('main').innerHTML=p==='current'?current():home();nt.hidden=true}
+ if(location.hash.slice(1)!==p)history.replaceState(null,'','#'+p)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go)}});
+document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('a[data-go]');if(b&&e.key==='Enter')go(b.dataset.go)});
+addEventListener('hashchange',()=>go(location.hash.slice(1)));
+go(location.hash.slice(1)||'home');
+</script>
+</body>
+</html>

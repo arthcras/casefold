@@ -1,0 +1,92 @@
+{
+ "note": "Supervisory and standard-setter guidance on crypto that Casefold links to its transaction typologies and instruments. Summaries are Casefold's own paraphrase, with the section and page of the source; verify: true = to be checked against the source before it is used as a norm.",
+ "as_of": "2026-11-20",
+ "guidance": [
+  {
+   "id": "G:fatf-rf-2020",
+   "issuer": "INT:fatf",
+   "issuer_name": "FATF",
+   "title": "Virtual Assets Red Flag Indicators of Money Laundering and Terrorist Financing",
+   "date": "2020-09-14",
+   "url": "https://www.fatf-gafi.org/en/publications/Methodsandtrends/Virtual-assets-red-flag-indicators.html",
+   "kind": "red flag indicators",
+   "status": "in force",
+   "verify": false,
+   "summary": "Red flags drawn from more than 100 cases, grouped by transactions, transaction patterns, anonymity, senders or recipients, source of funds or wealth, and geography. A single indicator is not proof; several together without a business rationale raise suspicion."
+  },
+  {
+   "id": "G:fatf-rba-2021",
+   "issuer": "INT:fatf",
+   "issuer_name": "FATF",
+   "title": "Updated Guidance for a Risk-Based Approach to Virtual Assets and Virtual Asset Service Providers",
+   "date": "2021-10-28",
+   "url": "https://www.fatf-gafi.org/en/publications/Fatfrecommendations/Guidance-rba-virtual-assets-2021.html",
+   "kind": "guidance",
+   "status": "in force; does not reflect the 2025 revision of Recommendation 1",
+   "verify": false,
+   "summary": "How the FATF Standards apply to virtual assets and VASPs: definitions, stablecoins, peer-to-peer transfers and unhosted wallets, licensing, the travel rule and counterparty due diligence."
+  },
+  {
+   "id": "G:fatf-tu-2026",
+   "issuer": "INT:fatf",
+   "issuer_name": "FATF",
+   "title": "Seventh Targeted Update on Implementation of the FATF Standards on Virtual Assets/VASPs",
+   "date": "2026-07-16",
+   "url": "https://www.fatf-gafi.org/en/news/targeted-updated-va-vasps-2026.html",
+   "kind": "report",
+   "status": "published",
+   "verify": false,
+   "summary": "Progress and gaps in implementing Recommendation 15; misuse of stablecoins by illicit actors, including DPRK actors and terrorist financiers, has kept increasing since the 2025 update."
+  },
+  {
+   "id": "G:eba-gl-2024-11",
+   "issuer": "EU:eba",
+   "issuer_name": "EBA",
+   "title": "Travel Rule Guidelines (EBA/GL/2024/11): information requirements in relation to transfers of funds and certain crypto-assets transfers under Regulation (EU) 2023/1113",
+   "date": "2024-07-04",
+   "applies_from": "2024-12-30",
+   "url": "https://www.eba.europa.eu/publications-and-media/press-releases/eba-issues-travel-rule-guidance-tackle-money-laundering-and-terrorist-financing-transfers-funds-and",
+   "kind": "guidelines",
+   "status": "applies from 2024-12-30",
+   "verify": false,
+   "summary": "Which information must travel with a crypto-asset transfer, and the steps CASPs and intermediary CASPs take to detect missing or incomplete information and to handle such transfers."
+  },
+  {
+   "id": "G:eba-gl-2024-01",
+   "issuer": "EU:eba",
+   "issuer_name": "EBA",
+   "title": "Guidelines amending the ML/TF Risk Factors Guidelines to cover crypto-asset service providers (EBA/GL/2024/01)",
+   "date": "2024-01-16",
+   "applies_from": "2024-12-30",
+   "url": "https://www.eba.europa.eu/publications-and-media/press-releases/eba-issues-guidance-crypto-asset-service-providers",
+   "kind": "guidelines",
+   "status": "applies from 2024-12-30",
+   "verify": false,
+   "summary": "Sector-specific risk factors for CASPs, including the type of crypto-asset, products that hide the user's identity, and transfers to or from self-hosted addresses, decentralised platforms or providers not authorised in the EU."
+  },
+  {
+   "id": "G:dnb-sanctions-crypto-2022",
+   "issuer": "NL:dnb",
+   "issuer_name": "DNB",
+   "title": "Sanctiescreening bij (inkomende en uitgaande) cryptotransacties",
+   "date": "2022-09-16",
+   "url": "https://www.dnb.nl/voor-de-sector/open-boek-toezicht/wet-regelgeving/sanctiewet-1977-sw/sanctiescreening-bij-inkomende-en-uitgaande-cryptotransacties/",
+   "kind": "Q&A (Open Boek Toezicht)",
+   "status": "current on DNB's site",
+   "verify": false,
+   "summary": "Crypto service providers screen counterparties and beneficiaries of incoming and outgoing transfers, not only their clients; measures are risk-based, acting on a hit is a strict obligation; unhosted wallets carry more risk; examples include blockchain analysis before and after the transfer and holding incoming crypto in an omnibus wallet until the counterparty is screened."
+  },
+  {
+   "id": "G:dnb-indicators-2019",
+   "issuer": "NL:dnb",
+   "issuer_name": "DNB",
+   "title": "Indicators that could point to unusual transactions in crypto service provision",
+   "date": "2019-11-11",
+   "url": "https://www.dnb.nl/en/sector-information/supervision-sectors/crypto-service-providers/integrity-supervision-of-crypto-service-providers/wwft-crypto/transactiemonitoring/indicators-that-could-point-to-unusual-transactions-in-crypto-service-provision/",
+   "kind": "Q&A (Open Boek Toezicht)",
+   "status": "possibly withdrawn: a DNB overview of withdrawn Open Book statements lists this topic",
+   "verify": true,
+   "summary": "Objective and subjective indicators for crypto services; a transaction profile per client; knowing the coins served, including contaminated coins. Points to FIU-NL for indicators."
+  }
+ ]
+}
