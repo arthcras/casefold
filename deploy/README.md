@@ -31,3 +31,16 @@ Check after deploy: `/` shows the website, `/crypto.html` the app, `/api/crawler
 
 Claude makes the change, it is checked by the workflows, and goes to `live` only after "zet live" in the chat.
 Back: Coolify keeps earlier deployments (Deployments → Redeploy an earlier one), or `live` is set back one commit.
+
+## Back office: office.casefoldcrypto.com (behind Cloudflare Access)
+
+The service `office` serves the workspace, the app with "Trace this wallet now", and the crawler with the server's
+token. nginx lets a request through only when the crawler confirms the Cloudflare Access token (`/access/verify`);
+without `CF_ACCESS_TEAM` and `CF_ACCESS_AUD` everything there is refused (401).
+
+1. Cloudflare → DNS (casefoldcrypto.com): A `office` → server IP, **proxied (orange)**: Access works only through Cloudflare.
+2. Cloudflare → Zero Trust → Access → Applications → Add → Self-hosted: domain `office.casefoldcrypto.com`,
+   policy Allow → the e-mail addresses that may enter. Copy the **Application Audience (AUD) tag** and the team domain
+   (`<team>.cloudflareaccess.com`, under Settings → Custom pages / Team domain).
+3. Coolify → Environment Variables: `CF_ACCESS_TEAM` = the team domain, `CF_ACCESS_AUD` = the AUD tag.
+4. Coolify → Domains: service `office` → `https://office.casefoldcrypto.com`, port 80. Deploy.

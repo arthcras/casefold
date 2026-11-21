@@ -11,6 +11,8 @@ Runs next to Neo4j on the Casefold server. Settings from the environment (server
   CRAWLER_OUT        optional folder: each trace is also written as a data/crypto/chain file for the static build
   NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD   optional: write each trace into Neo4j
   TRONGRID_API_KEY   optional: higher Tron limits
+  CF_ACCESS_TEAM, CF_ACCESS_AUD   Cloudflare Access team domain (e.g. casefold.cloudflareaccess.com) and application
+                     audience tag: GET /access/verify checks the Access token for the back office (refuses when unset)
 Start: uvicorn --factory casefold.crawler.api:make_app --host 127.0.0.1 --port 8090   (behind the server's reverse proxy, HTTPS)
 """
 import json, os, re, secrets, threading, uuid
@@ -72,6 +74,25 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
         except Exception as e:      # the job records what went wrong; the API stays up
             store.db.execute("UPDATE job SET status='failed', done=?, error=? WHERE id=?", (now(), str(e)[:500], jid))
         store.db.commit()
+
+    team, aud = os.environ.get('CF_ACCESS_TEAM', '').strip(), os.environ.get('CF_ACCESS_AUD', '').strip()
+    jwks = {}
+
+    @app.get('/access/verify')
+    def access_verify(cf_access_jwt_assertion: str = Header('')):
+        """For nginx auth_request in the back office: 204 when the Cloudflare Access token is valid, else 401."""
+        if not (team and aud and cf_access_jwt_assertion):
+            raise HTTPException(401, 'no valid access')
+        import jwt
+        try:
+            if 'c' not in jwks:
+                jwks['c'] = jwt.PyJWKClient(f'https://{team}/cdn-cgi/access/certs', cache_keys=True, lifespan=3600)
+            key = jwks['c'].get_signing_key_from_jwt(cf_access_jwt_assertion).key
+            claims = jwt.decode(cf_access_jwt_assertion, key, algorithms=['RS256'], audience=aud, issuer=f'https://{team}')
+        except Exception:
+            raise HTTPException(401, 'no valid access')
+        from fastapi import Response
+        return Response(status_code=204, headers={'X-Access-Email': str(claims.get('email', ''))})
 
     @app.get('/health')
     def health():

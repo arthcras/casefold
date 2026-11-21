@@ -116,9 +116,40 @@ def test_api():
     app.state.pool.shutdown(wait=True)
     r = c.get(f'/trace/{jid}', headers=H).json()
     assert r['status'] == 'done' and len(r['trace']['transfers']) >= 3, r
-    print('  ok   api: token required, address and chain checked, a job runs and returns its trace')
+    assert c.get('/access/verify').status_code == 401, 'back office closed without Access settings'
+    assert c.get('/access/verify', headers={'Cf-Access-Jwt-Assertion': 'x.y.z'}).status_code == 401
+    print('  ok   api: token required, address and chain checked, a job runs and returns its trace; back office closed without Access')
+
+
+def test_access_jwt():
+    import jwt, time
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from fastapi.testclient import TestClient
+    from casefold.crawler import api as A
+    k = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    os.environ['CF_ACCESS_TEAM'], os.environ['CF_ACCESS_AUD'] = 'team.cloudflareaccess.com', 'aud123'
+    try:
+        app = A.make_app(store=Store(), srcs={}, writer=None, token='t', out_dir='')
+    finally:
+        del os.environ['CF_ACCESS_TEAM'], os.environ['CF_ACCESS_AUD']
+    class K:  # stands in for the Access certificate endpoint
+        def get_signing_key_from_jwt(self, t):
+            return type('S', (), {'key': k.public_key()})()
+    import jwt as J
+    orig = J.PyJWKClient
+    J.PyJWKClient = lambda *a, **kw: K()
+    try:
+        c = TestClient(app)
+        ok = jwt.encode({'aud': 'aud123', 'iss': 'https://team.cloudflareaccess.com', 'email': 'a@b.c', 'exp': int(time.time()) + 60}, k, algorithm='RS256')
+        bad = jwt.encode({'aud': 'other', 'iss': 'https://team.cloudflareaccess.com', 'exp': int(time.time()) + 60}, k, algorithm='RS256')
+        r = c.get('/access/verify', headers={'Cf-Access-Jwt-Assertion': ok})
+        assert r.status_code == 204 and r.headers['x-access-email'] == 'a@b.c', r.status_code
+        assert c.get('/access/verify', headers={'Cf-Access-Jwt-Assertion': bad}).status_code == 401
+    finally:
+        J.PyJWKClient = orig
+    print('  ok   access: a valid Cloudflare Access token passes, another audience is refused')
 
 
 if __name__ == '__main__':
-    r = test_tron_trace(); test_backward(); test_evm(); test_utxo(); test_graph_statements(r); test_api()
+    r = test_tron_trace(); test_backward(); test_evm(); test_utxo(); test_graph_statements(r); test_api(); test_access_jwt()
     print('crawler: all pass')
