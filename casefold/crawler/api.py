@@ -15,7 +15,7 @@ Runs next to Neo4j on the Casefold server. Settings from the environment (server
                      audience tag: GET /access/verify checks the Access token for the back office (refuses when unset)
 Start: uvicorn --factory casefold.crawler.api:make_app --host 127.0.0.1 --port 8090   (behind the server's reverse proxy, HTTPS)
 """
-import json, os, re, secrets, threading, uuid
+import json, logging, os, re, secrets, threading, uuid
 from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import Depends, FastAPI, HTTPException, Header
@@ -25,6 +25,8 @@ from pydantic import BaseModel, Field
 from .crawl import as_chain_file, trace
 from .sources import sources
 from .store import Store, now
+
+log = logging.getLogger('uvicorn.error')
 
 FORMAT = {'bitcoin': re.compile(r'^(bc1[02-9ac-hj-np-z]{11,71}|[13][1-9A-HJ-NP-Za-km-z]{25,34})$'),
           'ethereum': re.compile(r'^0x[0-9a-fA-F]{40}$'), 'tron': re.compile(r'^T[1-9A-HJ-NP-Za-km-z]{33}$')}
@@ -81,7 +83,11 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
     @app.get('/access/verify')
     def access_verify(cf_access_jwt_assertion: str = Header('')):
         """For nginx auth_request in the back office: 204 when the Cloudflare Access token is valid, else 401."""
-        if not (team and aud and cf_access_jwt_assertion):
+        if not (team and aud):
+            log.warning('access refused: CF_ACCESS_TEAM or CF_ACCESS_AUD is not set')
+            raise HTTPException(401, 'no valid access')
+        if not cf_access_jwt_assertion:
+            log.warning('access refused: no Cf-Access-Jwt-Assertion header (is the DNS record proxied and the Access app in place?)')
             raise HTTPException(401, 'no valid access')
         import jwt
         try:
@@ -89,14 +95,21 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
                 jwks['c'] = jwt.PyJWKClient(f'https://{team}/cdn-cgi/access/certs', cache_keys=True, lifespan=3600)
             key = jwks['c'].get_signing_key_from_jwt(cf_access_jwt_assertion).key
             claims = jwt.decode(cf_access_jwt_assertion, key, algorithms=['RS256'], audience=aud, issuer=f'https://{team}')
-        except Exception:
+        except Exception as e:
+            try:
+                seen = jwt.decode(cf_access_jwt_assertion, options={'verify_signature': False})
+                got = f"aud={seen.get('aud')} iss={seen.get('iss')}"
+            except Exception:
+                got = 'token not readable'
+            log.warning('access refused: %s: %s (expected aud=%s… iss=https://%s; token has %s)', type(e).__name__, e, aud[:8], team, got)
             raise HTTPException(401, 'no valid access')
         from fastapi import Response
         return Response(status_code=204, headers={'X-Access-Email': str(claims.get('email', ''))})
 
     @app.get('/health')
     def health():
-        return {'ok': True, 'chains': sorted(srcs), 'store': store.stats(), 'neo4j': bool(writer)}
+        return {'ok': True, 'chains': sorted(srcs), 'store': store.stats(), 'neo4j': bool(writer),
+                'access': {'team': team or None, 'aud_set': bool(aud), 'aud_start': aud[:6] if aud else None}}
 
     @app.post('/trace', dependencies=[Depends(auth)])
     def start(p: TraceIn):
