@@ -28,12 +28,14 @@ server {
     location = /healthz { auth_request off; access_log off; }
     location = / { try_files /workspace.html =404; }
 
-    # the crawler with the server's token: only reachable here, after Access
+    # the crawler and the investigations, with the server's token: only reachable here, after Access
     location /api/crawler/ {
         proxy_pass http://crawler:8090/;
         proxy_set_header Authorization "Bearer ${CRAWLER_TOKEN}";
         proxy_set_header Host $host;
+        # the person: the investigations API checks this Access token itself and takes the e-mail from it
+        proxy_set_header Cf-Access-Jwt-Assertion $http_cf_access_jwt_assertion;
         proxy_read_timeout 120s;
-        client_max_body_size 64k;
+        client_max_body_size 8m;
     }
 }

@@ -3,6 +3,8 @@
   POST /trace        {"chain": "tron", "address": "T...", "hops": 3, "top": 5, "direction": "out"}  -> {"id": ...}
   GET  /trace/{id}   status (queued | running | done | failed) and, when done, the trace
   GET  /health       store size and which chains are configured
+  GET  /cases[?full=1], GET|PUT|DELETE /cases/{id}, GET /cases/{id}/audit
+                     the back office's investigations (casefold/crawler/cases.py): server token AND a Cloudflare Access token
 
 Runs next to Neo4j on the Casefold server. Settings from the environment (server secrets, never in git):
   CRAWLER_TOKEN      bearer token the app sends (required)
@@ -25,6 +27,7 @@ from pydantic import BaseModel, Field
 from .crawl import as_chain_file, trace
 from .sources import sources
 from .store import Store, now
+from .cases import Cases
 
 import sys  # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -34,6 +37,11 @@ log = logging.getLogger('uvicorn.error')
 
 FORMAT = {'bitcoin': re.compile(r'^(bc1[02-9ac-hj-np-z]{11,71}|[13][1-9A-HJ-NP-Za-km-z]{25,34})$'),
           'ethereum': re.compile(r'^0x[0-9a-fA-F]{40}$'), 'tron': re.compile(r'^T[1-9A-HJ-NP-Za-km-z]{33}$')}
+
+
+class CaseIn(BaseModel):
+    doc: dict
+    version: int = Field(0, ge=0)
 
 
 class TraceIn(BaseModel):
@@ -55,8 +63,10 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
         from .graph import Neo4jWriter
         writer = Neo4jWriter()
     if origin:
-        app.add_middleware(CORSMiddleware, allow_origins=[origin], allow_methods=['GET', 'POST'], allow_headers=['Authorization', 'Content-Type'])
+        app.add_middleware(CORSMiddleware, allow_origins=[origin], allow_methods=['GET', 'POST', 'PUT', 'DELETE'], allow_headers=['Authorization', 'Content-Type'])
     pool = ThreadPoolExecutor(max_workers=2)
+    cases = Cases(store.db, now)
+    clock = threading.Lock()     # one save at a time: the version check and the write belong together
     lock = threading.Lock()      # one crawl at a time per store: the free tiers allow only a few calls a second
 
     def auth(authorization: str = Header('')):
@@ -89,31 +99,72 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
         team += '.cloudflareaccess.com'
     jwks = {}
 
-    @app.get('/access/verify')
-    def access_verify(cf_access_jwt_assertion: str = Header('')):
-        """For nginx auth_request in the back office: 204 when the Cloudflare Access token is valid, else 401."""
+    def claims_of(assertion):
+        """The claims of a valid Cloudflare Access token, or 401 (and the reason in the log)."""
         if not (team and aud):
             log.warning('access refused: CF_ACCESS_TEAM or CF_ACCESS_AUD is not set')
             raise HTTPException(401, 'no valid access')
-        if not cf_access_jwt_assertion:
+        if not assertion:
             log.warning('access refused: no Cf-Access-Jwt-Assertion header (is the DNS record proxied and the Access app in place?)')
             raise HTTPException(401, 'no valid access')
         import jwt
         try:
             if 'c' not in jwks:
                 jwks['c'] = jwt.PyJWKClient(f'https://{team}/cdn-cgi/access/certs', cache_keys=True, lifespan=3600)
-            key = jwks['c'].get_signing_key_from_jwt(cf_access_jwt_assertion).key
-            claims = jwt.decode(cf_access_jwt_assertion, key, algorithms=['RS256'], audience=aud, issuer=f'https://{team}')
+            key = jwks['c'].get_signing_key_from_jwt(assertion).key
+            return jwt.decode(assertion, key, algorithms=['RS256'], audience=aud, issuer=f'https://{team}')
         except Exception as e:
             try:
-                seen = jwt.decode(cf_access_jwt_assertion, options={'verify_signature': False})
+                seen = jwt.decode(assertion, options={'verify_signature': False})
                 got = f"aud={seen.get('aud')} iss={seen.get('iss')}"
             except Exception:
                 got = 'token not readable'
             log.warning('access refused: %s: %s (expected aud=%s… iss=https://%s; token has %s)', type(e).__name__, e, aud[:8], team, got)
             raise HTTPException(401, 'no valid access')
+
+    @app.get('/access/verify')
+    def access_verify(cf_access_jwt_assertion: str = Header('')):
+        """For nginx auth_request in the back office: 204 when the Cloudflare Access token is valid, else 401."""
+        claims = claims_of(cf_access_jwt_assertion)
         from fastapi import Response
         return Response(status_code=204, headers={'X-Access-Email': str(claims.get('email', ''))})
+
+    def who(cf_access_jwt_assertion: str = Header('')):
+        """The person, from the Access token: the server token alone is not enough to change an investigation."""
+        e = str(claims_of(cf_access_jwt_assertion).get('email') or '').strip().lower()
+        if not e:
+            raise HTTPException(401, 'the access token names no e-mail')
+        return e
+
+    def answer(code, body):
+        if code != 200:
+            raise HTTPException(code, body if code == 409 else body['detail'])
+        return body
+
+    @app.get('/cases', dependencies=[Depends(auth)])
+    def cases_list(full: int = 0, me: str = Depends(who)):
+        return {'me': me, 'cases': cases.list(bool(full))}
+
+    @app.get('/cases/{cid}', dependencies=[Depends(auth)])
+    def case_get(cid: str, me: str = Depends(who)):
+        r = cases.get(cid)
+        if not r:
+            raise HTTPException(404, 'no such investigation')
+        return r
+
+    @app.put('/cases/{cid}', dependencies=[Depends(auth)])
+    def case_put(cid: str, p: CaseIn, me: str = Depends(who)):
+        with clock:
+            return answer(*cases.put(cid, p.doc, p.version, me))
+
+    @app.delete('/cases/{cid}', dependencies=[Depends(auth)])
+    def case_delete(cid: str, version: int, me: str = Depends(who)):
+        with clock:
+            return answer(*cases.delete(cid, version, me))
+
+    @app.get('/cases/{cid}/audit', dependencies=[Depends(auth)])
+    def case_audit(cid: str, me: str = Depends(who)):
+        return cases.audit(cid)
 
     @app.get('/health')
     def health():

@@ -44,3 +44,20 @@ without `CF_ACCESS_TEAM` and `CF_ACCESS_AUD` everything there is refused (401).
    (`<team>.cloudflareaccess.com`, under Settings → Custom pages / Team domain).
 3. Coolify → Environment Variables: `CF_ACCESS_TEAM` = the team domain, `CF_ACCESS_AUD` = the AUD tag.
 4. Coolify → Domains: service `office` → `https://office.casefoldcrypto.com`, port 80. Deploy.
+
+## Investigations on the server
+
+In the back office (office.casefoldcrypto.com) the investigations are stored on the server, not only in the browser:
+`casefold/crawler/cases.py`, in the crawler's SQLite file (`/data/crawler.sqlite`, Docker volume `crawler-data`).
+
+- Who: taken from the Cloudflare Access token (e-mail); the server token alone is not enough.
+- Versions: a save names the version it started from; a save from an older version is refused, and the app then shows
+  the newer version and says who changed it.
+- Audit trail: every create, change and delete is an event (who, when, version, SHA-256 of the document), chained by hash;
+  the database refuses changes to it. Delete hides an investigation; the document and its history are kept.
+- The browser keeps a copy and saves with the next change when the server was not reachable. Investigations made
+  earlier in a browser move to the server the first time the back office is opened there.
+- The public site and app (casefoldcrypto.com, app.casefoldcrypto.com) cannot reach them (`/api/crawler/cases` → 404);
+  the public app keeps its investigations in the browser.
+- Backup: the volume `crawler-data` holds everything; back it up (Coolify → the resource → Backups, or a copy of
+  `/data/crawler.sqlite`) before relying on it for client work.

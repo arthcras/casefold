@@ -166,6 +166,60 @@ def test_poisoning():
     print('  ok   poisoning: dust from a lookalike of a real counterparty is flagged; dust is no pass-through or round trip; paying the lookalike is flagged')
 
 
+def test_cases():
+    import jwt, time
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from fastapi.testclient import TestClient
+    from casefold.crawler import api as A
+    k = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    os.environ['CF_ACCESS_TEAM'], os.environ['CF_ACCESS_AUD'] = 'team', 'aud123'
+    try:
+        st = Store()
+        app = A.make_app(store=st, srcs={}, writer=None, token='t', out_dir='')
+    finally:
+        del os.environ['CF_ACCESS_TEAM'], os.environ['CF_ACCESS_AUD']
+    class K:
+        def get_signing_key_from_jwt(self, t):
+            return type('S', (), {'key': k.public_key()})()
+    import jwt as J
+    orig = J.PyJWKClient
+    J.PyJWKClient = lambda *a, **kw: K()
+    tok = lambda e: jwt.encode({'aud': 'aud123', 'iss': 'https://team.cloudflareaccess.com', 'email': e, 'exp': int(time.time()) + 60}, k, algorithm='RS256')
+    try:
+        c = TestClient(app)
+        H1 = {'Authorization': 'Bearer t', 'Cf-Access-Jwt-Assertion': tok('Ann@X.com')}
+        H2 = {'Authorization': 'Bearer t', 'Cf-Access-Jwt-Assertion': tok('bob@x.com')}
+        doc = {'id': 'INV-abc', 'name': 'Wallet T…', 'status': 'open', 'items': [], 'log': []}
+        assert c.get('/cases', headers={'Authorization': 'Bearer t'}).status_code == 401, 'Access token required'
+        assert c.get('/cases', headers={'Cf-Access-Jwt-Assertion': tok('a@x.com')}).status_code == 401, 'server token required'
+        assert c.put('/cases/INV-abc', json={'doc': {**doc, 'id': 'INV-other'}, 'version': 0}, headers=H1).status_code == 422
+        r = c.put('/cases/INV-abc', json={'doc': doc, 'version': 0}, headers=H1).json()
+        assert r['version'] == 1 and r['created_by'] == 'ann@x.com', r
+        assert c.put('/cases/INV-abc', json={'doc': doc, 'version': 1}, headers=H2).json()['version'] == 1, 'unchanged: no new version'
+        r = c.put('/cases/INV-abc', json={'doc': {**doc, 'status': 'review'}, 'version': 1}, headers=H2).json()
+        assert r['version'] == 2 and r['updated_by'] == 'bob@x.com'
+        r = c.put('/cases/INV-abc', json={'doc': {**doc, 'name': 'late'}, 'version': 1}, headers=H1)
+        assert r.status_code == 409 and r.json()['detail']['updated_by'] == 'bob@x.com', r.text
+        L = c.get('/cases?full=1', headers=H1).json()
+        assert L['me'] == 'ann@x.com' and L['cases'][0]['doc']['status'] == 'review'
+        assert c.delete('/cases/INV-abc?version=1', headers=H1).status_code == 409
+        assert c.delete('/cases/INV-abc?version=2', headers=H1).status_code == 200
+        assert c.get('/cases', headers=H1).json()['cases'] == [] and c.get('/cases/INV-abc', headers=H1).status_code == 404
+        assert c.put('/cases/INV-abc', json={'doc': doc, 'version': 2}, headers=H1).status_code == 410
+        a = c.get('/cases/INV-abc/audit', headers=H1).json()
+        assert a['chain_ok'] and [e['action'] for e in a['events']] == ['create', 'update', 'delete'], a
+        assert [e['by'] for e in a['events']] == ['ann@x.com', 'bob@x.com', 'ann@x.com']
+        try:
+            st.db.execute("UPDATE case_event SET by = 'x'"); raise AssertionError('audit trail changed')
+        except Exception as e:
+            assert 'append-only' in str(e), e
+        st.db.execute('DROP TRIGGER ce_no_update'); st.db.execute("UPDATE case_event SET by = 'mallory' WHERE n = 2")
+        assert not c.get('/cases/INV-abc/audit', headers=H1).json()['chain_ok'], 'a changed event breaks the chain'
+    finally:
+        J.PyJWKClient = orig
+    print('  ok   cases: server token and Access both required; versions refuse a stale save (409); delete hides; audit trail append-only and hash-chained')
+
+
 if __name__ == '__main__':
-    r = test_tron_trace(); test_backward(); test_evm(); test_utxo(); test_graph_statements(r); test_api(); test_access_jwt(); test_poisoning()
+    r = test_tron_trace(); test_backward(); test_evm(); test_utxo(); test_graph_statements(r); test_api(); test_access_jwt(); test_poisoning(); test_cases()
     print('crawler: all pass')

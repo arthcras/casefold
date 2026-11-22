@@ -108,6 +108,7 @@ body.vinv .ipane{display:block}
 }
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}@media(max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){table{font-size:12.5px}}
+.warnline{color:var(--warn)}
 </style>
 </head>
 <body>
@@ -345,7 +346,7 @@ const V={
 inv(){const I=INV.list;const isNew=INV.cur==='new'||!I.length;const cur=isNew?null:(I.find(x=>x.id===INV.cur)||I[0]);if(cur)INV.cur=cur.id;
  const P=cur?flowPrep(cur):null;
  $('side').innerHTML=`<div class="card"><h2>My investigations</h2>${I.map(x=>`<button class="jur" type="button" data-inv="${esc(x.id)}" aria-current="${!!cur&&x.id===cur.id}"><span>${esc(x.name)}</span><span class="mono">${esc(STLAB[x.status]||x.status)}</span></button>`).join('')||'<p class="note">None yet.</p>'}
-  <div class="chips" style="margin-top:8px"><button class="sb p" type="button" id="invnewmode">+ New investigation</button></div></div>
+  <div class="chips" style="margin-top:8px"><button class="sb p" type="button" id="invnewmode">+ New investigation</button></div><p class="note" id="srvst">${esc(srvText())}</p></div>
   ${cur?`<div class="card"><h2>Money flow</h2>${flowVars(P)}</div>`:''}`;
  /* the graph: the money flow, or the network of the investigation */
  const gm=S.gmode||'flow';
@@ -466,7 +467,7 @@ function read(t){const P=[],add=(k,v,edge,x)=>{if(!P.some(p=>p.k===k&&p.v===v))P
 function parseAmount(s){const m=s.replace(/\s/g,'').match(/(EUR|USD|€|\$)?([\d.,]+)(million|miljoen|billion|miljard)?/i);if(!m)return null;let n=m[2];
  n=/,\d{2}$/.test(n)?n.replace(/\./g,'').replace(',','.'):/\.\d{3}(\.|$)/.test(n)&&!/\.\d{1,2}$/.test(n)?n.replace(/\./g,''):n.replace(/,/g,'');
  let v=parseFloat(n);if(/million|miljoen/i.test(m[3]||''))v*=1e6;if(/billion|miljard/i.test(m[3]||''))v*=1e9;return {v,c:/USD|\$/i.test(m[1]||'')?'USD':'EUR'};}
-function confirm(){const sel=S.props.filter(p=>p.ok);if(!sel.length){S.msg='Tick at least one proposal.';return}
+function confirmProps(){const sel=S.props.filter(p=>p.ok);if(!sel.length){S.msg='Tick at least one proposal.';return}
  const id='SRC:'+S.kind+':'+Date.now().toString(36);const amt=sel.find(p=>p.k==='amount'),dt=sel.find(p=>p.k==='date');const a=amt?parseAmount(amt.v):null;
  q(`MERGE (k:Source {id:$id}) SET k.kind=$kind, k.title=$title, k.url=$url, k.date=$date, k.amount=CASE WHEN $amount IS NULL THEN null ELSE toFloat($amount) END, k.currency=$cur, k.verify=true, k.party=$title, k.summary=$text`,
   {id,kind:S.kind,title:S.title||'(untitled source)',url:S.url||'local:pasted',date:dt?dt.v:'unknown',amount:a?a.v:null,cur:a?a.c:null,text:(S.text||'').slice(0,2000)});
@@ -480,9 +481,45 @@ function confirm(){const sel=S.props.filter(p=>p.ok);if(!sel.length){S.msg='Tick
 /* ---------- my investigations: the client's own case, kept in this browser in the prototype ---------- */
 const STLAB={open:'open',review:'in review',closed:'signed off'};
 const INV={list:[],cur:null};try{INV.list=JSON.parse(localStorage.getItem('cf-inv')||'[]')}catch(e){}
-const invSave=()=>{try{localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}};
+const invSave=()=>{try{localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}srvSched()};
+/* investigations on the server (back office only): one shared store, versioned, with an append-only audit trail.
+   This browser keeps a copy; a save names the version it started from, so nobody overwrites someone else unnoticed. */
+const SRV={on:false,me:'',ver:{},sent:{},st:'',at:null,msg:'',t:null,busy:false,again:false};
+try{SRV.ver=JSON.parse(localStorage.getItem('cf-inv-ver')||'{}')}catch(e){}
+const srvKeep=()=>{try{localStorage.setItem('cf-inv-ver',JSON.stringify(SRV.ver));localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}};
+async function srvFetch(path,opt){const r=await fetch('/api/crawler/cases'+path,{...(opt||{}),headers:{'Content-Type':'application/json'},cache:'no-store',credentials:'same-origin'});const j=await r.json().catch(()=>({}));return {ok:r.ok,code:r.status,j}}
+async function srvLoad(){if(!CRAWL||SRV.busy)return;SRV.st=SRV.on?SRV.st:'loading';paintSrv();
+ try{const r=await srvFetch('?full=1');if(!r.ok)throw new Error(r.code===401?'not signed in to the server':'HTTP '+r.code);
+  SRV.on=true;SRV.me=r.j.me||'';const srv=new Map(r.j.cases.map(x=>[x.id,x]));const local=new Map(INV.list.map(c=>[c.id,c]));const list=[];const mine=[];let gone=0;
+  for(const x of r.j.cases){const c=local.get(x.id);
+   if(c&&SRV.ver[x.id]===x.version&&JSON.stringify(c)!==JSON.stringify(x.doc))list.push(c);   // changed here, not yet saved: keep and save
+   else{list.push(x.doc);SRV.sent[x.id]=JSON.stringify(x.doc)}SRV.ver[x.id]=x.version}
+  for(const c of INV.list){if(srv.has(c.id))continue;if(SRV.ver[c.id]){gone++;delete SRV.ver[c.id];continue}mine.push(c);list.push(c)}   // deleted on the server, or only in this browser
+  for(const c of mine)invLog(c,'Moved from this browser to the shared store on the server');
+  INV.list=list;srvKeep();SRV.st='ok';SRV.at=new Date();SRV.msg=mine.length?`${mine.length} from this browser moved to the server.`:gone?`${gone} deleted by someone else.`:'';
+  if(INV.cur&&INV.cur!=='new'&&!INV.list.some(x=>x.id===INV.cur))INV.cur=null;render();srvPush()}
+ catch(e){SRV.on=false;SRV.st='off';SRV.msg=e.message;paintSrv()}}
+function srvSched(){if(!SRV.on)return;clearTimeout(SRV.t);SRV.t=setTimeout(srvPush,700)}
+async function srvPush(){SRV.t=null;if(!SRV.on)return;if(SRV.busy){SRV.again=true;return}SRV.busy=true;let redraw=false;
+ try{for(const c of INV.list.slice()){const txt=JSON.stringify(c);if(SRV.sent[c.id]===txt)continue;SRV.st='saving';paintSrv();
+   const r=await srvFetch('/'+encodeURIComponent(c.id),{method:'PUT',body:JSON.stringify({doc:c,version:SRV.ver[c.id]||0})});
+   if(r.ok){SRV.ver[c.id]=r.j.version;SRV.sent[c.id]=txt;SRV.at=new Date();SRV.st='ok';if(/^(Not saved|")/.test(SRV.msg))SRV.msg=''}
+   else if(r.code===409){const d=r.j.detail||{};const g=await srvFetch('/'+encodeURIComponent(c.id));
+    if(g.ok){const i=INV.list.findIndex(x=>x.id===c.id);if(i>=0)INV.list[i]=g.j.doc;SRV.ver[c.id]=g.j.version;SRV.sent[c.id]=JSON.stringify(g.j.doc)}
+    SRV.st='conflict';SRV.msg=`"${c.name}" was changed by ${d.updated_by||'someone else'} meanwhile: their version is shown now; your last change to it was not saved.`;redraw=true}
+   else if(r.code===410){INV.list=INV.list.filter(x=>x.id!==c.id);delete SRV.ver[c.id];SRV.st='conflict';SRV.msg=`"${c.name}" was deleted by someone else.`;redraw=true}
+   else throw new Error(typeof r.j.detail==='string'?r.j.detail:'HTTP '+r.code)}
+  srvKeep()}
+ catch(e){SRV.st='error';SRV.msg=`Not saved on the server (${e.message}). It is kept in this browser and saved with the next change.`}
+ SRV.busy=false;if(redraw)render();else paintSrv();if(SRV.again){SRV.again=false;srvSched()}}
+async function srvDel(id){if(!SRV.on||!SRV.ver[id])return;const r=await srvFetch('/'+encodeURIComponent(id)+'?version='+SRV.ver[id],{method:'DELETE'});
+ if(r.ok){delete SRV.ver[id];delete SRV.sent[id];srvKeep();SRV.msg='';SRV.st='ok';paintSrv()}else{SRV.st='error';SRV.msg='The delete was not saved on the server: someone changed it meanwhile.';await srvLoad()}}
+function srvText(){if(!CRAWL)return 'Kept in this browser only.';const t=d=>d?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+ const m=SRV.msg?' '+SRV.msg:'';
+ return ({loading:'Connecting to the server…',saving:'Saving on the server…',ok:`Saved on the server${SRV.at?' · '+t(SRV.at):''}${SRV.me?' · '+SRV.me:''}.`+m,conflict:m.trim(),error:m.trim(),off:`Not connected to the server (${SRV.msg}): kept in this browser only.`})[SRV.st]||''}
+function paintSrv(){const e=document.getElementById('srvst');if(e){e.textContent=srvText();e.className='note'+(/^(conflict|error|off)$/.test(SRV.st)?' warnline':'')}}
 const invLog=(c,t)=>c.log.push({at:new Date().toISOString(),text:t});
-function invNew(name,reason){const by=(prompt('Your name (shown in the report)','')||'').trim();const c={id:'INV-'+Date.now().toString(36),name:name||'Untitled investigation',reason:reason||'',by:by||'you',created:new Date().toISOString(),status:'open',items:[],log:[]};invLog(c,`Started by ${c.by}`);INV.list.push(c);INV.cur=c.id;invSave();return c}
+function invNew(name,reason){const by=(prompt('Your name (shown in the report)',SRV.me||'')||'').trim();const c={id:'INV-'+Date.now().toString(36),name:name||'Untitled investigation',reason:reason||'',by:by||'you',created:new Date().toISOString(),status:'open',items:[],log:[]};invLog(c,`Started by ${c.by}`);INV.list.push(c);INV.cur=c.id;invSave();return c}
 function invCur(){return INV.list.find(x=>x.id===INV.cur)||(INV.cur!=='new'&&INV.list[0])||invNew('Untitled investigation','')}
 function nodeInfo(id){return q(`MATCH (n) WHERE coalesce(n.id, n.code, n.key) = $id RETURN ${N('n')} AS n LIMIT 1`,{id})[0]?.n}
 function invAdd(ids,by){const c=invCur();let k=0;for(const id of ids){if(c.items.some(x=>x.id===id))continue;const d=nodeInfo(id);if(!d)continue;c.items.push({id,t:d.t,label:d.t==='Address'?(q('MATCH (a:Address {key:$id}) RETURN a.label AS l',{id})[0]?.l||short(id)):d.t==='Article'?`${d.law} art. ${d.art}`:String(d.name||id),verdict:'lead',note:'',by:by||'you',added:new Date().toISOString()});k++}
@@ -1066,7 +1103,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tra
   S.fbusy='';render();return}
  if(t.id==='fmanual'){const c=invCur();c.findings={steps:STEPS.map(x=>({step:x,text:'',refs:[]})),findings:[{text:'',refs:[]}],questions:[],status:'draft',drafted_by:null,at:new Date().toISOString()};invSave();render();return}
  if(t.id==='fadd'){const c=invCur();c.findings.findings.push({text:'',refs:[]});invSave();render();return}
- if(t.id==='fadopt'){const c=invCur();const FR=factRegister(c);const T=findingsTest(c,FR,c.findings);const bad=T.filter(x=>!x[0]);if(bad.length&&!confirm(`${bad.length} ${bad.length===1?'check does':'checks do'} not pass:\n- ${bad.map(x=>x[1]).join('\n- ')}\n\nAdopt anyway?`))return;
+ if(t.id==='fadopt'){const c=invCur();const FR=factRegister(c);const T=findingsTest(c,FR,c.findings);const bad=T.filter(x=>!x[0]);if(bad.length&&!window.confirm(`${bad.length} ${bad.length===1?'check does':'checks do'} not pass:\n- ${bad.map(x=>x[1]).join('\n- ')}\n\nAdopt anyway?`))return;
   const who=prompt('Your name (you adopt these findings as yours)','');if(!who)return;c.findings.status='adopted';c.findings.adopted_by=who.trim();c.findings.adopted_at=new Date().toISOString();invLog(c,`Findings adopted by ${who.trim()}${bad.length?` with ${bad.length} open ${bad.length===1?'check':'checks'}`:''}`);invSave();render();return}
  if(t.id==='planchip'){S.view='plan';history.replaceState(null,'','#plan');render();return}
  if(t.dataset.pack!==undefined){const o=crOrder(+t.dataset.pack);render();setTimeout(()=>{const b=document.querySelector(`[data-pay="${o.id}"]`);b&&b.scrollIntoView({block:'center'})},50);return}
@@ -1103,7 +1140,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tra
  if(t.id==='sexample'){keep();S.text=EX;S.title=S.title||'Example: DNB fine for crypto services without registration';render();return}
  if(t.id==='sread'){keep();S.props=read(S.text);S.msg=S.props.length?'':'Nothing found to propose in this text.';render();return}
  if(t.id==='all'){S.props.forEach(p=>p.ok=true);$('props').innerHTML=props();return}
- if(t.id==='confirm'){try{confirm()}catch(err){S.msg='Not added: '+err.message}$('props').innerHTML=props();return}
+ if(t.id==='confirm'){try{confirmProps()}catch(err){S.msg='Not added: '+err.message}$('props').innerHTML=props();return}
  if(t.dataset.invadd!==undefined){const {c,k}=invAdd([t.dataset.invadd]);const b=t;b.textContent=k?`Added to ${c.name}`:'Already in the investigation';return}
  if(t.id==='binv'){if(!INV.list.length||INV.cur==='new'||S.view==='inv'&&S.check)invNew(`Check of ${new Date().toISOString().slice(0,10)}`,'From a check of wallets and names');const ids=[];for(const r of BATCH.filter(r=>r.level>0)){if(r.kind==='wallet'){const k=q('MATCH (a:Address) WHERE toLower(a.address) = toLower($s) RETURN a.key AS k',{s:r.input})[0];if(k)ids.push(k.k)}else{for(const e of q('MATCH (e:Entity) WHERE toLower(e.name) CONTAINS toLower($s) RETURN e.id AS k LIMIT 3',{s:r.input}))ids.push(e.k)}}const {c,k}=invAdd(ids);invLog(c,`${k} added from a check`);invSave();S.check=null;S.view='inv';INV.cur=c.id;history.replaceState(null,'','#inv');render();return}
  if(t.id==='invnew'){invNew($('invname').value.trim(),$('invwhy').value.trim());render();return}
@@ -1118,7 +1155,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tra
  if(t.id==='knnames'){const c=invCur();const csv=knodeNames(c);if(!csv){alert('No names in this investigation yet.');return}const st=await saveFile(`knode-names-${String(c.name).replace(/[^a-z0-9]+/gi,'-').slice(0,40)}.csv`,csv,'text/csv');if(st==='saved'){invLog(c,'Names exported for the KnodeCompliance screening');invSave();render()}return}
  if(t.id==='kngo'){const c=invCur();knodeApply(c,S.intake.screening);S.intake=null;S.intext='';S.inopen=false;render();return}
  if(t.id==='invack'){const c=invCur();c.watch={at:new Date().toISOString(),data:D.as_of,sig:invSig(c)};invLog(c,'Monitoring changes marked as seen');invSave();render();return}
- if(t.id==='invdel'){const c=invCur();if(!confirm(`Delete the investigation "${c.name}"? This cannot be undone.`))return;INV.list=INV.list.filter(x=>x.id!==c.id);INV.cur=null;invSave();render();return}
+ if(t.id==='invdel'){const c=invCur();if(!window.confirm(SRV.on?`Delete the investigation "${c.name}"? It disappears for everyone; the server keeps it, with who deleted it and when, in the audit trail.`:`Delete the investigation "${c.name}"? This cannot be undone.`))return;INV.list=INV.list.filter(x=>x.id!==c.id);INV.cur=null;try{localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}srvDel(c.id);render();return}
  if(t.id==='bgo'){S.batch=$('batch').value;S.hits=await batchScreen(S.batch);$('hits').innerHTML=S.hits;$('hits').scrollIntoView({behavior:'smooth'});return}
  if(t.id==='bcsv'){downloadCsv();return}
  if(t.id==='evr'){evidence(t.dataset.id);return}
@@ -1146,9 +1183,9 @@ document.addEventListener('change',e=>{if(e.target.dataset.pi!==undefined)S.prop
   svg.addEventListener('pointerdown',e=>{if(e.target.closest('[data-node],[data-edge]'))return;drag={x:e.clientX-RZ.x,y:e.clientY-RZ.y};svg.setPointerCapture(e.pointerId);svg.style.cursor='grabbing'});
   svg.addEventListener('pointermove',e=>{if(!drag)return;RZ.x=e.clientX-drag.x;RZ.y=e.clientY-drag.y;rzApply()});
   svg.addEventListener('pointerup',()=>{drag=null;svg.style.cursor=''})}
- planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;render();}
+ planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;render();if(CRAWL){srvLoad();window.addEventListener('focus',()=>{if(SRV.on&&!SRV.busy&&!SRV.t)srvLoad()})}}
  catch(e){$('body').innerHTML=`<div class="card"><b>Could not start the graph in this page.</b><p class="note">${esc(e.message)}</p></div>`}})();
-try{if(localStorage.getItem('cf-debug'))window.CF={q,screenOne,inspect,normRegister,factRegister,S,tts,render}}catch(e){}
+try{if(localStorage.getItem('cf-debug'))window.CF={q,screenOne,inspect,normRegister,factRegister,S,tts,render,INV,invSave,SRV,srvLoad}}catch(e){}
 </script>
 </body>
 </html>

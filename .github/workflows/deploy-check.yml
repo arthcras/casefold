@@ -41,5 +41,6 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' "http://$OF/")" = 401
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Cf-Access-Jwt-Assertion: x.y.z' "http://$OF/api/crawler/health")" = 401
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://$IP/api/crawler/trace" -H 'Content-Type: application/json' -d '{"chain":"tron","address":"x"}')" = 401
+          test "$(curl -s -o /dev/null -w '%{http_code}' "http://$IP/api/crawler/cases")" = 404
       - if: always()
         run: docker compose --project-directory . -f deploy/coolify/docker-compose.yml logs --tail 50
