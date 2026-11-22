@@ -145,7 +145,7 @@ const fmtN=n=>Number(n||0).toLocaleString('en-US');
 /* ---------- graph ---------- */
 const COL={RiskCategory:'#3d4657',Jurisdiction:'#6c4fc0',Sector:'#8a94a6',Regulator:'#1d3f73',Law:'#a86b1f',Article:'#c99a3a',Case:'#e2660f',Source:'#5f7d95',Party:'#c2334d',Listed:'#8b1e3f',SanctionsList:'#1f8a56',Address:'#2f6fb5',Chain:'#0f766e',Labels:'#3ccf91',TxTypology:'#7c3aed',Guidance:'#475569',Instrument:'#0e7490'};
 const SEV={severe:0,high:1,medium:2,low:3,none:4};const SEVCOL={severe:['#7a0f2b','#a3123a','#c2334d','#d9536a','#8b1e3f'],high:['#e2660f','#f08a3c','#c9541b','#f2a65a','#b8470c','#ee7b2c','#d97a1f','#f4b183'],medium:['#c99a3a','#e0b85c'],low:['#1f8a56','#4cc58a'],none:['#9aa4b2']};
-const KIND={RiskCategory:'Risk category',Case:'Case',Party:'Party in a case',Listed:'Listed on a sanctions list',SanctionsList:'Sanctions list',Address:'Crypto address',Regulator:'Supervisor',Law:'Law',Article:'Article',Jurisdiction:'Country',Sector:'Sector',Source:'Source',Chain:'Blockchain',Labels:'Labelled addresses',TxTypology:'Transaction typology',Guidance:'Supervisory guidance',Instrument:'Crypto instrument'};
+const KIND={Investigation:'Investigation',RiskCategory:'Risk category',Case:'Case',Party:'Party in a case',Listed:'Listed on a sanctions list',SanctionsList:'Sanctions list',Address:'Crypto address',Regulator:'Supervisor',Law:'Law',Article:'Article',Jurisdiction:'Country',Sector:'Sector',Source:'Source',Chain:'Blockchain',Labels:'Labelled addresses',TxTypology:'Transaction typology',Guidance:'Supervisory guidance',Instrument:'Crypto instrument'};
 const WORD={SENT:'sent',SUPERVISES:'supervises',IN_JURISDICTION:'in',SUBJECT_TO:'subject to',BY:'by',AGAINST:'against',VIOLATED:'violated',VIOLATED_ARTICLE:'violated',REPLACED_BY:'replaced by',HAS_ARTICLE:'article',LISTS:'lists',CONTROLS:'controls',POSSIBLY_SAME:'possibly the same',UNDER_POWER:'power',PUBLISHED_BY:'published by',NAMES:'names',CITES:'cites',SHOWS:'shows',FLAGGED_IN:'named in',ISSUED:'issued',ADDRESSED_IN:'addressed in'};
 const N=x=>`{id: coalesce(${x}.id, ${x}.code, ${x}.key), t: labels(${x})[0], name: coalesce(${x}.short, ${x}.party, ${x}.name, ${x}.title, ${x}.code, ${x}.address), kind: ${x}.kind, listed: coalesce(${x}.listed, ${x}.hop = 0), art: ${x}.art, law: ${x}.law_short}`;
 const kindOf=d=>d.t==='Source'?(d.kind==='case'?'Case':'Source'):d.t==='Entity'?(d.listed?'Listed':'Party'):d.t;
@@ -312,12 +312,13 @@ function inspectEdge(eid){if(SYN[eid]){const x=SYN[eid];if(cy){cy.edges().remove
   ${Object.keys(p).filter(k=>!known.has(k)&&p[k]!=null&&p[k]!=='').map(k=>`<div class="k">${esc(k)}</div><div class="v">${esc(val(k,p[k]))}</div>`).join('')}
   ${p.tx?`<div class="k">Latest transaction</div><div class="v mono" style="word-break:break-all">${EXPL[chain]&&/^[0-9a-fA-Fx]+$/.test(p.tx)?`<a href="${EXPL[chain]}${esc(p.tx)}" target="_blank" rel="noopener">${esc(short(p.tx))}</a>`:esc(p.tx)}</div>`:''}</div>`}).join('')}
  ${rel==='SENT'?'<p class="note">From public block explorers: the latest transfers only. Who controls an address that is not on a list is not known here.</p>':''}`;}
-function inspect(id){if(cy)cy.edges().removeClass('esel');
+function inspect(id){inspect0(id);const h=invAlsoHtml(id);if(h&&$('insp'))$('insp').insertAdjacentHTML('beforeend',`<div class="card" style="margin-top:10px;padding:10px">${h}</div>`)}
+function inspect0(id){if(cy)cy.edges().removeClass('esel');
  if(String(id).startsWith('LAB:')){const c=id.slice(4);const rs=q('MATCH (a:Address)-[:IN_CATEGORY]->(:RiskCategory {id:$c}) RETURN a.key AS k, a.label AS l, a.label_source AS s ORDER BY l',{c});$('insp').innerHTML=`<div class="typ">Labelled addresses</div><h2 style="margin-top:4px">${esc(RC[c]?RC[c].name:c)}</h2>${rs.map(r=>`<button class="nb" type="button" data-node="${esc(r.k)}"><span class="sub">${esc(r.s||'')}</span> <b>${esc(r.l||short(r.k))}</b></button>`).join('')}<p class="note">A label is the explorer's attribution, with its source. It is a lead, not a finding.</p>`;return}
  if(String(id).startsWith('CHAIN:')){const c=id.slice(6);const r=q(`MATCH (:SanctionsList)-[:LISTS]->(e:Entity)-[:CONTROLS]->(a:Address {chain:$c}) RETURN count(DISTINCT a) AS n, count(DISTINCT e) AS e`,{c})[0]||{n:0,e:0};
   $('insp').innerHTML=`<div class="typ">Blockchain</div><h2 style="margin-top:4px">${esc(c)}</h2><div class="k">Sanctioned addresses</div><div class="v mono">${fmtN(r.n)}</div><div class="k">Listed persons or entities with an address here</div><div class="v mono">${fmtN(r.e)}</div><p class="note">From the addresses the sanctions lists publish. Screen an address in the box on the left.</p>`;return}const r=q('MATCH (n) WHERE coalesce(n.id, n.code, n.key) = $id RETURN properties(n) AS p, labels(n)[0] AS t LIMIT 1',{id})[0];if(!r)return;
  const p=r.p,k=kindOf({t:r.t,kind:p.kind,listed:p.listed});
- const nb=q(`MATCH (a)-[r]->(b) WHERE coalesce(a.id, a.code, a.key) = $id RETURN type(r) AS rel, ${N('b')} AS b, 1 AS out LIMIT 40`,{id}).concat(q(`MATCH (b)-[r]->(a) WHERE coalesce(a.id, a.code, a.key) = $id RETURN type(r) AS rel, ${N('b')} AS b, 0 AS out LIMIT 40`,{id})).slice(0,40);
+ const nb=q(`MATCH (a)-[r]->(b) WHERE coalesce(a.id, a.code, a.key) = $id RETURN type(r) AS rel, ${N('b')} AS b, 1 AS out LIMIT 40`,{id}).concat(q(`MATCH (b)-[r]->(a) WHERE coalesce(a.id, a.code, a.key) = $id AND type(r) <> 'CONCERNS' RETURN type(r) AS rel, ${N('b')} AS b, 0 AS out LIMIT 40`,{id})).slice(0,40);
  const amt=p.amount!=null&&!p.amount_note?money(p.amount,p.currency):null;
  const head=k==='Article'?`${p.law_short||''} art. ${p.art}`:p.party||p.name||p.short||p.title||p.code||p.address||id;
  $('insp').innerHTML=`<div class="typ">${esc(KIND[k]||k)}</div><h2 style="margin-top:4px">${esc(head)}</h2><div class="chips" style="margin:6px 0"><button class="btn" type="button" data-invadd="${esc(id)}">Add to investigation</button>${['Entity','Address','Source'].includes(r.t)?`<button class="btn" type="button" id="evr" data-id="${esc(id)}">Evidence report</button>`:''}${r.t==='Source'&&p.kind==='case'?`<button class="btn p" type="button" data-caseinv="${esc(id)}">Investigate →</button>`:''}</div>
@@ -371,7 +372,7 @@ inv(){const I=INV.list;const isNew=INV.cur==='new'||!I.length;const cur=isNew?nu
     ${x.ext?(x.t==='Address'&&EXPA[x.chain]?`<a href="${EXPA[x.chain]}${encodeURIComponent(x.address)}" target="_blank" rel="noopener"><b>${esc(x.label)}</b></a>`:`<b>${esc(x.label)}</b>`):`<a href="#" data-isel="${i}"><b>${esc(x.label)}</b></a>${items.some((y,j)=>j!==i&&y.label===x.label)?` <span class="mono sub">${esc(x.id)}</span>`:''}`}<span style="margin-left:auto"></span>
     <details class="menu"><summary class="sb" aria-label="Actions for ${esc(x.label)}">⋯</summary><div>${x.t==='Address'&&!x.ext?`<button type="button" data-fstart="${esc(x.id)}">Follow the money from here</button>`:''}${x.ext&&x.t==='Address'&&!x.trace?`<button type="button" data-trace="${i}">Request a trace</button>`:''}${x.ext?'':`<button type="button" data-isel="${i}">Ask questions</button>`}<button type="button" data-invrm="${i}" style="color:var(--bad)">Remove</button></div></details></div>
     ${x.ext&&x.t==='Address'?`<div class="src">${x.trace?'trace requested':'not in the traced data yet'}</div>`:''}${x.knode?`<div class="src"><span class="tag ${x.knode.level==='hoog'?'bad':x.knode.level==='verhoogd'?'warn':'ok'}">Knode: ${esc(x.knode.level)}</span> ${esc(x.knode.themes.join(', '))}</div>`:''}${x.ext&&x.t==='Name'&&x.party?`<div class="src">party in the Knode file</div>`:''}${x.ext&&x.t==='Name'&&!x.party?`<div class="src">name on ${esc(String(x.list||'').replace('LIST:','').toUpperCase())}; no wallets published</div>`:''}
-    <div class="src" title="${esc(x.src||'')}">${esc(x.src?x.src:x.by==='casefold'?'added by a question':x.by==='flow'?'added from the flow':'added by hand')}</div>
+    <div class="src" title="${esc(x.src||'')}">${esc(x.src?x.src:x.by==='casefold'?'added by a question':x.by==='flow'?'added from the flow':'added by hand')}</div>${(()=>{const h=invAlso(x.id,cur.id);return h.length?`<div class="src"><span class="tag warn">also in ${h.length} other ${h.length===1?'investigation':'investigations'}</span> ${h.slice(0,3).map(({c,x})=>`<button class="nb" type="button" data-goinv="${esc(c.id)}">${esc(c.name)}</button> <span class="sub">(${esc(x.verdict)})</span>`).join(', ')}</div>`:''})()}
     <div style="display:flex;gap:6px;margin-top:5px"><select data-verdict="${i}" aria-label="Verdict for ${esc(x.label)}" class="vsel v-${x.verdict}">${['lead','confirmed','dismissed'].map(v=>`<option value="${v}" ${x.verdict===v?'selected':''}>${v}</option>`).join('')}</select><input type="text" data-note="${i}" value="${esc(x.note||'')}" placeholder="Why this verdict" class="vnote"></div></div>`).join(''):'<p class="note">No items yet. Add your data above, or click a party, wallet or case anywhere and choose <b>Add to investigation</b>.</p>'}</div>`;
  /* bottom of the middle: questions, findings, transactions, activity */
  const tab=S.itab||'ask';const nT=(cur.txs||[]).length;
@@ -481,42 +482,55 @@ function confirmProps(){const sel=S.props.filter(p=>p.ok);if(!sel.length){S.msg=
 /* ---------- my investigations: the client's own case, kept in this browser in the prototype ---------- */
 const STLAB={open:'open',review:'in review',closed:'signed off'};
 const INV={list:[],cur:null};try{INV.list=JSON.parse(localStorage.getItem('cf-inv')||'[]')}catch(e){}
-const invSave=()=>{try{localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}srvSched()};
+const invSave=()=>{try{localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}invProject();srvSched()};
 /* investigations on the server (back office only): one shared store, versioned, with an append-only audit trail.
    This browser keeps a copy; a save names the version it started from, so nobody overwrites someone else unnoticed. */
 const SRV={on:false,me:'',ver:{},sent:{},st:'',at:null,msg:'',t:null,busy:false,again:false};
 try{SRV.ver=JSON.parse(localStorage.getItem('cf-inv-ver')||'{}')}catch(e){}
+const srvSig=c=>JSON.stringify({...c,flow:undefined,watch:undefined});   // view settings and the automatic monitoring baseline are not a change (marking changes as seen is, through the log)
 const srvKeep=()=>{try{localStorage.setItem('cf-inv-ver',JSON.stringify(SRV.ver));localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}};
 async function srvFetch(path,opt){const r=await fetch('/api/crawler/cases'+path,{...(opt||{}),headers:{'Content-Type':'application/json'},cache:'no-store',credentials:'same-origin'});const j=await r.json().catch(()=>({}));return {ok:r.ok,code:r.status,j}}
 async function srvLoad(){if(!CRAWL||SRV.busy)return;SRV.st=SRV.on?SRV.st:'loading';paintSrv();
  try{const r=await srvFetch('?full=1');if(!r.ok)throw new Error(r.code===401?'not signed in to the server':'HTTP '+r.code);
   SRV.on=true;SRV.me=r.j.me||'';const srv=new Map(r.j.cases.map(x=>[x.id,x]));const local=new Map(INV.list.map(c=>[c.id,c]));const list=[];const mine=[];let gone=0;
   for(const x of r.j.cases){const c=local.get(x.id);
-   if(c&&SRV.ver[x.id]===x.version&&JSON.stringify(c)!==JSON.stringify(x.doc))list.push(c);   // changed here, not yet saved: keep and save
-   else{list.push(x.doc);SRV.sent[x.id]=JSON.stringify(x.doc)}SRV.ver[x.id]=x.version}
+   if(c&&SRV.ver[x.id]===x.version&&srvSig(c)!==srvSig(x.doc))list.push(c);   // changed here, not yet saved: keep and save
+   else{list.push(x.doc);SRV.sent[x.id]=srvSig(x.doc)}SRV.ver[x.id]=x.version}
   for(const c of INV.list){if(srv.has(c.id))continue;if(SRV.ver[c.id]){gone++;delete SRV.ver[c.id];continue}mine.push(c);list.push(c)}   // deleted on the server, or only in this browser
   for(const c of mine)invLog(c,'Moved from this browser to the shared store on the server');
   INV.list=list;srvKeep();SRV.st='ok';SRV.at=new Date();SRV.msg=mine.length?`${mine.length} from this browser moved to the server.`:gone?`${gone} deleted by someone else.`:'';
-  if(INV.cur&&INV.cur!=='new'&&!INV.list.some(x=>x.id===INV.cur))INV.cur=null;render();srvPush()}
+  if(INV.cur&&INV.cur!=='new'&&!INV.list.some(x=>x.id===INV.cur))INV.cur=null;invProject();render();srvPush()}
  catch(e){SRV.on=false;SRV.st='off';SRV.msg=e.message;paintSrv()}}
 function srvSched(){if(!SRV.on)return;clearTimeout(SRV.t);SRV.t=setTimeout(srvPush,700)}
 async function srvPush(){SRV.t=null;if(!SRV.on)return;if(SRV.busy){SRV.again=true;return}SRV.busy=true;let redraw=false;
- try{for(const c of INV.list.slice()){const txt=JSON.stringify(c);if(SRV.sent[c.id]===txt)continue;SRV.st='saving';paintSrv();
+ try{for(const c of INV.list.slice()){const txt=srvSig(c);if(SRV.sent[c.id]===txt)continue;SRV.st='saving';paintSrv();
    const r=await srvFetch('/'+encodeURIComponent(c.id),{method:'PUT',body:JSON.stringify({doc:c,version:SRV.ver[c.id]||0})});
    if(r.ok){SRV.ver[c.id]=r.j.version;SRV.sent[c.id]=txt;SRV.at=new Date();SRV.st='ok';if(/^(Not saved|")/.test(SRV.msg))SRV.msg=''}
    else if(r.code===409){const d=r.j.detail||{};const g=await srvFetch('/'+encodeURIComponent(c.id));
-    if(g.ok){const i=INV.list.findIndex(x=>x.id===c.id);if(i>=0)INV.list[i]=g.j.doc;SRV.ver[c.id]=g.j.version;SRV.sent[c.id]=JSON.stringify(g.j.doc)}
+    if(g.ok){const i=INV.list.findIndex(x=>x.id===c.id);if(i>=0)INV.list[i]=g.j.doc;SRV.ver[c.id]=g.j.version;SRV.sent[c.id]=srvSig(g.j.doc)}
     SRV.st='conflict';SRV.msg=`"${c.name}" was changed by ${d.updated_by||'someone else'} meanwhile: their version is shown now; your last change to it was not saved.`;redraw=true}
    else if(r.code===410){INV.list=INV.list.filter(x=>x.id!==c.id);delete SRV.ver[c.id];SRV.st='conflict';SRV.msg=`"${c.name}" was deleted by someone else.`;redraw=true}
    else throw new Error(typeof r.j.detail==='string'?r.j.detail:'HTTP '+r.code)}
   srvKeep()}
  catch(e){SRV.st='error';SRV.msg=`Not saved on the server (${e.message}). It is kept in this browser and saved with the next change.`}
- SRV.busy=false;if(redraw)render();else paintSrv();if(SRV.again){SRV.again=false;srvSched()}}
+ SRV.busy=false;if(redraw){invProject();render()}else paintSrv();if(SRV.again){SRV.again=false;srvSched()}}
 async function srvDel(id){if(!SRV.on||!SRV.ver[id])return;const r=await srvFetch('/'+encodeURIComponent(id)+'?version='+SRV.ver[id],{method:'DELETE'});
  if(r.ok){delete SRV.ver[id];delete SRV.sent[id];srvKeep();SRV.msg='';SRV.st='ok';paintSrv()}else{SRV.st='error';SRV.msg='The delete was not saved on the server: someone changed it meanwhile.';await srvLoad()}}
 function srvText(){if(!CRAWL)return 'Kept in this browser only.';const t=d=>d?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
  const m=SRV.msg?' '+SRV.msg:'';
  return ({loading:'Connecting to the server…',saving:'Saving on the server…',ok:`Saved on the server${SRV.at?' · '+t(SRV.at):''}${SRV.me?' · '+SRV.me:''}.`+m,conflict:m.trim(),error:m.trim(),off:`Not connected to the server (${SRV.msg}): kept in this browser only.`})[SRV.st]||''}
+/* the investigations in the graph: (:Investigation)-[:CONCERNS {verdict, note}]->(wallet, party, case …) for every
+   dossier, so questions across investigations run in Cypher like the rest ("which dossiers touch this wallet?") */
+const INVT=/^[A-Z][A-Za-z]{1,30}$/;
+function invProject(){if(typeof db==='undefined'||!db)return;try{q('MATCH (i:Investigation) DETACH DELETE i');
+ const inv=INV.list.map(c=>({id:c.id,name:String(c.name||''),status:String(c.status||''),by:String(c.by||''),created:String(c.created||''),version:SRV.ver[c.id]||0,signed:c.signed?String(c.signed.at||c.signed.by||'yes'):null}));if(!inv.length)return;
+ q('UNWIND $inv AS x CREATE (i:Investigation {id: x.id}) SET i.name = x.name, i.status = x.status, i.by = x.by, i.created = x.created, i.version = x.version, i.signed = x.signed',{inv});
+ const by={};for(const c of INV.list)for(const x of c.items||[]){if(x.ext||!INVT.test(x.t||''))continue;(by[x.t]=by[x.t]||[]).push({inv:c.id,id:x.id,verdict:x.verdict||'lead',note:String(x.note||''),added:String(x.added||'')})}
+ for(const t in by)q(`UNWIND $it AS x MATCH (i:Investigation {id: x.inv}) MATCH (n:${t}) WHERE coalesce(n.id, n.code, n.key) = x.id MERGE (i)-[r:CONCERNS]->(n) SET r.verdict = x.verdict, r.note = x.note, r.added = x.added`,{it:by[t]})}
+ catch(e){console.warn('investigations not in the graph:',e.message)}}
+function invAlso(id,except){const lo=String(id).toLowerCase();const out=[];for(const c of INV.list){if(c.id===except)continue;const x=(c.items||[]).find(x=>String(x.id).toLowerCase()===lo);if(x)out.push({c,x})}return out}
+function invAlsoHtml(id,except){const h=invAlso(id,except);if(!h.length)return '';
+ return `<div class="k">${except?'Also in':'In investigations'}</div>${h.map(({c,x})=>`<div class="v"><button class="nb" type="button" data-goinv="${esc(c.id)}" style="text-align:left"><b>${esc(c.name)}</b></button> <span class="sub">${esc(STLAB[c.status]||c.status)} · ${esc(x.verdict)}${x.note?' · '+esc(x.note):''}</span></div>`).join('')}`}
 function paintSrv(){const e=document.getElementById('srvst');if(e){e.textContent=srvText();e.className='note'+(/^(conflict|error|off)$/.test(SRV.st)?' warnline':'')}}
 const invLog=(c,t)=>c.log.push({at:new Date().toISOString(),text:t});
 function invNew(name,reason){const by=(prompt('Your name (shown in the report)',SRV.me||'')||'').trim();const c={id:'INV-'+Date.now().toString(36),name:name||'Untitled investigation',reason:reason||'',by:by||'you',created:new Date().toISOString(),status:'open',items:[],log:[]};invLog(c,`Started by ${c.by}`);INV.list.push(c);INV.cur=c.id;invSave();return c}
@@ -1065,6 +1079,7 @@ async function screen(s){s=s.trim();if(!s)return '';
      :`<div class="card"><p><span class="tag">not on an imported list</span></p><p class="sub">${rows.length?(sib?`The address is in the traced data and not on a list. It <b>${esc(sib.split(';')[0])}</b>: no money went from one to the other through that wallet, so this is context, not exposure.`:'The address is in the traced data, but not on a list and not linked to a listed entity within 3 steps.'):'The address is not on the imported lists and not in the traced data.'} That does not mean it is clear: only part of the chain is traced so far.</p></div>`;
     graph=[...E('MATCH (a:Address)-[r:SENT]->(b:Address) WHERE toLower(a.address) = toLower($s) OR toLower(b.address) = toLower($s)',{s})];}}
   {const k=rows.length?rows[0].key:null;const tl=k?addrTT(k):[];const pz=tl.some(t=>t.id==='TT-POISON');if(tl.length){const card=`<div class="card"><h2>Patterns in its transfers</h2>${tl.map(t=>`<div class="row"><div>${ttTag(t.id)} <b>${esc(ttName(t.id))}</b><div class="sub">${esc(t.ev||'')}</div></div><div class="sub">${esc(String(t.f||'').slice(0,10))}</div></div>`).join('')}<p class="note">A pattern is a lead for review, never proof.</p></div>`;html=pz?card+html:html+card}}
+  {const k=rows.length?rows[0].key:null;const h=k?invAlsoHtml(k):'';if(h)html=`<div class="card">${h}</div>`+html}
   html+=walletActions(s);}
  else{const all=await names();const toks=norm(s).split(' ').filter(t=>t.length>=3);
   const hits=toks.length?all.filter(x=>toks.every(t=>x.n.includes(' '+t+' ')||t.length>=6&&x.n.includes(t))).slice(0,30):[];
@@ -1144,6 +1159,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tra
  if(t.dataset.invadd!==undefined){const {c,k}=invAdd([t.dataset.invadd]);const b=t;b.textContent=k?`Added to ${c.name}`:'Already in the investigation';return}
  if(t.id==='binv'){if(!INV.list.length||INV.cur==='new'||S.view==='inv'&&S.check)invNew(`Check of ${new Date().toISOString().slice(0,10)}`,'From a check of wallets and names');const ids=[];for(const r of BATCH.filter(r=>r.level>0)){if(r.kind==='wallet'){const k=q('MATCH (a:Address) WHERE toLower(a.address) = toLower($s) RETURN a.key AS k',{s:r.input})[0];if(k)ids.push(k.k)}else{for(const e of q('MATCH (e:Entity) WHERE toLower(e.name) CONTAINS toLower($s) RETURN e.id AS k LIMIT 3',{s:r.input}))ids.push(e.k)}}const {c,k}=invAdd(ids);invLog(c,`${k} added from a check`);invSave();S.check=null;S.view='inv';INV.cur=c.id;history.replaceState(null,'','#inv');render();return}
  if(t.id==='invnew'){invNew($('invname').value.trim(),$('invwhy').value.trim());render();return}
+ if(t.dataset.goinv){S.view='inv';history.replaceState(null,'','#inv');INV.cur=t.dataset.goinv;S.itab=null;S.isel=null;S.inopen=false;S.intake=null;S.intext='';S.inmsg='';render();if($('ipane'))$('ipane').scrollTop=0;return}
  if(t.dataset.inv){$('ipane').scrollTop=0;INV.cur=t.dataset.inv;S.itab=null;S.isel=null;S.inopen=false;S.fz=null;S.intake=null;S.intext='';S.inmsg='';render();return}
  if(t.dataset.invrm!==undefined){const c=invCur();const x=c.items.splice(+t.dataset.invrm,1)[0];invLog(c,`Removed ${x.label}`);invSave();render();return}
  if(t.dataset.ask){const [i,j]=t.dataset.ask.split(':').map(Number);const c=invCur();const x=c.items[i];const a=ASK[x.t][j];const ids=a[1](x.id).map(r=>r.k).filter(Boolean);const {k}=invAdd(ids,'casefold');invLog(c,`Asked "${a[0]}" about ${x.label}: ${k} new`);invSave();render();return}
@@ -1183,7 +1199,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.pi!==undefined)S.prop
   svg.addEventListener('pointerdown',e=>{if(e.target.closest('[data-node],[data-edge]'))return;drag={x:e.clientX-RZ.x,y:e.clientY-RZ.y};svg.setPointerCapture(e.pointerId);svg.style.cursor='grabbing'});
   svg.addEventListener('pointermove',e=>{if(!drag)return;RZ.x=e.clientX-drag.x;RZ.y=e.clientY-drag.y;rzApply()});
   svg.addEventListener('pointerup',()=>{drag=null;svg.style.cursor=''})}
- planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;render();if(CRAWL){srvLoad();window.addEventListener('focus',()=>{if(SRV.on&&!SRV.busy&&!SRV.t)srvLoad()})}}
+ planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;invProject();render();if(CRAWL){srvLoad();window.addEventListener('focus',()=>{if(SRV.on&&!SRV.busy&&!SRV.t)srvLoad()})}}
  catch(e){$('body').innerHTML=`<div class="card"><b>Could not start the graph in this page.</b><p class="note">${esc(e.message)}</p></div>`}})();
 try{if(localStorage.getItem('cf-debug'))window.CF={q,screenOne,inspect,normRegister,factRegister,S,tts,render,INV,invSave,SRV,srvLoad}}catch(e){}
 </script>

@@ -53,6 +53,9 @@ In the back office (office.casefoldcrypto.com) the investigations are stored on 
 - Who: taken from the Cloudflare Access token (e-mail); the server token alone is not enough.
 - Versions: a save names the version it started from; a save from an older version is refused, and the app then shows
   the newer version and says who changed it.
+- Every saved version is kept whole (`/cases/{id}/versions/{v}`), so what a dossier said at sign-off can be shown again.
+- In the app the dossiers are also in the graph: `(:Investigation)-[:CONCERNS {verdict, note}]->(wallet, party, case)`,
+  so a wallet shows which other investigations it is in. A Neo4j on the server can later be filled from this store.
 - Audit trail: every create, change and delete is an event (who, when, version, SHA-256 of the document), chained by hash;
   the database refuses changes to it. Delete hides an investigation; the document and its history are kept.
 - The browser keeps a copy and saves with the next change when the server was not reachable. Investigations made

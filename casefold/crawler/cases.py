@@ -4,7 +4,9 @@ Every investigation is kept whole (the JSON the app works with) with a version n
 started from, and a save from an older version is refused (409), so two people never overwrite each other unnoticed.
 Every change writes an event to an append-only audit trail (who, when, what, the SHA-256 of the saved document),
 chained by hash: each event's hash covers the previous one, so a changed or removed event breaks the chain.
-SQLite triggers refuse UPDATE and DELETE on the audit table. Deleting an investigation hides it; nothing is erased.
+Every saved version is kept whole (case_version), so what an investigation said at any moment (at sign-off, say) can
+be shown again, and its SHA-256 matches the audit event. SQLite triggers refuse UPDATE and DELETE on the audit table
+and on the versions. Deleting an investigation hides it; nothing is erased.
 
 Who did it comes from the Cloudflare Access token (its e-mail), never from the request body.
 """
@@ -16,6 +18,9 @@ CREATE TABLE IF NOT EXISTS case_doc (id TEXT PRIMARY KEY, name TEXT, status TEXT
 CREATE TABLE IF NOT EXISTS case_event (n INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, at TEXT, by TEXT, action TEXT,
   version INTEGER, sha256 TEXT, note TEXT, prev TEXT, hash TEXT);
 CREATE INDEX IF NOT EXISTS ce_case ON case_event (case_id);
+CREATE TABLE IF NOT EXISTS case_version (case_id TEXT, version INTEGER, at TEXT, by TEXT, sha256 TEXT, doc TEXT, PRIMARY KEY (case_id, version));
+CREATE TRIGGER IF NOT EXISTS cv_no_update BEFORE UPDATE ON case_version BEGIN SELECT RAISE(ABORT, 'versions are kept as saved'); END;
+CREATE TRIGGER IF NOT EXISTS cv_no_delete BEFORE DELETE ON case_version BEGIN SELECT RAISE(ABORT, 'versions are kept as saved'); END;
 CREATE TRIGGER IF NOT EXISTS ce_no_update BEFORE UPDATE ON case_event BEGIN SELECT RAISE(ABORT, 'the audit trail is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS ce_no_delete BEFORE DELETE ON case_event BEGIN SELECT RAISE(ABORT, 'the audit trail is append-only'); END;
 """
@@ -83,6 +88,7 @@ class Cases:
         else:
             self.db.execute('INSERT INTO case_doc VALUES (?,?,?,?,?,?,?,?,?,?,0)',
                             (cid, str(doc.get('name', ''))[:300], str(doc.get('status', '')), v, text, digest, at, by, at, by))
+        self.db.execute('INSERT INTO case_version VALUES (?,?,?,?,?,?)', (cid, v, at, by, digest, text))
         self._event(cid, by, 'update' if r else 'create', v, digest)
         self.db.commit()
         return 200, self._row(self.db.execute('SELECT * FROM case_doc WHERE id = ?', (cid,)).fetchone(), False)
@@ -110,3 +116,13 @@ class Cases:
         ev = [{k: e[k] for k in ('n', 'at', 'by', 'action', 'version', 'sha256', 'note', 'hash')} | {'case_id': e['case_id']}
               for e in allrows if cid is None or e['case_id'] == cid]
         return {'chain_ok': ok, 'events': ev, 'head': prev}
+
+    def versions(self, cid):
+        return [dict(r) for r in self.db.execute('SELECT version, at, by, sha256 FROM case_version WHERE case_id = ? ORDER BY version', (cid,))]
+
+    def version(self, cid, v):
+        r = self.db.execute('SELECT * FROM case_version WHERE case_id = ? AND version = ?', (cid, v)).fetchone()
+        if not r:
+            return None
+        ok = sha(r['doc']) == r['sha256']
+        return {'id': cid, 'version': v, 'at': r['at'], 'by': r['by'], 'sha256': r['sha256'], 'sha256_ok': ok, 'doc': json.loads(r['doc'])}

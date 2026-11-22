@@ -3,7 +3,7 @@
   POST /trace        {"chain": "tron", "address": "T...", "hops": 3, "top": 5, "direction": "out"}  -> {"id": ...}
   GET  /trace/{id}   status (queued | running | done | failed) and, when done, the trace
   GET  /health       store size and which chains are configured
-  GET  /cases[?full=1], GET|PUT|DELETE /cases/{id}, GET /cases/{id}/audit
+  GET  /cases[?full=1], GET|PUT|DELETE /cases/{id}, GET /cases/{id}/audit, GET /cases/{id}/versions[/{v}]
                      the back office's investigations (casefold/crawler/cases.py): server token AND a Cloudflare Access token
 
 Runs next to Neo4j on the Casefold server. Settings from the environment (server secrets, never in git):
@@ -161,6 +161,17 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
     def case_delete(cid: str, version: int, me: str = Depends(who)):
         with clock:
             return answer(*cases.delete(cid, version, me))
+
+    @app.get('/cases/{cid}/versions', dependencies=[Depends(auth)])
+    def case_versions(cid: str, me: str = Depends(who)):
+        return {'id': cid, 'versions': cases.versions(cid)}
+
+    @app.get('/cases/{cid}/versions/{v}', dependencies=[Depends(auth)])
+    def case_version(cid: str, v: int, me: str = Depends(who)):
+        r = cases.version(cid, v)
+        if not r:
+            raise HTTPException(404, 'no such version')
+        return r
 
     @app.get('/cases/{cid}/audit', dependencies=[Depends(auth)])
     def case_audit(cid: str, me: str = Depends(who)):

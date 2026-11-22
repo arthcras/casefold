@@ -209,6 +209,14 @@ def test_cases():
         a = c.get('/cases/INV-abc/audit', headers=H1).json()
         assert a['chain_ok'] and [e['action'] for e in a['events']] == ['create', 'update', 'delete'], a
         assert [e['by'] for e in a['events']] == ['ann@x.com', 'bob@x.com', 'ann@x.com']
+        V = c.get('/cases/INV-abc/versions', headers=H1).json()['versions']
+        assert [v['version'] for v in V] == [1, 2] and V[1]['sha256'] == a['events'][1]['sha256'], V
+        v1 = c.get('/cases/INV-abc/versions/1', headers=H1).json()
+        assert v1['doc']['status'] == 'open' and v1['sha256_ok'] and v1['by'] == 'ann@x.com', v1
+        try:
+            st.db.execute("UPDATE case_version SET doc = '{}'"); raise AssertionError('version changed')
+        except Exception as e:
+            assert 'kept as saved' in str(e), e
         try:
             st.db.execute("UPDATE case_event SET by = 'x'"); raise AssertionError('audit trail changed')
         except Exception as e:
@@ -217,7 +225,7 @@ def test_cases():
         assert not c.get('/cases/INV-abc/audit', headers=H1).json()['chain_ok'], 'a changed event breaks the chain'
     finally:
         J.PyJWKClient = orig
-    print('  ok   cases: server token and Access both required; versions refuse a stale save (409); delete hides; audit trail append-only and hash-chained')
+    print('  ok   cases: server token and Access both required; versions refuse a stale save (409); delete hides; audit trail append-only and hash-chained; every version kept whole')
 
 
 if __name__ == '__main__':
