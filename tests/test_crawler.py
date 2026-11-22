@@ -117,6 +117,8 @@ def test_api():
     r = c.get(f'/trace/{jid}', headers=H).json()
     assert r['status'] == 'done' and len(r['trace']['transfers']) >= 3, r
     assert set(r['trace']['typologies']) == {'tl', 'te'}, r['trace'].keys()
+    L = c.post('/traces/latest', json={'keys': ['tron:' + A, 'tron:Tnothing']}, headers=H).json()['traces']
+    assert list(L) == ['tron:' + A] and len(L['tron:' + A]['transfers']) >= 3, L.keys()
     assert c.get('/access/verify').status_code == 401, 'back office closed without Access settings'
     assert c.get('/access/verify', headers={'Cf-Access-Jwt-Assertion': 'x.y.z'}).status_code == 401
     print('  ok   api: token required, address and chain checked, a job runs and returns its trace; back office closed without Access')

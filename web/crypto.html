@@ -499,7 +499,7 @@ async function srvLoad(){if(!CRAWL||SRV.busy)return;SRV.st=SRV.on?SRV.st:'loadin
   for(const c of INV.list){if(srv.has(c.id))continue;if(SRV.ver[c.id]){gone++;delete SRV.ver[c.id];continue}mine.push(c);list.push(c)}   // deleted on the server, or only in this browser
   for(const c of mine)invLog(c,'Moved from this browser to the shared store on the server');
   INV.list=list;srvKeep();SRV.st='ok';SRV.at=new Date();SRV.msg=mine.length?`${mine.length} from this browser moved to the server.`:gone?`${gone} deleted by someone else.`:'';
-  if(INV.cur&&INV.cur!=='new'&&!INV.list.some(x=>x.id===INV.cur))INV.cur=null;invProject();render();srvPush()}
+  if(INV.cur&&INV.cur!=='new'&&!INV.list.some(x=>x.id===INV.cur))INV.cur=null;invProject();render();srvPush();traceRestore()}
  catch(e){SRV.on=false;SRV.st='off';SRV.msg=e.message;paintSrv()}}
 function srvSched(){if(!SRV.on)return;clearTimeout(SRV.t);SRV.t=setTimeout(srvPush,700)}
 async function srvPush(){SRV.t=null;if(!SRV.on)return;if(SRV.busy){SRV.again=true;return}SRV.busy=true;let redraw=false;
@@ -516,6 +516,12 @@ async function srvPush(){SRV.t=null;if(!SRV.on)return;if(SRV.busy){SRV.again=tru
  SRV.busy=false;if(redraw){invProject();render()}else paintSrv();if(SRV.again){SRV.again=false;srvSched()}}
 async function srvDel(id){if(!SRV.on||!SRV.ver[id])return;const r=await srvFetch('/'+encodeURIComponent(id)+'?version='+SRV.ver[id],{method:'DELETE'});
  if(r.ok){delete SRV.ver[id];delete SRV.sent[id];srvKeep();SRV.msg='';SRV.st='ok';paintSrv()}else{SRV.st='error';SRV.msg='The delete was not saved on the server: someone changed it meanwhile.';await srvLoad()}}
+/* earlier live traces back into this page's graph: the server keeps each trace; the graph here starts empty on every visit */
+const RESTORED=new Set();
+async function traceRestore(){if(!CRAWL)return;const keys=[...new Set(INV.list.flatMap(c=>(c.items||[]).filter(x=>x.t==='Address').map(x=>x.id)).concat(INV.list.map(c=>c.flow&&c.flow.start).filter(Boolean)))].filter(k=>/^[a-z]+:/.test(k)&&!RESTORED.has(k));if(!keys.length)return;
+ try{const r=await fetch('/api/crawler/traces/latest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keys:keys.slice(0,500)}),cache:'no-store'});if(!r.ok)return;const j=await r.json();
+  keys.forEach(k=>RESTORED.add(k));let n=0;for(const [k,T] of Object.entries(j.traces||{})){try{applyTrace(T,k,true);TRACE[k]=TRACE[k]||{st:'done',n:T.transfers.length,at:T.fetched_at||new Date().toISOString()};n++}catch(e){console.warn('trace not restored',k,e.message)}}
+  if(n){TTC=null;invProject();render()}}catch(e){console.warn('traces not restored:',e.message)}}
 function srvText(){if(!CRAWL)return 'Kept in this browser only.';const t=d=>d?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
  const m=SRV.msg?' '+SRV.msg:'';
  return ({loading:'Connecting to the server…',saving:'Saving on the server…',ok:`Saved on the server${SRV.at?' · '+t(SRV.at):''}${SRV.me?' · '+SRV.me:''}.`+m,conflict:m.trim(),error:m.trim(),off:`Not connected to the server (${SRV.msg}): kept in this browser only.`})[SRV.st]||''}
@@ -852,7 +858,7 @@ async function liveTrace(key,dir){const i=key.indexOf(':'),chain=key.slice(0,i),
    if(s.status==='done'){applyTrace(s.trace,key);TRACE[key]={st:'done',n:s.trace.transfers.length,at:new Date().toISOString()};render();return}
    if(s.status==='failed')throw new Error(s.error||'failed')}
   throw new Error('no answer after 5 minutes')}catch(e){TRACE[key]={st:'failed',err:e.message};render()}}
-function applyTrace(T,key){const fl={};for(const t of T.transfers){if(String(t.asset).endsWith('*')||!(t.amount>0&&t.amount<1e12))continue;const k=[t.chain,t.from,t.to,t.asset].join('|');
+function applyTrace(T,key,quiet){const fl={};for(const t of T.transfers){if(String(t.asset).endsWith('*')||!(t.amount>0&&t.amount<1e12))continue;const k=[t.chain,t.from,t.to,t.asset].join('|');
   const x=fl[k]||(fl[k]={chain:t.chain,from:t.from,to:t.to,from_key:t.chain+':'+t.from,to_key:t.chain+':'+t.to,asset:t.asset,amount:0,count:0,first:t.time,last:t.time,tx:t.tx,hop:t.hop||1});
   x.amount=Math.round((x.amount+t.amount)*1e8)/1e8;x.count++;if(t.time&&(!x.first||t.time<x.first))x.first=t.time;if(t.time&&(!x.last||t.time>x.last)){x.last=t.time;x.tx=t.tx}x.hop=Math.min(x.hop,t.hop||1)}
  q(D.load.find(s=>s.startsWith('UNWIND $t AS t')),{t:Object.values(fl)});
@@ -861,6 +867,7 @@ function applyTrace(T,key){const fl={};for(const t of T.transfers){if(String(t.a
  if((TY.te||[]).length)q('UNWIND $te AS x MATCH (a:Address {key: x.from_key})-[s:SENT {asset: x.asset}]->(b:Address {key: x.to_key}) SET s.typologies = [t IN coalesce(s.typologies, []) WHERE NOT t IN x.typologies] + x.typologies',{te:TY.te});
  if((TY.tl||[]).length)q(D.load.find(s=>s.startsWith('UNWIND $tl AS x')),{tl:TY.tl});
  if(TY.tl||TY.te)TTC=null;
+ if(quiet)return;
  const c=invCur();if(c){const it=c.items.find(x=>x.id===key);if(it){const g=q('MATCH (a:Address) WHERE toLower(a.key) = toLower($k) RETURN a.key AS k',{k:key})[0];if(g){it.id=g.k;delete it.ext;if(c.flow&&c.flow.start===key)c.flow.start=g.k}}
   const np=new Set((TY.tl||[]).filter(x=>x.typology==='TT-POISON').map(x=>x.key)).size;
   invLog(c,`Traced ${key} live on the chain: ${T.transfers.length} transfers, ${T.addresses.length} wallets, ${T.api_calls} calls to ${T.chain} sources.${np?` Address poisoning: ${np} wallet${np>1?'s':''}.`:''}`);
@@ -1199,7 +1206,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.pi!==undefined)S.prop
   svg.addEventListener('pointerdown',e=>{if(e.target.closest('[data-node],[data-edge]'))return;drag={x:e.clientX-RZ.x,y:e.clientY-RZ.y};svg.setPointerCapture(e.pointerId);svg.style.cursor='grabbing'});
   svg.addEventListener('pointermove',e=>{if(!drag)return;RZ.x=e.clientX-drag.x;RZ.y=e.clientY-drag.y;rzApply()});
   svg.addEventListener('pointerup',()=>{drag=null;svg.style.cursor=''})}
- planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;invProject();render();if(CRAWL){srvLoad();window.addEventListener('focus',()=>{if(SRV.on&&!SRV.busy&&!SRV.t)srvLoad()})}}
+ planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;invProject();render();if(CRAWL){srvLoad().then(traceRestore);window.addEventListener('focus',()=>{if(SRV.on&&!SRV.busy&&!SRV.t)srvLoad()})}}
  catch(e){$('body').innerHTML=`<div class="card"><b>Could not start the graph in this page.</b><p class="note">${esc(e.message)}</p></div>`}})();
 try{if(localStorage.getItem('cf-debug'))window.CF={q,screenOne,inspect,normRegister,factRegister,S,tts,render,INV,invSave,SRV,srvLoad}}catch(e){}
 </script>

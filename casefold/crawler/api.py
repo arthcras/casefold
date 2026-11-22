@@ -2,6 +2,7 @@
 
   POST /trace        {"chain": "tron", "address": "T...", "hops": 3, "top": 5, "direction": "out"}  -> {"id": ...}
   GET  /trace/{id}   status (queued | running | done | failed) and, when done, the trace
+  POST /traces/latest {"keys": ["tron:T…"]}  the last finished trace of each wallet
   GET  /health       store size and which chains are configured
   GET  /cases[?full=1], GET|PUT|DELETE /cases/{id}, GET /cases/{id}/audit, GET /cases/{id}/versions[/{v}]
                      the back office's investigations (casefold/crawler/cases.py): server token AND a Cloudflare Access token
@@ -37,6 +38,10 @@ log = logging.getLogger('uvicorn.error')
 
 FORMAT = {'bitcoin': re.compile(r'^(bc1[02-9ac-hj-np-z]{11,71}|[13][1-9A-HJ-NP-Za-km-z]{25,34})$'),
           'ethereum': re.compile(r'^0x[0-9a-fA-F]{40}$'), 'tron': re.compile(r'^T[1-9A-HJ-NP-Za-km-z]{33}$')}
+
+
+class KeysIn(BaseModel):
+    keys: list[str] = Field(default_factory=list, max_length=500)
 
 
 class CaseIn(BaseModel):
@@ -192,6 +197,17 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
         store.db.execute('INSERT INTO job VALUES (?,?,?,?,?,?,?,?,?)', (jid, p.chain, p.address, p.model_dump_json(), 'queued', now(), None, None, None)); store.db.commit()
         pool.submit(run, jid, p)
         return {'id': jid, 'status': 'queued'}
+
+    @app.post('/traces/latest', dependencies=[Depends(auth)])
+    def traces_latest(p: KeysIn):
+        """The last finished trace of each wallet (chain:address), so the app can put earlier traces back in its graph."""
+        out = {}
+        for k in p.keys:
+            chain, _, address = k.partition(':')
+            r = store.db.execute("SELECT result FROM job WHERE chain=? AND address=? AND status='done' ORDER BY done DESC LIMIT 1", (chain, address)).fetchone()
+            if r:
+                out[k] = json.loads(r['result'])
+        return {'traces': out}
 
     @app.get('/trace/{jid}', dependencies=[Depends(auth)])
     def status(jid: str):
