@@ -116,6 +116,7 @@ def test_api():
     app.state.pool.shutdown(wait=True)
     r = c.get(f'/trace/{jid}', headers=H).json()
     assert r['status'] == 'done' and len(r['trace']['transfers']) >= 3, r
+    assert set(r['trace']['typologies']) == {'tl', 'te'}, r['trace'].keys()
     assert c.get('/access/verify').status_code == 401, 'back office closed without Access settings'
     assert c.get('/access/verify', headers={'Cf-Access-Jwt-Assertion': 'x.y.z'}).status_code == 401
     print('  ok   api: token required, address and chain checked, a job runs and returns its trace; back office closed without Access')
@@ -150,6 +151,21 @@ def test_access_jwt():
     print('  ok   access: a valid Cloudflare Access token passes, another audience is refused')
 
 
+def test_poisoning():
+    import typologies
+    V, C, L = 'TEANdtCWWT2ojgHeTG35L4yhH37SnJG7BD', 'TNgj9egxAAAAAAAAAAAAAAAAAAAAA3idTky', 'TNgvj6UpBBBBBBBBBBBBBBBBBBBBB3idTky'
+    tr = [{'chain': 'tron', 'from': C, 'to': V, 'asset': 'USDT', 'amount': 500000, 'time': '2025-03-20T10:00:00', 'tx': 'a'},
+          {'chain': 'tron', 'from': L, 'to': V, 'asset': 'USDT', 'amount': 0.236, 'time': '2025-03-21T10:00:00', 'tx': 'b'},
+          {'chain': 'tron', 'from': V, 'to': 'TXrealCounterpartyZZZZZZZZZZZZZZZZ', 'asset': 'USDT', 'amount': 2000, 'time': '2025-03-22T10:00:00', 'tx': 'c'}]
+    _, tl, te, _ = typologies.detect(set(), {}, {}, transfers=tr)
+    got = {(x['key'], x['typology']) for x in tl}
+    assert ('tron:' + L, 'TT-POISON') in got and ('tron:' + C, 'TT-POISON') not in got and ('tron:' + V, 'TT-POISON') not in got, got
+    assert not any('TT-ROUND' in x['typologies'] or 'TT-PASS' in x['typologies'] for x in te if x['from_key'] == 'tron:' + L), te
+    _, tl, _, _ = typologies.detect(set(), {}, {}, transfers=tr + [{'chain': 'tron', 'from': V, 'to': L, 'asset': 'USDT', 'amount': 1000, 'time': '2025-03-23T10:00:00', 'tx': 'd'}])
+    assert any(x['key'] == 'tron:' + V and x['typology'] == 'TT-POISON' and 'may have worked' in x['evidence'] for x in tl), tl
+    print('  ok   poisoning: dust from a lookalike of a real counterparty is flagged; dust is no pass-through or round trip; paying the lookalike is flagged')
+
+
 if __name__ == '__main__':
-    r = test_tron_trace(); test_backward(); test_evm(); test_utxo(); test_graph_statements(r); test_api(); test_access_jwt()
+    r = test_tron_trace(); test_backward(); test_evm(); test_utxo(); test_graph_statements(r); test_api(); test_access_jwt(); test_poisoning()
     print('crawler: all pass')

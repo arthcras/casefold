@@ -25,7 +25,7 @@ RETURN a.key, b.key, s.asset, s.amount
 ## Typologies
 
 TT-LISTED, TT-SANCTIONED-ASSET, TT-HIGHRISK, TT-SERVICE (from lists and labels); TT-FANOUT, TT-FANIN, TT-PASS,
-TT-STRUCT, TT-PEEL (Bitcoin only), TT-SWAP, TT-ROUND, TT-LARGE, TT-LOOKALIKE (address poisoning). The rules and their
+TT-STRUCT, TT-PEEL (Bitcoin only), TT-SWAP, TT-ROUND, TT-LARGE, TT-LOOKALIKE (fake or spam tokens), TT-POISON (address poisoning: dust or a fake token from a lookalike of a real counterparty). The rules and their
 thresholds are in `tx_typologies.json`; the back office (Data → Transaction typologies) changes them with four eyes,
 and they take effect at the next build.
 

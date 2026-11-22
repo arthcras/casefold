@@ -24,7 +24,26 @@ def _t(s):
 
 
 def rule_text(rule, params):
-    return re.sub(r'\{(\w+)\}', lambda m: f"{params.get(m.group(1))}", rule)
+    def show(v):
+        return ', '.join(f"{n:g} {k}" for k, n in v.items()) if isinstance(v, dict) else f"{v}"
+    return re.sub(r'\{(\w+)\}', lambda m: show(params.get(m.group(1))), rule)
+
+
+def _body(addr):
+    """The part of an address a person compares by eye: without the fixed chain prefix (0x, bc1, T, 1, 3)."""
+    a = str(addr).split(':')[-1]
+    if a[:2].lower() == '0x':
+        return a[2:].lower()
+    if a[:3].lower() in ('bc1', 'ltc'):
+        return a[3:].lower()
+    return a[1:]
+
+
+def _same(a, b, prefix, suffix, long_suffix):
+    a, b = _body(a), _body(b)
+    if a == b or len(a) < 8 or len(b) < 8:
+        return False
+    return (a[-suffix:] == b[-suffix:] and a[:prefix] == b[:prefix]) or a[-long_suffix:] == b[-long_suffix:]
 
 
 def raw_transfers():
@@ -53,6 +72,9 @@ def detect(listed_keys, labels, categories, transfers=None):
     banned = {(i['chain'], i['symbol']): i['sanctioned'] for i in ins if i.get('sanctioned')}
     T = raw_transfers() if transfers is None else [{**t, 'fk': t['chain'] + ':' + t['from'], 'tk': t['chain'] + ':' + t['to'], 'ts': _t(t.get('time'))} for t in transfers if t.get('from') and t.get('to') and 0 < t['amount'] < 1e12]
     clean = [t for t in T if not t['asset'].endswith('*')]
+    DUST = P.get('TT-POISON', {}).get('dust', {})
+    def dusty(t):
+        return t['asset'] in DUST and t['amount'] <= DUST[t['asset']]
     wl = defaultdict(lambda: {'n': 0, 'first': None, 'last': None, 'evidence': ''})     # (key, typology, asset) -> label
     el = defaultdict(set)                                                                 # (from, to, asset) -> typologies
 
@@ -130,6 +152,8 @@ def detect(listed_keys, labels, categories, transfers=None):
         if not outs:
             continue
         for x in sorted(ins_, key=lambda x: x['ts']):
+            if dusty(x):
+                continue
             nxt = [o for o in outs if x['ts'] <= o['ts'] <= x['ts'] + h]
             s = sum(o['amount'] for o in nxt)
             if x['amount'] > 0 and s >= ratio * x['amount']:
@@ -197,7 +221,8 @@ def detect(listed_keys, labels, categories, transfers=None):
     # round trip: back to the start within a few hops, same asset (on the summed flows)
     nxt = defaultdict(set)
     for t in clean:
-        nxt[(t['fk'], t['asset'])].add(t['tk'])
+        if not dusty(t):
+            nxt[(t['fk'], t['asset'])].add(t['tk'])
     for (a, asset), bs in sorted(nxt.items()):
         for b in sorted(bs):
             if a in nxt.get((b, asset), ()):
@@ -210,6 +235,29 @@ def detect(listed_keys, labels, categories, transfers=None):
                             el[(e[0], e[1], asset)].add('TT-ROUND')
                         wlabel(a, 'TT-ROUND', asset, f"{asset} returned in 3 hops via {b.split(':')[-1][:8]}… and {c.split(':')[-1][:8]}…")
                         break
+    # address poisoning: dust or a fake token from an address that copies a real counterparty of the wallet
+    p = P.get('TT-POISON')
+    if p:
+        tiny = lambda t: t['asset'].endswith('*') or dusty(t)
+        real, small = defaultdict(set), defaultdict(list)          # wallet -> real counterparties; wallet -> dust transfers
+        for t in T:
+            for me, other in ((t['fk'], t['tk']), (t['tk'], t['fk'])):
+                (small[me].append((other, t)) if tiny(t) else real[me].add(other))
+        for me, xs in small.items():
+            for other, t in xs:
+                twin = next((c for c in sorted(real[me]) if c.split(':')[0] == other.split(':')[0] and _same(c, other, p.get('prefix', 2), p.get('suffix', 4), p.get('long_suffix', 6))), None)
+                if not twin:
+                    continue
+                c, o = twin.split(':')[-1], other.split(':')[-1]
+                what = f"a fake token ({t['amount']:g} {t['asset'].rstrip('*')})" if t['asset'].endswith('*') else f"dust ({t['amount']:g} {t['asset']})"
+                wlabel(other, 'TT-POISON', 'any', f"{o[:6]}…{o[-6:]} imitates {c[:6]}…{c[-6:]}, a real counterparty of {me.split(':')[-1][:8]}…; {what}", t['ts'])
+                if not t['asset'].endswith('*'):
+                    el[(t['fk'], t['tk'], t['asset'])].add('TT-POISON')
+                paid = [x for x in clean if x['fk'] == me and x['tk'] == other and not tiny(x)]
+                if paid:
+                    wlabel(me, 'TT-POISON', 'any', f"sent {sum(x['amount'] for x in paid):,.2f} {paid[0]['asset']} to the lookalike {o[:6]}…{o[-6:]}: the poisoning may have worked", paid[0]['ts'], len(paid))
+                    for x in paid:
+                        el[(x['fk'], x['tk'], x['asset'])].add('TT-POISON')
     tl = [{'key': k, 'typology': tid, 'asset': a, 'evidence': v['evidence'], 'n': v['n'],
            'first': v['first'].isoformat()[:19] if v['first'] else None, 'last': v['last'].isoformat()[:19] if v['last'] else None}
           for (k, tid, a), v in sorted(wl.items())]
@@ -225,7 +273,7 @@ LOAD = [
     "UNWIND $gd AS x MERGE (g:Guidance {id: x.id}) SET g.title = x.title, g.issuer = x.issuer_name, g.date = x.date, g.url = x.url, g.kind = x.kind, g.status = x.status, g.summary = x.summary, g.verify = x.verify, g.applies_from = x.applies_from",
     "UNWIND $gd AS x MATCH (g:Guidance {id: x.id}) MATCH (r:Regulator {id: x.issuer}) MERGE (r)-[:ISSUED]->(g)",
     "UNWIND $tg AS x MATCH (t:TxTypology {id: x.typology}) MATCH (g:Guidance {id: x.guidance}) MERGE (t)-[r:FLAGGED_IN {section: x.section}]->(g) SET r.page = x.page, r.says = x.says",
-    "UNWIND $tl AS x MATCH (a:Address {key: x.key}) MATCH (t:TxTypology {id: x.typology}) MERGE (a)-[r:SHOWS {asset: x.asset}]->(t) SET r.evidence = x.evidence, r.n = x.n, r.first = x.first, r.last = x.last",
+    "UNWIND $tl AS x MERGE (a:Address {key: x.key}) ON CREATE SET a.chain = split(x.key, ':')[0], a.address = split(x.key, ':')[1] WITH x, a MATCH (t:TxTypology {id: x.typology}) MERGE (a)-[r:SHOWS {asset: x.asset}]->(t) SET r.evidence = x.evidence, r.n = x.n, r.first = x.first, r.last = x.last",
     "UNWIND $te AS x MATCH (a:Address {key: x.from_key})-[s:SENT {asset: x.asset}]->(b:Address {key: x.to_key}) SET s.typologies = x.typologies",
     "UNWIND $in AS x MERGE (i:Instrument {id: x.id}) SET i.symbol = x.symbol, i.name = x.name, i.chain = x.chain, i.model = x.model, i.standard = x.standard, i.kind = x.kind, i.issuer = x.issuer, i.contract = x.contract, i.freeze = x.freeze, i.traceable = x.traceable, i.risk = x.risk, i.sanctioned = x.sanctioned_what, i.sanctioned_from = x.sanctioned_from, i.sanctioned_by = x.sanctioned_by, i.sanction_source = x.sanctioned_source, i.verify = coalesce(x.verify, false)",
     "UNWIND $in AS x UNWIND x.guidance AS gid MATCH (i:Instrument {id: x.id}) MATCH (g:Guidance {id: gid}) MERGE (i)-[:ADDRESSED_IN]->(g)",

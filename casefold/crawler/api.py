@@ -26,6 +26,10 @@ from .crawl import as_chain_file, trace
 from .sources import sources
 from .store import Store, now
 
+import sys  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import typologies  # noqa: E402
+
 log = logging.getLogger('uvicorn.error')
 
 FORMAT = {'bitcoin': re.compile(r'^(bc1[02-9ac-hj-np-z]{11,71}|[13][1-9A-HJ-NP-Za-km-z]{25,34})$'),
@@ -66,6 +70,8 @@ def make_app(store=None, srcs=None, writer=None, token=None, out_dir=None, origi
         try:
             with lock:
                 r = trace(srcs[p.chain], store, p.address, p.hops, p.top, p.direction, log=lambda m: None)
+            _, tl, te, _ = typologies.detect(set(), {}, {}, transfers=r['transfers'])
+            r['typologies'] = {'tl': tl, 'te': te}      # the patterns in these transfers, for the app to load beside them
             if writer:
                 r['graph'] = writer.write(r)
             if out_dir:
