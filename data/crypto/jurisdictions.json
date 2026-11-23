@@ -1,0 +1,751 @@
+{
+ "note": "Crypto supervision per jurisdiction. Wave 1 = Netherlands (ids shared with the Casefold register), wave 2 = EU, wave 3 = worldwide. verify: true = names, roles and links still to be checked against the supervisor's own site.",
+ "as_of": "2026-11-19",
+ "jurisdictions": [
+  {
+   "code": "NL",
+   "name": "Netherlands",
+   "wave": 1,
+   "regime": "MiCA licence (AFM); DNB registration under the Wwft until 30 Dec 2024, national transition to 30 June 2025",
+   "travel_rule": true,
+   "verify": false,
+   "sector": "NL:crypto-asset-service-providers-mica-casps-other-than-banks-e",
+   "regulators": [
+    {
+     "id": "NL:afm",
+     "short": "AFM",
+     "name": "Stichting Autoriteit Financiële Markten",
+     "role": "MiCA licence, conduct and AML (Wwft art. 1d(1)(b))",
+     "aml": true,
+     "url": "https://www.afm.nl"
+    },
+    {
+     "id": "NL:dnb",
+     "short": "DNB",
+     "name": "De Nederlandsche Bank",
+     "role": "AML for banks and EMIs with crypto services; registration of crypto service providers before MiCA",
+     "aml": true,
+     "url": "https://www.dnb.nl"
+    },
+    {
+     "id": "NL:fiu-nl",
+     "short": "FIU-NL",
+     "name": "FIU-Nederland",
+     "role": "receives unusual-transaction reports (Wwft art. 16)",
+     "aml": false,
+     "url": "https://www.fiu-nederland.nl"
+    },
+    {
+     "id": "NL:om",
+     "short": "OM",
+     "name": "Openbaar Ministerie",
+     "role": "criminal prosecution",
+     "aml": false,
+     "url": "https://www.om.nl"
+    }
+   ],
+   "laws": [
+    {
+     "id": "NL:mica",
+     "short": "MiCAR",
+     "title": "Regulation (EU) 2023/1114 (MiCA)",
+     "url": "https://eur-lex.europa.eu/eli/reg/2023/1114/oj"
+    },
+    {
+     "id": "NL:tfr",
+     "short": "TFR",
+     "title": "Regulation (EU) 2023/1113 (transfer of funds and crypto-assets)",
+     "url": "https://eur-lex.europa.eu/eli/reg/2023/1113/oj"
+    },
+    {
+     "id": "NL:wwft",
+     "short": "Wwft",
+     "title": "Wet ter voorkoming van witwassen en financieren van terrorisme",
+     "url": "https://wetten.overheid.nl/BWBR0024282"
+    },
+    {
+     "id": "NL:sw1977",
+     "short": "Sw",
+     "title": "Sanctiewet 1977",
+     "url": "https://wetten.overheid.nl/BWBR0003296"
+    },
+    {
+     "id": "EU:amlr",
+     "short": "AMLR",
+     "title": "Regulation (EU) 2024/1624 (from 10 July 2027)",
+     "url": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj"
+    },
+    {
+     "id": "EU:dac8",
+     "short": "DAC8",
+     "title": "Directive (EU) 2023/2226 (crypto tax reporting)",
+     "url": "https://eur-lex.europa.eu/eli/dir/2023/2226/oj"
+    }
+   ]
+  },
+  {
+   "code": "EU",
+   "name": "European Union",
+   "wave": 2,
+   "regime": "MiCA authorisation of CASPs, passported across the EU",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "EU:esma",
+     "short": "ESMA",
+     "name": "European Securities and Markets Authority",
+     "role": "MiCA register of CASPs, guidelines",
+     "aml": false,
+     "url": "https://www.esma.europa.eu"
+    },
+    {
+     "id": "EU:eba",
+     "short": "EBA",
+     "name": "European Banking Authority",
+     "role": "AML/CFT and travel-rule guidelines",
+     "aml": true,
+     "url": "https://www.eba.europa.eu"
+    },
+    {
+     "id": "EU:amla",
+     "short": "AMLA",
+     "name": "Anti-Money Laundering Authority",
+     "role": "EU AML authority; direct supervision of selected entities later",
+     "aml": true,
+     "url": "https://www.amla.europa.eu"
+    }
+   ],
+   "laws": [
+    {
+     "id": "EU:mica",
+     "short": "MiCAR",
+     "title": "Regulation (EU) 2023/1114",
+     "url": null
+    },
+    {
+     "id": "EU:tfr",
+     "short": "TFR",
+     "title": "Regulation (EU) 2023/1113",
+     "url": null
+    },
+    {
+     "id": "EU:amlr",
+     "short": "AMLR",
+     "title": "Regulation (EU) 2024/1624",
+     "url": null
+    },
+    {
+     "id": "EU:dac8",
+     "short": "DAC8",
+     "title": "Directive (EU) 2023/2226",
+     "url": null
+    }
+   ],
+   "sector": "EU:crypto-asset-service-providers"
+  },
+  {
+   "code": "DE",
+   "name": "Germany",
+   "wave": 2,
+   "regime": "MiCA licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "DE:bafin",
+     "short": "BaFin",
+     "name": "Bundesanstalt für Finanzdienstleistungsaufsicht",
+     "role": "MiCA licence and AML",
+     "aml": true,
+     "url": "https://www.bafin.de"
+    }
+   ],
+   "laws": [
+    {
+     "id": "EU:mica",
+     "short": "MiCAR",
+     "title": "Regulation (EU) 2023/1114",
+     "url": null
+    },
+    {
+     "id": "DE:gwg",
+     "short": "GwG",
+     "title": "Geldwäschegesetz",
+     "url": null
+    }
+   ],
+   "sector": "DE:crypto-asset-service-providers"
+  },
+  {
+   "code": "FR",
+   "name": "France",
+   "wave": 2,
+   "regime": "MiCA licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "FR:amf",
+     "short": "AMF",
+     "name": "Autorité des marchés financiers",
+     "role": "MiCA licence",
+     "aml": false,
+     "url": "https://www.amf-france.org"
+    },
+    {
+     "id": "FR:acpr",
+     "short": "ACPR",
+     "name": "Autorité de contrôle prudentiel et de résolution",
+     "role": "AML supervision",
+     "aml": true,
+     "url": "https://acpr.banque-france.fr"
+    }
+   ],
+   "laws": [
+    {
+     "id": "EU:mica",
+     "short": "MiCAR",
+     "title": "Regulation (EU) 2023/1114",
+     "url": null
+    },
+    {
+     "id": "FR:cmf",
+     "short": "CMF",
+     "title": "Code monétaire et financier",
+     "url": null
+    }
+   ],
+   "sector": "FR:crypto-asset-service-providers"
+  },
+  {
+   "code": "US",
+   "name": "United States",
+   "wave": 3,
+   "regime": "FinCEN MSB registration, state licences, securities and commodities law",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "US:sec",
+     "short": "SEC",
+     "name": "Securities and Exchange Commission",
+     "role": "securities",
+     "aml": false,
+     "url": "https://www.sec.gov"
+    },
+    {
+     "id": "US:cftc",
+     "short": "CFTC",
+     "name": "Commodity Futures Trading Commission",
+     "role": "commodities and derivatives",
+     "aml": false,
+     "url": "https://www.cftc.gov"
+    },
+    {
+     "id": "US:fincen",
+     "short": "FinCEN",
+     "name": "Financial Crimes Enforcement Network",
+     "role": "BSA/AML, MSB registration",
+     "aml": true,
+     "url": "https://www.fincen.gov"
+    },
+    {
+     "id": "US:ofac",
+     "short": "OFAC",
+     "name": "Office of Foreign Assets Control",
+     "role": "sanctions",
+     "aml": false,
+     "url": "https://ofac.treasury.gov"
+    },
+    {
+     "id": "US:doj",
+     "short": "DOJ",
+     "name": "Department of Justice",
+     "role": "criminal prosecution",
+     "aml": false,
+     "url": "https://www.justice.gov"
+    },
+    {
+     "id": "US:nydfs",
+     "short": "NYDFS",
+     "name": "New York State Department of Financial Services",
+     "role": "state licence (BitLicense)",
+     "aml": true,
+     "url": "https://www.dfs.ny.gov"
+    }
+   ],
+   "laws": [
+    {
+     "id": "US:bsa",
+     "short": "BSA",
+     "title": "Bank Secrecy Act",
+     "url": null
+    },
+    {
+     "id": "US:1960",
+     "short": "18 USC 1960",
+     "title": "Prohibition of unlicensed money transmitting businesses",
+     "url": null
+    },
+    {
+     "id": "US:1956",
+     "short": "18 USC 1956",
+     "title": "Laundering of monetary instruments",
+     "url": null
+    },
+    {
+     "id": "US:ieepa",
+     "short": "IEEPA",
+     "title": "International Emergency Economic Powers Act",
+     "url": null
+    },
+    {
+     "id": "US:sa1933",
+     "short": "Securities Act",
+     "title": "Securities Act of 1933",
+     "url": null
+    },
+    {
+     "id": "US:9714",
+     "short": "CRMLA 9714",
+     "title": "Combating Russian Money Laundering Act, section 9714",
+     "url": null
+    }
+   ],
+   "sector": "US:crypto-asset-service-providers"
+  },
+  {
+   "code": "GB",
+   "name": "United Kingdom",
+   "wave": 3,
+   "regime": "FCA registration under the MLRs; cryptoasset regime in transition",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "GB:fca",
+     "short": "FCA",
+     "name": "Financial Conduct Authority",
+     "role": "registration, AML, financial promotions",
+     "aml": true,
+     "url": "https://www.fca.org.uk"
+    },
+    {
+     "id": "GB:ofsi",
+     "short": "OFSI",
+     "name": "Office of Financial Sanctions Implementation",
+     "role": "sanctions",
+     "aml": false,
+     "url": "https://www.gov.uk/government/organisations/office-of-financial-sanctions-implementation"
+    }
+   ],
+   "laws": [
+    {
+     "id": "GB:mlr2017",
+     "short": "MLRs 2017",
+     "title": "Money Laundering Regulations 2017",
+     "url": null
+    }
+   ],
+   "sector": "GB:crypto-asset-service-providers"
+  },
+  {
+   "code": "CH",
+   "name": "Switzerland",
+   "wave": 3,
+   "regime": "licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "CH:finma",
+     "short": "FINMA",
+     "name": "Swiss Financial Market Supervisory Authority",
+     "role": "licensing and AML",
+     "aml": true,
+     "url": "https://www.finma.ch"
+    }
+   ],
+   "laws": [
+    {
+     "id": "CH:amla",
+     "short": "AMLA",
+     "title": "Anti-Money Laundering Act",
+     "url": null
+    },
+    {
+     "id": "CH:dlt",
+     "short": "DLT Act",
+     "title": "DLT Act",
+     "url": null
+    }
+   ],
+   "sector": "CH:crypto-asset-service-providers"
+  },
+  {
+   "code": "SG",
+   "name": "Singapore",
+   "wave": 3,
+   "regime": "licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "SG:mas",
+     "short": "MAS",
+     "name": "Monetary Authority of Singapore",
+     "role": "licensing and AML",
+     "aml": true,
+     "url": "https://www.mas.gov.sg"
+    }
+   ],
+   "laws": [
+    {
+     "id": "SG:psa",
+     "short": "PSA 2019",
+     "title": "Payment Services Act 2019",
+     "url": null
+    },
+    {
+     "id": "SG:fsma",
+     "short": "FSMA 2022",
+     "title": "Financial Services and Markets Act 2022",
+     "url": null
+    }
+   ],
+   "sector": "SG:crypto-asset-service-providers"
+  },
+  {
+   "code": "HK",
+   "name": "Hong Kong",
+   "wave": 3,
+   "regime": "licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "HK:sfc",
+     "short": "SFC",
+     "name": "Securities and Futures Commission",
+     "role": "VATP licensing",
+     "aml": true,
+     "url": "https://www.sfc.hk"
+    },
+    {
+     "id": "HK:hkma",
+     "short": "HKMA",
+     "name": "Hong Kong Monetary Authority",
+     "role": "stablecoin issuers",
+     "aml": false,
+     "url": "https://www.hkma.gov.hk"
+    }
+   ],
+   "laws": [
+    {
+     "id": "HK:amlo",
+     "short": "AMLO",
+     "title": "Anti-Money Laundering and Counter-Terrorist Financing Ordinance",
+     "url": null
+    }
+   ],
+   "sector": "HK:crypto-asset-service-providers"
+  },
+  {
+   "code": "JP",
+   "name": "Japan",
+   "wave": 3,
+   "regime": "registration",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "JP:fsa",
+     "short": "JFSA",
+     "name": "Financial Services Agency",
+     "role": "registration of crypto exchanges",
+     "aml": true,
+     "url": "https://www.fsa.go.jp"
+    }
+   ],
+   "laws": [
+    {
+     "id": "JP:psa",
+     "short": "PSA (JP)",
+     "title": "Payment Services Act",
+     "url": null
+    }
+   ],
+   "sector": "JP:crypto-asset-service-providers"
+  },
+  {
+   "code": "KR",
+   "name": "South Korea",
+   "wave": 3,
+   "regime": "reporting",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "KR:kofiu",
+     "short": "KoFIU",
+     "name": "Korea Financial Intelligence Unit",
+     "role": "VASP reporting and AML",
+     "aml": true,
+     "url": "https://www.kofiu.go.kr"
+    }
+   ],
+   "laws": [
+    {
+     "id": "KR:sfti",
+     "short": "SFTI Act",
+     "title": "Act on Reporting and Using Specified Financial Transaction Information",
+     "url": null
+    }
+   ],
+   "sector": "KR:crypto-asset-service-providers"
+  },
+  {
+   "code": "AE",
+   "name": "United Arab Emirates",
+   "wave": 3,
+   "regime": "licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "AE:vara",
+     "short": "VARA",
+     "name": "Virtual Assets Regulatory Authority (Dubai)",
+     "role": "VASP licensing",
+     "aml": true,
+     "url": "https://www.vara.ae"
+    },
+    {
+     "id": "AE:fsra",
+     "short": "FSRA",
+     "name": "Financial Services Regulatory Authority (ADGM)",
+     "role": "ADGM licensing",
+     "aml": true,
+     "url": "https://www.adgm.com"
+    }
+   ],
+   "laws": [
+    {
+     "id": "AE:vara-rb",
+     "short": "VARA Rulebooks",
+     "title": "VARA Rulebooks",
+     "url": null
+    }
+   ],
+   "sector": "AE:crypto-asset-service-providers"
+  },
+  {
+   "code": "AU",
+   "name": "Australia",
+   "wave": 3,
+   "regime": "registration",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "AU:austrac",
+     "short": "AUSTRAC",
+     "name": "Australian Transaction Reports and Analysis Centre",
+     "role": "DCE registration and AML",
+     "aml": true,
+     "url": "https://www.austrac.gov.au"
+    },
+    {
+     "id": "AU:asic",
+     "short": "ASIC",
+     "name": "Australian Securities and Investments Commission",
+     "role": "financial products",
+     "aml": false,
+     "url": "https://asic.gov.au"
+    }
+   ],
+   "laws": [
+    {
+     "id": "AU:amlctf",
+     "short": "AML/CTF Act",
+     "title": "AML/CTF Act 2006",
+     "url": null
+    }
+   ],
+   "sector": "AU:crypto-asset-service-providers"
+  },
+  {
+   "code": "CA",
+   "name": "Canada",
+   "wave": 3,
+   "regime": "registration and securities rules",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "CA:fintrac",
+     "short": "FINTRAC",
+     "name": "Financial Transactions and Reports Analysis Centre of Canada",
+     "role": "MSB registration and AML",
+     "aml": true,
+     "url": "https://fintrac-canafe.canada.ca"
+    },
+    {
+     "id": "CA:csa",
+     "short": "CSA",
+     "name": "Canadian Securities Administrators",
+     "role": "crypto trading platforms",
+     "aml": false,
+     "url": "https://www.securities-administrators.ca"
+    }
+   ],
+   "laws": [
+    {
+     "id": "CA:pcmltfa",
+     "short": "PCMLTFA",
+     "title": "Proceeds of Crime (Money Laundering) and Terrorist Financing Act",
+     "url": null
+    }
+   ],
+   "sector": "CA:crypto-asset-service-providers"
+  },
+  {
+   "code": "BR",
+   "name": "Brazil",
+   "wave": 3,
+   "regime": "authorisation",
+   "travel_rule": null,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "BR:bcb",
+     "short": "BCB",
+     "name": "Banco Central do Brasil",
+     "role": "VASP authorisation",
+     "aml": true,
+     "url": "https://www.bcb.gov.br"
+    },
+    {
+     "id": "BR:cvm",
+     "short": "CVM",
+     "name": "Comissão de Valores Mobiliários",
+     "role": "securities",
+     "aml": false,
+     "url": "https://www.gov.br/cvm"
+    }
+   ],
+   "laws": [
+    {
+     "id": "BR:14478",
+     "short": "Lei 14.478",
+     "title": "Law 14.478/2022",
+     "url": null
+    }
+   ],
+   "sector": "BR:crypto-asset-service-providers"
+  },
+  {
+   "code": "ZA",
+   "name": "South Africa",
+   "wave": 3,
+   "regime": "licence",
+   "travel_rule": true,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "ZA:fsca",
+     "short": "FSCA",
+     "name": "Financial Sector Conduct Authority",
+     "role": "CASP licensing",
+     "aml": false,
+     "url": "https://www.fsca.co.za"
+    },
+    {
+     "id": "ZA:fic",
+     "short": "FIC",
+     "name": "Financial Intelligence Centre",
+     "role": "AML",
+     "aml": true,
+     "url": "https://www.fic.gov.za"
+    }
+   ],
+   "laws": [
+    {
+     "id": "ZA:fica",
+     "short": "FIC Act",
+     "title": "Financial Intelligence Centre Act",
+     "url": null
+    }
+   ],
+   "sector": "ZA:crypto-asset-service-providers"
+  },
+  {
+   "code": "CW",
+   "name": "Curaçao",
+   "wave": 3,
+   "regime": "to inventory",
+   "travel_rule": null,
+   "verify": true,
+   "regulators": [
+    {
+     "id": "CW:cbcs",
+     "short": "CBCS",
+     "name": "Centrale Bank van Curaçao en Sint Maarten",
+     "role": "to inventory",
+     "aml": true,
+     "url": "https://www.centralbank.cw"
+    }
+   ],
+   "laws": [],
+   "sector": "CW:crypto-asset-service-providers"
+  },
+  {
+   "code": "INT",
+   "name": "Global standards",
+   "wave": 3,
+   "regime": "standards",
+   "travel_rule": null,
+   "verify": false,
+   "regulators": [
+    {
+     "id": "INT:fatf",
+     "short": "FATF",
+     "name": "Financial Action Task Force",
+     "role": "Recommendation 15 (virtual assets), 16 (travel rule)",
+     "aml": true,
+     "url": "https://www.fatf-gafi.org"
+    },
+    {
+     "id": "INT:oecd",
+     "short": "OECD",
+     "name": "OECD",
+     "role": "CARF (crypto tax reporting); CRS and FATCA are the non-crypto counterparts",
+     "aml": false,
+     "url": "https://www.oecd.org"
+    }
+   ],
+   "laws": [
+    {
+     "id": "INT:r15",
+     "short": "FATF R.15",
+     "title": "FATF Recommendation 15 and INR.15",
+     "url": null
+    },
+    {
+     "id": "INT:r16",
+     "short": "FATF R.16",
+     "title": "FATF Recommendation 16 (travel rule)",
+     "url": null
+    },
+    {
+     "id": "INT:carf",
+     "short": "CARF",
+     "title": "OECD Crypto-Asset Reporting Framework",
+     "url": null
+    }
+   ],
+   "sector": "INT:crypto-asset-service-providers"
+  }
+ ]
+}

@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_case import find_relate, HERE
 import clock
 
-Q = sorted(glob.glob(os.path.join(HERE, 'queries', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'office', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'register', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'explore', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'law', '*.cypher')))
+Q = sorted(glob.glob(os.path.join(HERE, 'queries', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'office', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'register', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'explore', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'law', '*.cypher'))) + sorted(glob.glob(os.path.join(HERE, 'queries', 'crypto', '*.cypher')))
 if '--list' in sys.argv or len(sys.argv) < 3:
     for q in Q:
         print(os.path.relpath(q, os.path.join(HERE, 'queries'))[:-7].split('_')[0], open(q, encoding='utf-8').readline().strip('/ \n'))

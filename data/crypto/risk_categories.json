@@ -1,0 +1,263 @@
+{
+ "note": "Casefold's own risk typology, in plain words: what a counterparty address belongs to (counterparty) and what went wrong in a case (case). Severity orders them; it is not a score. Programme codes of the sanctions lists map to categories; every listed entity is also 'sanctions'. Based on public sources: the FATF red-flag indicators for virtual assets and the sanctions programmes themselves. label_map: keywords in an explorer's label (Blockscout, Tronscan) that put the address in a category; the first match wins, and the label is always shown with its source.",
+ "categories": [
+  {
+   "id": "sanctions",
+   "name": "Sanctioned entity",
+   "severity": "severe",
+   "group": "counterparty",
+   "description": "On a sanctions list (OFAC, EU, UN, UK). Dealing with it can itself be a violation."
+  },
+  {
+   "id": "terrorist_financing",
+   "name": "Terrorist financing",
+   "severity": "severe",
+   "group": "counterparty",
+   "description": "Designated as a terrorist organisation or financier (e.g. OFAC SDGT, FTO; UK and EU counter-terrorism regimes)."
+  },
+  {
+   "id": "state_theft",
+   "name": "State-sponsored theft and hacking",
+   "severity": "severe",
+   "group": "counterparty",
+   "description": "State actors that steal or launder crypto (e.g. OFAC DPRK programmes)."
+  },
+  {
+   "id": "proliferation",
+   "name": "Weapons proliferation",
+   "severity": "severe",
+   "group": "counterparty",
+   "description": "Financing of weapons of mass destruction (e.g. OFAC NPWMD)."
+  },
+  {
+   "id": "csam",
+   "name": "Child sexual abuse material",
+   "severity": "severe",
+   "group": "counterparty",
+   "description": "Vendors of child sexual abuse material."
+  },
+  {
+   "id": "cybercrime",
+   "name": "Cybercrime and ransomware",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Ransomware, malware and other cybercrime (e.g. OFAC CYBER programmes)."
+  },
+  {
+   "id": "darknet_market",
+   "name": "Darknet market",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Marketplaces for illegal goods."
+  },
+  {
+   "id": "drug_trafficking",
+   "name": "Drug trafficking and organised crime",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Narcotics and transnational criminal organisations (e.g. OFAC ILLICIT-DRUGS, SDNTK, TCO)."
+  },
+  {
+   "id": "scam",
+   "name": "Scam and fraud",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Investment scams, pig butchering, fake platforms, phishing."
+  },
+  {
+   "id": "stolen_funds",
+   "name": "Stolen funds",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Proceeds of hacks and thefts."
+  },
+  {
+   "id": "mixer",
+   "name": "Mixer and obfuscation",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Services that break the trail of funds."
+  },
+  {
+   "id": "sanctioned_jurisdiction",
+   "name": "Sanctioned jurisdiction programme",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Listed under a country programme (e.g. Russia, Iran, Ukraine-related)."
+  },
+  {
+   "id": "human_rights",
+   "name": "Human rights abuse",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Listed under a human rights regime."
+  },
+  {
+   "id": "state_influence",
+   "name": "Election interference and state influence",
+   "severity": "high",
+   "group": "counterparty",
+   "description": "Listed for interference in elections or influence operations."
+  },
+  {
+   "id": "high_risk_exchange",
+   "name": "High-risk exchange",
+   "severity": "medium",
+   "group": "counterparty",
+   "description": "Exchanges without effective KYC or a licence where they serve customers."
+  },
+  {
+   "id": "p2p_exchange",
+   "name": "Peer-to-peer exchange",
+   "severity": "medium",
+   "group": "counterparty",
+   "description": "P2P platforms and OTC desks."
+  },
+  {
+   "id": "gambling",
+   "name": "Gambling",
+   "severity": "medium",
+   "group": "counterparty",
+   "description": "Online gambling services."
+  },
+  {
+   "id": "exchange",
+   "name": "Exchange (named by an explorer)",
+   "severity": "low",
+   "group": "counterparty",
+   "description": "An address an explorer labels as belonging to an exchange; whether that exchange is licensed is not checked here."
+  },
+  {
+   "id": "licensed_exchange",
+   "name": "Licensed exchange",
+   "severity": "low",
+   "group": "counterparty",
+   "description": "Exchanges with a licence or registration where they operate."
+  },
+  {
+   "id": "defi",
+   "name": "DeFi protocol and bridge",
+   "severity": "low",
+   "group": "counterparty",
+   "description": "Smart-contract services, swaps and bridges."
+  },
+  {
+   "id": "unattributed",
+   "name": "Unattributed",
+   "severity": "none",
+   "group": "counterparty",
+   "description": "Not (yet) attributed to a known entity or service."
+  },
+  {
+   "id": "unlicensed_service",
+   "name": "Crypto services without licence or registration",
+   "severity": "medium",
+   "group": "case",
+   "description": "Offering crypto services where a licence or registration is required (e.g. Wwft art. 23b, MiCAR art. 59, 18 USC 1960)."
+  },
+  {
+   "id": "aml_failure",
+   "name": "AML programme failure",
+   "severity": "high",
+   "group": "case",
+   "description": "No effective customer due diligence, monitoring or reporting of suspicious transactions."
+  },
+  {
+   "id": "sanctions_violation",
+   "name": "Sanctions violation",
+   "severity": "severe",
+   "group": "case",
+   "description": "Transactions with sanctioned persons or jurisdictions."
+  },
+  {
+   "id": "money_laundering",
+   "name": "Money laundering",
+   "severity": "severe",
+   "group": "case",
+   "description": "Laundering the proceeds of crime, or a service built for it."
+  },
+  {
+   "id": "fraud",
+   "name": "Fraud on investors",
+   "severity": "high",
+   "group": "case",
+   "description": "Misleading investors or misusing customer funds."
+  }
+ ],
+ "program_map": [
+  [
+   "^SDGT$|^FTO$|Counter-Terrorism|^IRGC$",
+   "terrorist_financing"
+  ],
+  [
+   "^DPRK",
+   "state_theft"
+  ],
+  [
+   "^NPWMD$",
+   "proliferation"
+  ],
+  [
+   "^CYBER",
+   "cybercrime"
+  ],
+  [
+   "ILLICIT-DRUGS|^SDNTK$|^TCO$",
+   "drug_trafficking"
+  ],
+  [
+   "RUSSIA|^UKR|UKRAINE|CAATSA|^IRAN|^IFSR$|Russia",
+   "sanctioned_jurisdiction"
+  ],
+  [
+   "HRIT|Human Rights",
+   "human_rights"
+  ],
+  [
+   "ELECTION",
+   "state_influence"
+  ]
+ ],
+ "label_map": [
+  [
+   "ofac|blocked|sanction",
+   "sanctions"
+  ],
+  [
+   "tornado|mixer|mixing|blender|sinbad|wasabi|samourai|coinjoin",
+   "mixer"
+  ],
+  [
+   "scam|phish|fake|fraud|ponzi|drainer",
+   "scam"
+  ],
+  [
+   "exploit|hack|heist|stolen|attacker",
+   "stolen_funds"
+  ],
+  [
+   "lazarus|dprk",
+   "state_theft"
+  ],
+  [
+   "garantex|grinex|bitzlato|suex|chatex",
+   "sanctions"
+  ],
+  [
+   "casino|gambl|\\bbet\\b|dice|roobet|stake\\.com",
+   "gambling"
+  ],
+  [
+   "localbitcoins|paxful|hodlhodl|\\botc\\b|p2p",
+   "p2p_exchange"
+  ],
+  [
+   "binance|okx|okex|huobi|\\bhtx\\b|kucoin|bybit|gate\\.io|\\bgate\\b|mexc|kraken|coinbase|bitfinex|poloniex|bitstamp|gemini|crypto\\.com|upbit|bithumb|bitget|whitebit|exmo|exchange|hot wallet|deposit|cobo|blofin|fiat-gateway|custody",
+   "exchange"
+  ],
+  [
+   "uniswap|sushi|1inch|curve|bridge|router|swap|aave|compound|lido|wormhole|stargate|multichain|0x: exchange proxy|metamask",
+   "defi"
+  ]
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "note": "Listed entities whose crypto addresses are traced on chain by casefold/fetch_chain.py: the latest transfers of each address (hop 1) and, for the largest counterparties, their latest transfers (hop 2). Public block explorers only, no keys. A spread of typologies: exchanges in cases (Garantex, Grinex), OTC desks laundering ransomware (SUEX, Chatex), state theft (Lazarus Group), a mixer (Blender.io), a scam marketplace (Xinbi Guarantee) and terrorist financing (Gaza Now, Ansarallah).",
+ "max_transfers_per_address": 50,
+ "hop2_counterparties": 8,
+ "entities": [
+  "OFAC:36025",
+  "EU:172907",
+  "OFAC:55045",
+  "OFAC:33151",
+  "OFAC:33854",
+  "OFAC:27307",
+  "OFAC:37070",
+  "OFAC:58361",
+  "OFAC:47635",
+  "OFAC:47664"
+ ],
+ "max_seed_addresses": 15
+}

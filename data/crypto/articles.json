@@ -1,0 +1,163 @@
+{
+ "note": "Key articles for crypto, with the duty in plain words. The text comes from the law files read in under laws/ (MiCA and TFR from EUR-Lex, the Wwft from wetten.overheid.nl); heading = the official heading where the law has one. replaced_by: the article that took over the duty.",
+ "articles": [
+  {
+   "law": "NL:wwft",
+   "art": "23b",
+   "heading": null,
+   "duty": "registration of crypto service providers with DNB (exchange between virtual and fiat currency, custodian wallets)",
+   "replaced_by": [
+    "NL:mica:59"
+   ]
+  },
+  {
+   "law": "NL:wwft",
+   "art": "23c",
+   "heading": null,
+   "duty": "crypto services only when registered with DNB",
+   "replaced_by": [
+    "NL:mica:59"
+   ]
+  },
+  {
+   "law": "NL:wwft",
+   "art": "29",
+   "heading": null,
+   "duty": "power of the supervisor to impose a last onder dwangsom",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:wwft",
+   "art": "30",
+   "heading": null,
+   "duty": "power of the supervisor to impose an administrative fine",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "59",
+   "heading": "Vergunningverlening",
+   "duty": "no crypto-asset services in the Union without authorisation as a CASP (or a notification under art. 60)",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "60",
+   "heading": "Aanbieding van cryptoactivadiensten door bepaalde financiële entiteiten",
+   "duty": "credit institutions and other financial entities may offer crypto-asset services after a notification",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "61",
+   "heading": "Verlening van cryptoactivadiensten uitsluitend op initiatief van de cliënt",
+   "duty": "reverse solicitation",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "62",
+   "heading": "Aanvraag van een vergunning als aanbieder van cryptoactivadiensten",
+   "duty": "application for authorisation",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "63",
+   "heading": "Beoordeling van de vergunningsaanvraag en toekenning of weigering van een vergunning",
+   "duty": "assessment and grant or refusal of authorisation",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "67",
+   "heading": "Prudentiële vereisten",
+   "duty": "prudential requirements",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "68",
+   "heading": "Governanceregelingen",
+   "duty": "governance",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "70",
+   "heading": "Bewaring van cryptoactiva en geldmiddelen van cliënten",
+   "duty": "safekeeping of clients' crypto-assets and funds",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "75",
+   "heading": "Bewaring en beheer van cryptoactiva namens cliënten",
+   "duty": "custody and administration on behalf of clients",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "76",
+   "heading": "Exploitatie van een cryptoactivahandelsplatform",
+   "duty": "operation of a trading platform",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "94",
+   "heading": "Bevoegdheden van de bevoegde autoriteiten",
+   "duty": "powers of the competent authorities",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "111",
+   "heading": "Administratieve sancties en andere administratieve maatregelen",
+   "duty": "administrative penalties and measures",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:mica",
+   "art": "143",
+   "heading": "Overgangsmaatregelen",
+   "duty": "transitional measures (national transition for existing providers)",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:tfr",
+   "art": "14",
+   "heading": "Bij overdrachten van cryptoactiva te voegen informatie",
+   "duty": "travel rule: information that accompanies a transfer of crypto-assets (originator's CASP)",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:tfr",
+   "art": "16",
+   "heading": "Opsporing van ontbrekende informatie over de initiator of de begunstigde",
+   "duty": "detect missing information (beneficiary's CASP)",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:tfr",
+   "art": "17",
+   "heading": "Overmakingen van cryptoactiva met ontbrekende of onvolledige informatie over de initiator of de begunstigde",
+   "duty": "transfers with missing or incomplete information",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:tfr",
+   "art": "19",
+   "heading": "Het bewaren van informatie over de initiator en de begunstigde die bij de overdracht is gevoegd",
+   "duty": "keep the information that accompanies the transfer",
+   "replaced_by": []
+  },
+  {
+   "law": "NL:tfr",
+   "art": "23",
+   "heading": "Interne beleidsregels, procedures en controles ter bewaking van de uitvoering van de beperkende maatregelen",
+   "duty": "policies and controls to implement restrictive measures (sanctions)",
+   "replaced_by": []
+  }
+ ]
+}

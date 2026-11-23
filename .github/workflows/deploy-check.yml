@@ -1,0 +1,46 @@
+# Builds the two images that Coolify deploys (deploy/coolify/docker-compose.yml) and checks that the site, the app and
+# the crawler answer, before anything goes to the branch `live`. Builds only: nothing is pushed or deployed from here.
+name: deploy-check
+
+on:
+  push:
+    branches: [crypto-intelligence, live]
+    paths: [deploy/**, web/site.html, web/crypto.html, web/workspace.html, web/data/**, 'casefold/crawler/**', .github/workflows/deploy-check.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the stack
+        env:
+          CRAWLER_TOKEN: check-only
+        run: docker compose --project-directory . -f deploy/coolify/docker-compose.yml up -d --build --wait
+      - name: The site, the app, the data and the crawler answer through nginx
+        run: |
+          IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker compose --project-directory . -f deploy/coolify/docker-compose.yml ps -q web))
+          curl -fsS "http://$IP/" | grep -q "Casefold"
+          curl -fsS "http://$IP/crypto.html" | grep -q "Casefold Crypto Intelligence"
+          curl -fsS -H "Host: app.casefoldcrypto.com" "http://$IP/" | grep -q "Casefold Crypto Intelligence"
+          curl -fsS -H "Host: casefoldcrypto.com" "http://$IP/" | grep -q "How it works"
+          curl -fsSI "http://$IP/vendor/relate/relate_bg.wasm" | grep -qi "content-type: application/wasm"
+          curl -fsSI "http://$IP/" | grep -qi "content-type: text/html"
+          curl -fsSI "http://$IP/crypto.html" | grep -qi "content-type: text/html"
+          curl -fsSI "http://$IP/vendor/relate/relate.js" | grep -qi "content-type: application/javascript"
+          curl -fsSI "http://$IP/data/crypto.json" | grep -qi "content-type: application/json"
+          curl -fsS "http://$IP/data/crypto.json" | head -c 100
+          curl -fsS "http://$IP/api/crawler/health"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "http://$IP/workspace.html")" = 404
+          OF=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker compose --project-directory . -f deploy/coolify/docker-compose.yml ps -q office))
+          curl -fsS "http://$OF/healthz"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "http://$OF/")" = 401
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Cf-Access-Jwt-Assertion: x.y.z' "http://$OF/api/crawler/health")" = 401
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://$IP/api/crawler/trace" -H 'Content-Type: application/json' -d '{"chain":"tron","address":"x"}')" = 401
+          test "$(curl -s -o /dev/null -w '%{http_code}' "http://$IP/api/crawler/cases")" = 404
+      - if: always()
+        run: docker compose --project-directory . -f deploy/coolify/docker-compose.yml logs --tail 50

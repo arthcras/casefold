@@ -28,6 +28,10 @@ echo; python3 casefold/ask.py tests/cases/nl-currency-exchange-instit-1.rl 16   
 echo; python3 casefold/ask.py tests/cases/nl-banks-1.rl 17                     # monitoring: the client's transactions with its 3 sub-clients against its service profile
 # the sector register: one file with the classification of every sector (FATF scope, category), its supervisor, its duties and the office files
 python3 casefold/build_register.py
+# Casefold Crypto Intelligence: crypto supervisors and laws per jurisdiction (the Netherlands first), public enforcement cases, sanctions lists
+python3 tests/test_crypto.py                                         # builds register/crypto.rl and web/data/crypto.json, then checks them
+echo; python3 casefold/ask.py register/crypto.rl crypto/01          # who supervises crypto, under which law, per jurisdiction
+echo; python3 casefold/ask.py register/crypto.rl crypto/03          # where the same law went wrong before
 echo; python3 casefold/ask.py register/sectors.rl register/01       # the sector map: category, FATF scope, supervisor, obliged since or from
 echo; python3 casefold/ask.py register/sectors.rl register/02       # which duties are shared and which belong to one corner of the market
 echo; python3 casefold/ask.py register/sectors.rl register/03       # per authority: AML supervisor, licensing authority, FIU-Nederland, AP
@@ -80,4 +84,4 @@ python3 casefold/apply_schema.py register/sectors.rl offices/*.rl cases/*.rl tes
 python3 casefold/export_view.py register/sectors.rl cases/nl-kalmora.rl $(ls cases/nl-kalmora-docs.rl cases/nl-kalmora-new.rl 2>/dev/null) offices/*.rl tests/cases/*.rl tests/offices/*.rl $(ls laws/*.rl 2>/dev/null)
 python3 casefold/export_examples.py                                       # example documents for 'New client from documents'
 python3 casefold/handover.py cases/nl-kalmora.rl                     # auditor hand-over: relate clone (JSON snapshot) + relate info + sha256
-echo; echo "Viewer: cd web && python3 -m http.server 8000   then open http://localhost:8000"
+echo; echo "Viewer: cd web && python3 -m http.server 8000   then open http://localhost:8000  (crypto: /crypto.html)"

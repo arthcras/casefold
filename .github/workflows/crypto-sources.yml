@@ -1,0 +1,59 @@
+# Fetch the sources behind Casefold Crypto Intelligence on a runner with internet: the DNB decision documents of the
+# Dutch crypto cases (which articles each one cites) and MiCA, the TFR and DAC8 from EUR-Lex, read in article by article.
+# The results go to the branch crypto-sources-out (and an artifact) for review; they reach the code only by a commit
+# that a person or Claude makes after checking them. Uses only the workflow's own token.
+name: crypto-sources
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [crypto-intelligence]
+    paths: [data/crypto/decisions.json, casefold/fetch_crypto_sources.py, .github/workflows/crypto-sources.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Relate and pdftotext
+        run: |
+          curl -sSfL https://relatedb.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-nld
+      - name: Fetch and read the decisions and the laws
+        run: python3 casefold/fetch_crypto_sources.py --laws
+      - name: Summary
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          if not os.path.exists("data/crypto/decision_citations.json"): raise SystemExit(0)
+          d = json.load(open("data/crypto/decision_citations.json"))
+          for x in d['decisions']:
+              print(x['case'], x.get('error') or '', [(c['law'], c['art'], c['lids'], c['count']) for c in x.get('citations', [])[:8]])
+          PY
+          ls -la laws/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crypto-sources
+          path: |
+            data/crypto/decision_citations.json
+            laws/*mica*
+            laws/*tfr*
+            laws/*dac8*
+          if-no-files-found: warn
+      - name: Put the results on the branch crypto-sources-out
+        run: |
+          git config user.name "crypto-sources workflow"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -B crypto-sources-out
+          git add -f laws/*mica* laws/*tfr* laws/*dac8* $(ls data/crypto/decision_citations.json 2>/dev/null)
+          git commit -m "crypto-sources: laws read in on the runner ($(date -u +%F))" || echo "nothing new"
+          git push -f origin crypto-sources-out
