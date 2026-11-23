@@ -132,7 +132,7 @@ body.vinv .ipane{display:block}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <script type="module">
 const RELATE=new URL('vendor/relate/relate.js',location.href).href;
-const VIEWS=[['inv','My investigations','Work'],['trace','Sanctioned entities on chain','Knowledge'],['cases','Cases and fines','Knowledge'],['register','Supervision per country','Knowledge'],['risk','Risk typologies','Knowledge'],['sanctions','Sanctions lists','Knowledge']];
+const VIEWS=[['inv','My investigations','Work'],['invlist','All investigations','Work'],['trace','Sanctioned entities on chain','Knowledge'],['cases','Cases and fines','Knowledge'],['register','Supervision per country','Knowledge'],['risk','Risk typologies','Knowledge'],['sanctions','Sanctions lists','Knowledge']];
 const HIDDEN_VIEWS=['search'];const ALIAS={entities:'trace',lists:'sanctions',screen:'inv'};
 const S={view:'register',jur:'NL',props:[],kind:'case',msg:'',sel:null};
 let db,D,cy,NAMES=null;window.__cf={cy:()=>cy,q:(a,b)=>q(a,b)};
@@ -401,6 +401,23 @@ register(){
  <div class="two"><div class="card"><h2>Supervisors</h2>${sup.map(r=>`<div class="row"><div><a href="#" data-node="${esc(r.id)}"><b>${esc(r.short)}</b></a> <span class="sub">${esc(r.name)}</span><div class="sub">${esc(r.role)}</div></div><div>${r.aml?'<span class="tag">AML</span> ':''}<a href="${esc(r.url)}" target="_blank" rel="noopener" class="sub">site</a></div></div>`).join('')}</div>
  <div class="card"><h2>Laws</h2>${laws.map(r=>`<div class="row"><div><a href="#" data-node="${esc(r.id)}"><b>${esc(r.short)}</b></a> <span class="sub">${esc(r.title)}</span></div>${r.url?`<div><a href="${esc(r.url)}" target="_blank" rel="noopener" class="sub">text</a></div>`:''}</div>`).join('')||'<p class="note">To inventory.</p>'}</div></div>
  <div class="card"><div class="row" style="border:0;align-items:center"><div><h2 style="margin:0">Where it went wrong here</h2><div class="sub">${cs.length?`${cs.length} ${cs.length===1?'case':'cases'}, latest ${esc(cs[0].date)}: ${esc(cs[0].party)}`:'No cases collected yet for this country.'}</div></div>${cs.length?`<div><button class="btn g" type="button" data-cjur="${esc(cur.code)}">Open in Cases and fines →</button></div>`:''}</div></div>`;},
+invlist(){const I=INV.list,me=(SRV.me||'').toLowerCase();const M=c=>SRV.meta[c.id]||{};
+ const mine=c=>!me||String(M(c).created_by||'').toLowerCase()===me||String(c.by||'').toLowerCase()===me;
+ const who=S.ilwho||'all',st=S.ilst||'',tq=(S.ilq||'').toLowerCase();
+ const hit=c=>!tq||[c.name,c.reason,c.by,...(c.items||[]).map(x=>x.id+' '+(x.label||''))].join(' ').toLowerCase().includes(tq);
+ const r=I.filter(c=>(who==='all'||mine(c))&&(!st||c.status===st)&&hit(c)).sort((a,b)=>String(M(b).updated||b.created||'').localeCompare(String(M(a).updated||a.created||'')));
+ const n=k=>I.filter(c=>c.status===k).length;const cnt=(c,v)=>(c.items||[]).filter(x=>x.verdict===v).length;const d=x=>x?String(x).slice(0,16).replace('T',' '):'';
+ const rel=E("MATCH (a:Investigation)-[r:CONCERNS]->(b)");draw(els(rel.length?rel:E("MATCH (a:Investigation)")));
+ const chip=(k,v,lab,cur)=>`<button class="btn ${cur===v?'':'g'}" type="button" data-il${k}="${esc(v)}" style="min-height:32px;padding:0 10px">${esc(lab)}</button>`;
+ $('side').innerHTML=`<div class="card"><h2>Show</h2><div class="chips">${chip('who','all',`Everyone · ${I.length}`,who)}${me?chip('who','mine',`Mine · ${I.filter(mine).length}`,who):''}</div>
+  <div class="chips" style="margin-top:8px">${chip('st','','All',st)}${chip('st','open',`Open · ${n('open')}`,st)}${chip('st','review',`In review · ${n('review')}`,st)}${chip('st','closed',`Signed off · ${n('closed')}`,st)}</div>
+  <input id="ilq" type="search" placeholder="Name, reason or wallet" value="${esc(S.ilq||'')}" style="margin-top:10px;width:100%"><p class="note">${SRV.on?'Every investigation of the team, from the server. Open one to read it or to work on; a signed-off one is reopened with <b>Reopen</b>, which is recorded.':'In this browser only.'}</p></div>
+  ${S.ilhist?`<div class="card" id="ilhist"><h2>History</h2><p class="note">Loading…</p></div>`:''}`;
+ if(S.ilhist)ilHistory(S.ilhist);
+ return `<h1>All investigations: open, in review and signed off</h1><p class="lead">Every investigation with who started it, its status, the last change and its verdicts. The graph shows them with the wallets, parties and cases they concern, so overlap between investigations is visible at a glance. <b>Open →</b> continues the work where it was left.</p>
+ <div class="kpis"><div class="kpi"><b>${I.length}</b><span>investigations</span></div><div class="kpi"><b>${n('open')}</b><span>open</span></div><div class="kpi"><b>${n('review')}</b><span>in review</span></div><div class="kpi"><b>${n('closed')}</b><span>signed off</span></div></div>
+ <div class="card scroll">${r.length?`<table><thead><tr><th>Started</th><th>Investigation</th><th>Status</th><th>Started by</th><th>Last change</th><th>Items</th><th>Confirmed</th><th>Leads</th><th>Also in others</th><th></th></tr></thead><tbody>${r.map(c=>{const m=M(c);const ov=new Set((c.items||[]).flatMap(x=>invAlso(x.id,c.id).map(h=>h.c.id))).size;
+  return `<tr class="click" data-goinv="${esc(c.id)}"><td class="n">${esc(d(c.created).slice(0,10))}</td><td><b>${esc(c.name)}</b>${c.reason?`<div class="sub">${esc(c.reason)}</div>`:''}</td><td><span class="tag ${c.status==='closed'?'':c.status==='review'?'warn':''}">${esc(STLAB[c.status]||c.status)}</span>${c.reviewer?`<div class="sub">by ${esc(c.reviewer)}</div>`:''}</td><td>${esc(m.created_by||c.by||'')}</td><td class="sub">${esc(d(m.updated))}${m.updated_by?`<div>${esc(m.updated_by)}</div>`:''}${m.version?`<div>version ${m.version}</div>`:''}</td><td class="n">${(c.items||[]).length}</td><td class="n">${cnt(c,'confirmed')}</td><td class="n">${cnt(c,'lead')}</td><td class="n">${ov?`<span class="tag warn">${ov}</span>`:''}</td><td style="white-space:nowrap"><button class="sb p" type="button" data-goinv="${esc(c.id)}">Open →</button>${SRV.on&&SRV.ver[c.id]?` <button class="sb" type="button" data-ilhist="${esc(c.id)}">History</button>`:''}</td></tr>`}).join('')}</tbody></table>`:`<p class="note">${I.length?'Nothing matches this filter.':'No investigations yet. Start one under My investigations.'}</p>`}</div>`},
 cases(){
  $('side').innerHTML=`<div class="card"><h2>In this view</h2><p class="note">Every public case with the authority, the article that was broken, the party, and where the same party appears on a sanctions list.</p></div>`;
  draw(els([...E("MATCH (a:Source {kind:'case'})-[r:BY]->(b:Regulator)"),...E("MATCH (a:Source {kind:'case'})-[r:VIOLATED_ARTICLE]->(b:Article)"),...E("MATCH (a:Source {kind:'case'})-[r:AGAINST]->(b:Entity)"),
@@ -485,7 +502,7 @@ const INV={list:[],cur:null};try{INV.list=JSON.parse(localStorage.getItem('cf-in
 const invSave=()=>{try{localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}invProject();srvSched()};
 /* investigations on the server (back office only): one shared store, versioned, with an append-only audit trail.
    This browser keeps a copy; a save names the version it started from, so nobody overwrites someone else unnoticed. */
-const SRV={on:false,me:'',ver:{},sent:{},st:'',at:null,msg:'',t:null,busy:false,again:false};
+const SRV={on:false,me:'',meta:{},ver:{},sent:{},st:'',at:null,msg:'',t:null,busy:false,again:false};
 try{SRV.ver=JSON.parse(localStorage.getItem('cf-inv-ver')||'{}')}catch(e){}
 const srvSig=c=>JSON.stringify({...c,flow:undefined,watch:undefined});   // view settings and the automatic monitoring baseline are not a change (marking changes as seen is, through the log)
 const srvKeep=()=>{try{localStorage.setItem('cf-inv-ver',JSON.stringify(SRV.ver));localStorage.setItem('cf-inv',JSON.stringify(INV.list))}catch(e){}};
@@ -493,7 +510,7 @@ async function srvFetch(path,opt){const r=await fetch('/api/crawler/cases'+path,
 async function srvLoad(){if(!CRAWL||SRV.busy)return;SRV.st=SRV.on?SRV.st:'loading';paintSrv();
  try{const r=await srvFetch('?full=1');if(!r.ok)throw new Error(r.code===401?'not signed in to the server':'HTTP '+r.code);
   SRV.on=true;SRV.me=r.j.me||'';const srv=new Map(r.j.cases.map(x=>[x.id,x]));const local=new Map(INV.list.map(c=>[c.id,c]));const list=[];const mine=[];let gone=0;
-  for(const x of r.j.cases){const c=local.get(x.id);
+  for(const x of r.j.cases){const c=local.get(x.id);SRV.meta[x.id]={created:x.created,created_by:x.created_by,updated:x.updated,updated_by:x.updated_by,version:x.version};
    if(c&&SRV.ver[x.id]===x.version&&srvSig(c)!==srvSig(x.doc))list.push(c);   // changed here, not yet saved: keep and save
    else{list.push(x.doc);SRV.sent[x.id]=srvSig(x.doc)}SRV.ver[x.id]=x.version}
   for(const c of INV.list){if(srv.has(c.id))continue;if(SRV.ver[c.id]){gone++;delete SRV.ver[c.id];continue}mine.push(c);list.push(c)}   // deleted on the server, or only in this browser
@@ -505,7 +522,7 @@ function srvSched(){if(!SRV.on)return;clearTimeout(SRV.t);SRV.t=setTimeout(srvPu
 async function srvPush(){SRV.t=null;if(!SRV.on)return;if(SRV.busy){SRV.again=true;return}SRV.busy=true;let redraw=false;
  try{for(const c of INV.list.slice()){const txt=srvSig(c);if(SRV.sent[c.id]===txt)continue;SRV.st='saving';paintSrv();
    const r=await srvFetch('/'+encodeURIComponent(c.id),{method:'PUT',body:JSON.stringify({doc:c,version:SRV.ver[c.id]||0})});
-   if(r.ok){SRV.ver[c.id]=r.j.version;SRV.sent[c.id]=txt;SRV.at=new Date();SRV.st='ok';if(/^(Not saved|")/.test(SRV.msg))SRV.msg=''}
+   if(r.ok){SRV.ver[c.id]=r.j.version;SRV.sent[c.id]=txt;SRV.meta[c.id]={created:r.j.created,created_by:r.j.created_by,updated:r.j.updated,updated_by:r.j.updated_by,version:r.j.version};SRV.at=new Date();SRV.st='ok';if(/^(Not saved|")/.test(SRV.msg))SRV.msg=''}
    else if(r.code===409){const d=r.j.detail||{};const g=await srvFetch('/'+encodeURIComponent(c.id));
     if(g.ok){const i=INV.list.findIndex(x=>x.id===c.id);if(i>=0)INV.list[i]=g.j.doc;SRV.ver[c.id]=g.j.version;SRV.sent[c.id]=srvSig(g.j.doc)}
     SRV.st='conflict';SRV.msg=`"${c.name}" was changed by ${d.updated_by||'someone else'} meanwhile: their version is shown now; your last change to it was not saved.`;redraw=true}
@@ -522,6 +539,13 @@ async function traceRestore(){if(!CRAWL)return;const keys=[...new Set(INV.list.f
  try{const r=await fetch('/api/crawler/traces/latest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keys:keys.slice(0,500)}),cache:'no-store'});if(!r.ok)return;const j=await r.json();
   keys.forEach(k=>RESTORED.add(k));let n=0;for(const [k,T] of Object.entries(j.traces||{})){try{applyTrace(T,k,true);TRACE[k]=TRACE[k]||{st:'done',n:T.transfers.length,at:T.fetched_at||new Date().toISOString()};n++}catch(e){console.warn('trace not restored',k,e.message)}}
   if(n){TTC=null;invProject();render()}}catch(e){console.warn('traces not restored:',e.message)}}
+async function ilHistory(id){const el=$('ilhist');if(!el)return;const c=INV.list.find(x=>x.id===id);
+ try{const [v,a]=await Promise.all([srvFetch('/'+encodeURIComponent(id)+'/versions'),srvFetch('/'+encodeURIComponent(id)+'/audit')]);if(!v.ok||!a.ok)throw new Error('HTTP '+(v.ok?a.code:v.code));
+  const e=$('ilhist');if(!e)return;
+  e.innerHTML=`<h2>History · ${esc(c?c.name:id)}</h2><p class="note">${a.j.chain_ok?'<span class="tag">audit trail intact</span>':'<span class="tag bad">audit trail broken</span>'} Every saved version is kept whole; its SHA-256 is in the audit trail.</p>${a.j.events.slice().reverse().map(x=>`<div class="row"><div><b>${esc({create:'Started',update:'Changed',delete:'Deleted'}[x.action]||x.action)}</b> · version ${x.version}<div class="sub">${esc(String(x.at).replace('T',' ').slice(0,16))} · ${esc(x.by)}</div><div class="sub mono" title="${esc(x.sha256)}">SHA-256 ${esc(String(x.sha256).slice(0,16))}…</div></div>${x.action!=='delete'?`<div><button class="nb" type="button" data-ilver="${esc(id)}|${x.version}">Download</button></div>`:''}</div>`).join('')}`}
+ catch(e){const el2=$('ilhist');if(el2)el2.innerHTML=`<h2>History</h2><p class="note">The history could not be read from the server (${esc(e.message)}).</p>`}}
+async function ilVersion(id,v){const r=await srvFetch('/'+encodeURIComponent(id)+'/versions/'+v);if(!r.ok){alert('This version could not be read from the server.');return}
+ const b=new Blob([JSON.stringify(r.j,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`${id}-version-${v}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function srvText(){if(!CRAWL)return 'Kept in this browser only.';const t=d=>d?d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
  const m=SRV.msg?' '+SRV.msg:'';
  return ({loading:'Connecting to the server…',saving:'Saving on the server…',ok:`Saved on the server${SRV.at?' · '+t(SRV.at):''}${SRV.me?' · '+SRV.me:''}.`+m,conflict:m.trim(),error:m.trim(),off:`Not connected to the server (${SRV.msg}): kept in this browser only.`})[SRV.st]||''}
@@ -554,7 +578,7 @@ function invGraph(c){if(!cy)return;const ids=c.items.map(x=>x.id);if(!ids.length
  const rows=[...E('MATCH (a)-[r]->(b) WHERE coalesce(a.id, a.code, a.key) IN $all AND coalesce(b.id, b.code, b.key) IN $all',{all})];
  const el=els(rows);const have=new Set(el.filter(x=>!x.data.source).map(x=>x.data.id));
  for(const x of c.items){if(!have.has(x.id)){const d=nodeInfo(x.id);if(d)el.push({data:{id:d.id,t:d.t,k:kindOf(d),label:labelOf(d)}})}}
- for(const e of el){if(e.data.source)continue;const it=c.items.find(x=>x.id===e.data.id);if(it){e.data.verdict=it.verdict;if(it.t==='Address')e.data.label=it.label.slice(0,18)}else e.data.ctx=1}
+ for(const e of el){if(e.data.source)continue;const it=c.items.find(x=>x.id===e.data.id);if(it){e.data.verdict=it.verdict;if(it.t==='Address')e.data.label=String(it.label||short(String(it.id).split(':').pop())).slice(0,18)}else e.data.ctx=1}
  draw(el)}
 function invSig(c){const sig={};for(const x of c.items){if(x.ext)continue;if(x.t==='Address'){const r=q('MATCH (a:Address {key:$id}) OPTIONAL MATCH (l:SanctionsList)-[:LISTS]->(a) OPTIONAL MATCH (a)-[s:SENT]-(:Address)<-[:CONTROLS]-(e:Entity) RETURN collect(DISTINCT l.id) AS l, collect(DISTINCT e.name) AS e, count(s) AS n',{id:x.id})[0];sig[x.id]={lists:r.l.sort(),near:r.e.sort(),n:r.n}}
  if(x.t==='Entity'){const r=q("MATCH (e:Entity {id:$id}) OPTIONAL MATCH (l:SanctionsList)-[:LISTS]->(e) OPTIONAL MATCH (e)-[:POSSIBLY_SAME]-(:Entity)<-[:AGAINST]-(c:Source) RETURN collect(DISTINCT l.id) AS l, collect(DISTINCT c.id) AS c",{id:x.id})[0];sig[x.id]={lists:r.l.sort(),cases:r.c.sort()}}}return sig}
@@ -1108,8 +1132,8 @@ const EX='DNB legt een bestuurlijke boete op van EUR 3.325.000 aan een cryptodie
 function render(){if(S.view!=='trace')hideRadar();{const inv=S.view==='inv',was=document.body.classList.contains('vinv');document.body.classList.toggle('vinv',inv);document.documentElement.style.setProperty('--hh',document.querySelector('.top').offsetHeight+'px');
   const ins=$('insp'),side=document.querySelector('.app>aside');if(inv&&ins.parentNode!==side)side.appendChild(ins);if(!inv&&ins.parentNode===side)document.querySelector('.app').appendChild(ins);
   if(!inv){$('fpane').style.display='none';document.body.classList.remove('fmode')}if(was!==inv&&cy)setTimeout(()=>{cy.resize();cy.fit(undefined,30)},30)}$('views').innerHTML=VIEWS.map((v,i)=>`${i===0||VIEWS[i-1][2]!==v[2]?`<div class="vgrp">${v[2]}</div>`:''}<button type="button" data-v="${v[0]}" aria-current="${v[0]===S.view}">${v[1]}</button>`).join('');
- try{$('body').innerHTML=V[S.view]()+(['inv','plan','verify'].includes(S.view)?'':sourcesCard(S.view));if(S.view==='inv'&&cy)setTimeout(()=>cy.resize(),0)}catch(e){$('body').innerHTML=`<div class="card"><b>Something went wrong showing this view.</b><p class="note">${esc(e.message)}</p></div>`}}
-document.addEventListener('click',async e=>{const tb=e.target.closest('[data-trace]');if(tb){e.preventDefault();const c=invCur();await liveTrace(tb.dataset.trace,c&&c.flow?c.flow.dir:'out');return}const wi=e.target.closest('[data-wsinv]');if(wi){e.preventDefault();await walletInvestigate(wi.dataset.wsinv);return}const ci=e.target.closest('[data-caseinv]');if(ci){e.preventDefault();await caseInvestigate(ci.dataset.caseinv);return}const rc=e.target.closest('[data-rcat]');if(rc){S.rcat=rc.dataset.rcat;render();return}
+ try{$('body').innerHTML=V[S.view]()+(['inv','plan','verify'].includes(S.view)?'':sourcesCard(S.view));if(S.view==='inv'&&cy)setTimeout(()=>cy.resize(),0)}catch(e){console.error(e);$('body').innerHTML=`<div class="card"><b>Something went wrong showing this view.</b><p class="note">${esc(e.message)}</p></div>`}}
+document.addEventListener('click',async e=>{const gr=e.target.closest('tr[data-goinv]');if(gr&&!e.target.closest('button')){S.view='inv';history.replaceState(null,'','#inv');INV.cur=gr.dataset.goinv;S.itab=null;S.isel=null;S.inopen=false;S.intake=null;render();return}const tb=e.target.closest('[data-trace]');if(tb){e.preventDefault();const c=invCur();await liveTrace(tb.dataset.trace,c&&c.flow?c.flow.dir:'out');return}const wi=e.target.closest('[data-wsinv]');if(wi){e.preventDefault();await walletInvestigate(wi.dataset.wsinv);return}const ci=e.target.closest('[data-caseinv]');if(ci){e.preventDefault();await caseInvestigate(ci.dataset.caseinv);return}const rc=e.target.closest('[data-rcat]');if(rc){S.rcat=rc.dataset.rcat;render();return}
  const edgeLink=e.target.closest('[data-edge]');if(edgeLink){inspectEdge(edgeLink.dataset.edge);return}
  const nodeLink=e.target.closest('[data-node]');if(nodeLink){e.preventDefault();const id=nodeLink.dataset.node;if(S.view==='trace'||S.view==='inv'){inspect(id);return}if(cy&&!cy.getElementById(id).length)expand(id);else select(id);return}
  const gt=e.target.closest('a[data-goto]');if(gt){e.preventDefault();S.view=gt.dataset.goto;history.replaceState(null,'','#'+S.view);render();return}
@@ -1166,6 +1190,10 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tra
  if(t.dataset.invadd!==undefined){const {c,k}=invAdd([t.dataset.invadd]);const b=t;b.textContent=k?`Added to ${c.name}`:'Already in the investigation';return}
  if(t.id==='binv'){if(!INV.list.length||INV.cur==='new'||S.view==='inv'&&S.check)invNew(`Check of ${new Date().toISOString().slice(0,10)}`,'From a check of wallets and names');const ids=[];for(const r of BATCH.filter(r=>r.level>0)){if(r.kind==='wallet'){const k=q('MATCH (a:Address) WHERE toLower(a.address) = toLower($s) RETURN a.key AS k',{s:r.input})[0];if(k)ids.push(k.k)}else{for(const e of q('MATCH (e:Entity) WHERE toLower(e.name) CONTAINS toLower($s) RETURN e.id AS k LIMIT 3',{s:r.input}))ids.push(e.k)}}const {c,k}=invAdd(ids);invLog(c,`${k} added from a check`);invSave();S.check=null;S.view='inv';INV.cur=c.id;history.replaceState(null,'','#inv');render();return}
  if(t.id==='invnew'){invNew($('invname').value.trim(),$('invwhy').value.trim());render();return}
+ if(t.dataset.ilwho!==undefined){S.ilwho=t.dataset.ilwho;render();return}
+ if(t.dataset.ilst!==undefined){S.ilst=t.dataset.ilst;render();return}
+ if(t.dataset.ilhist){S.ilhist=t.dataset.ilhist;render();return}
+ if(t.dataset.ilver){const [i,v]=t.dataset.ilver.split('|');ilVersion(i,+v);return}
  if(t.dataset.goinv){S.view='inv';history.replaceState(null,'','#inv');INV.cur=t.dataset.goinv;S.itab=null;S.isel=null;S.inopen=false;S.intake=null;S.intext='';S.inmsg='';render();if($('ipane'))$('ipane').scrollTop=0;return}
  if(t.dataset.inv){$('ipane').scrollTop=0;INV.cur=t.dataset.inv;S.itab=null;S.isel=null;S.inopen=false;S.fz=null;S.intake=null;S.intext='';S.inmsg='';render();return}
  if(t.dataset.invrm!==undefined){const c=invCur();const x=c.items.splice(+t.dataset.invrm,1)[0];invLog(c,`Removed ${x.label}`);invSave();render();return}
@@ -1209,6 +1237,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.pi!==undefined)S.prop
  planChip();const h0=location.hash.slice(1),h=ALIAS[h0]||h0;if(h0==='plan')S.view='plan';else if(h0.startsWith('verify')){S.view='verify';S.vexp=(h0.split('=')[1]||'').toLowerCase()}else if(VIEWS.some(v=>v[0]===h))S.view=h;invProject();render();if(CRAWL){srvLoad().then(traceRestore);window.addEventListener('focus',()=>{if(SRV.on&&!SRV.busy&&!SRV.t)srvLoad()})}}
  catch(e){$('body').innerHTML=`<div class="card"><b>Could not start the graph in this page.</b><p class="note">${esc(e.message)}</p></div>`}})();
 try{if(localStorage.getItem('cf-debug'))window.CF={q,screenOne,inspect,normRegister,factRegister,S,tts,render,INV,invSave,SRV,srvLoad}}catch(e){}
+document.addEventListener('input',e=>{if(e.target.id==='ilq'){S.ilq=e.target.value;const p=e.target.selectionStart;render();const i=$('ilq');if(i){i.focus();i.setSelectionRange(p,p)}}});
 </script>
 </body>
 </html>
